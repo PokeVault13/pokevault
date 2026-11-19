@@ -3153,3 +3153,1029 @@
                         this.finish();
                     } else {
                         this.rafId = requestAnimationFrame(loop);
+                    }
+                };
+                this.rafId = requestAnimationFrame(loop);
+            },
+
+            setLamp(level) {
+                const labels = ['WHITE', 'BLUE', 'GREEN', 'RED', 'GOLD', '🌈 RAINBOW'];
+                const activeCls = [
+                    'py-1 rounded-lg bg-slate-200 text-black font-black shadow',
+                    'py-1 rounded-lg bg-blue-500 text-white font-black shadow-[0_0_12px_#3b82f6]',
+                    'py-1 rounded-lg bg-emerald-400 text-black font-black shadow-[0_0_12px_#34d399]',
+                    'py-1 rounded-lg bg-rose-500 text-white font-black shadow-[0_0_14px_#f43f5e]',
+                    'py-1 rounded-lg bg-amber-400 text-black font-black shadow-[0_0_16px_#facc15]',
+                    'py-1 rounded-lg bg-gradient-to-r from-rose-500 via-amber-400 to-cyan-400 text-black font-black shadow-[0_0_20px_#f472b6]'
+                ];
+                document.getElementById('stepup-label-text').textContent = `STEP-UP: ${labels[level] || 'WHITE'}`;
+                for (let i = 0; i <= 5; i++) {
+                    const el = document.getElementById(`lamp-${i}`);
+                    if (!el) continue;
+                    el.className = i === level
+                        ? activeCls[i]
+                        : 'py-1 rounded-lg bg-slate-900/80 border border-white/10 text-gray-500';
+                }
+            },
+
+            buildScriptScene(script, bestCard, bestTier) {
+                const artOverlay = document.getElementById('cinema-art-overlay');
+                const centerCallout = document.getElementById('cinema-center-callout');
+                const subMain = document.getElementById('cinema-subtitle-main');
+                const subSub = document.getElementById('cinema-subtitle-sub');
+                const actBadge = document.getElementById('cinema-act-badge');
+                const isJackpot = bestTier === 'S' || bestTier === 'A';
+                const targetArt = `${OFFICIAL_ART_BASE}/${bestCard?.dex || 151}.png`;
+
+                // 劇本 A: 3D 精靈球捕捉 & 彩虹大師球進化
+                if (script === 'ball') {
+                    const floor = new THREE.Mesh(
+                        new THREE.CircleGeometry(4.5, 48),
+                        new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.4, metalness: 0.5 })
+                    );
+                    floor.rotation.x = -Math.PI / 2;
+                    floor.position.y = -1.2;
+                    this.scene.add(floor);
+
+                    const ballGroup = new THREE.Group();
+                    const topMat = new THREE.MeshStandardMaterial({ color: 0xef4444, roughness: 0.25, metalness: 0.45 });
+                    const topHalf = new THREE.Mesh(new THREE.SphereGeometry(0.95, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2), topMat);
+                    const botHalf = new THREE.Mesh(
+                        new THREE.SphereGeometry(0.95, 32, 16, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2),
+                        new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.25, metalness: 0.3 })
+                    );
+                    const band = new THREE.Mesh(
+                        new THREE.CylinderGeometry(0.97, 0.97, 0.14, 32),
+                        new THREE.MeshStandardMaterial({ color: 0x0f172a, metalness: 0.8 })
+                    );
+                    const btn = new THREE.Mesh(
+                        new THREE.SphereGeometry(0.24, 20, 20),
+                        new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0x38bdf8, emissiveIntensity: 0.4 })
+                    );
+                    btn.position.z = 0.92;
+                    ballGroup.add(topHalf, botHalf, band, btn);
+                    this.scene.add(ballGroup);
+
+                    artOverlay.innerHTML = `<img id="cinema-target-mon" src="${targetArt}" referrerpolicy="no-referrer" class="w-44 h-44 sm:w-52 sm:h-52 object-contain drop-shadow-[0_0_25px_rgba(250,204,21,0.85)] transition-all duration-300">`;
+                    SoundEngine.ballThrow();
+                    let bounced = [false, false, false];
+                    let shaken = [false, false, false];
+                    let evolved = false;
+
+                    return {
+                        update: (t, p) => {
+                            const mon = document.getElementById('cinema-target-mon');
+                            if (t < 2.2) {
+                                actBadge.textContent = 'ACT 1 / THROW';
+                                subMain.textContent = '去吧！3D 精靈球全力投出！！';
+                                subSub.textContent = '🔴 紅光鎖定目標寶可夢，準備吸入收服！';
+                                ballGroup.position.set(0, Math.sin((t / 2.2) * Math.PI) * 2.4 - 0.2, -3.5 + (t / 2.2) * 3.5);
+                                ballGroup.rotation.x = t * 9;
+                                if (t > 1.3 && mon) {
+                                    if (!bounced[0]) { SoundEngine.ballOpenAbsorb(); bounced[0] = true; }
+                                    mon.style.transform = `scale(${Math.max(0.05, 1 - (t - 1.3) * 1.1)})`;
+                                    mon.style.filter = 'brightness(3) sepia(1) hue-rotate(-50deg) saturate(6)';
+                                }
+                            } else if (t < 6.0) {
+                                if (mon) mon.style.opacity = '0';
+                                actBadge.textContent = 'ACT 2 / CAPTURE';
+                                subMain.textContent = '叮咚……叮咚……精靈球劇烈搖晃中！';
+                                subSub.textContent = '💓 心跳加速！千萬不要彈開啊！！';
+                                const bIdx = Math.floor((t - 2.2) / 1.2);
+                                if (bIdx >= 0 && bIdx < 3 && !shaken[bIdx]) {
+                                    shaken[bIdx] = true;
+                                    SoundEngine.ballShake();
+                                }
+                                ballGroup.position.set(0, -0.25 + Math.abs(Math.sin((t - 2.2) * 5)) * 0.25, 0);
+                                ballGroup.rotation.set(0, 0, Math.sin((t - 2.2) * 11) * 0.38);
+                                this.camera.position.z = Math.max(3.6, this.camera.position.z - 0.015);
+                            } else {
+                                actBadge.textContent = isJackpot ? 'ACT 3 / MASTER BALL!!' : 'ACT 3 / GOTCHA!';
+                                if (isJackpot && !evolved) {
+                                    evolved = true;
+                                    topMat.color.setHex(0x9333ea);
+                                    topMat.emissive.setHex(0xf43f5e);
+                                    topMat.emissiveIntensity = 0.55;
+                                    SoundEngine.ballCaptureFanfare(true);
+                                    centerCallout.innerHTML = `<div class="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-fuchsia-600 via-amber-400 to-cyan-400 text-black font-black text-xl sm:text-3xl shadow-2xl animate-bounce">🌈 大師球奇蹟進化收服！！</div>`;
+                                } else if (!evolved) {
+                                    evolved = true;
+                                    SoundEngine.ballCaptureFanfare(false);
+                                    centerCallout.innerHTML = `<div class="px-5 py-2 rounded-2xl bg-emerald-400 text-black font-black text-xl sm:text-2xl shadow-xl">✨ 收服成功！！</div>`;
+                                }
+                                subMain.textContent = isJackpot ? '🌈 紫金雷電炸裂！進化為【彩虹大師球】收服大獎！' : '✨ 喀嚓一聲！成功收服寶可夢！';
+                                subSub.textContent = '🎉 準備揭曉本次抽卡戰利品！';
+                                ballGroup.rotation.y += 0.06;
+                            }
+                        }
+                    };
+                }
+
+                // 劇本 B: 極巨空間・超極巨擬真神獸對決
+                if (script === 'dynamax') {
+                    this.scene.background = new THREE.Color(0x16071d);
+                    const vortex = new THREE.Mesh(
+                        new THREE.TorusGeometry(2.6, 0.22, 16, 64),
+                        new THREE.MeshBasicMaterial({ color: 0xf43f5e })
+                    );
+                    vortex.rotation.x = Math.PI / 2.4;
+                    vortex.position.y = 1.9;
+                    this.scene.add(vortex);
+
+                    const beam = new THREE.Mesh(
+                        new THREE.CylinderGeometry(0.18, 0.35, 5, 20),
+                        new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.75 })
+                    );
+                    beam.rotation.x = Math.PI / 2;
+                    beam.position.set(0, -0.3, 1.5);
+                    this.scene.add(beam);
+
+                    const bossArt = `${OFFICIAL_ART_BASE}/${bestCard?.dex || 384}.png`;
+                    artOverlay.innerHTML = `
+                        <div class="flex flex-col items-center space-y-2 w-full px-4">
+                            <div class="w-56 sm:w-72 bg-black/75 border border-rose-500/60 rounded-xl p-2">
+                                <div class="flex justify-between text-[10px] font-black text-rose-300 mb-1">
+                                    <span>DYNAMAX RAID BOSS</span>
+                                    <span id="boss-hp-txt">HP 100%</span>
+                                </div>
+                                <div class="w-full h-2 bg-slate-900 rounded-full overflow-hidden">
+                                    <div id="boss-hp-bar" class="h-full bg-gradient-to-r from-rose-500 to-amber-400 transition-all" style="width:100%"></div>
+                                </div>
+                            </div>
+                            <img id="dynamax-boss-img" src="${bossArt}" referrerpolicy="no-referrer" class="w-52 h-52 sm:w-64 sm:h-64 object-contain filter brightness-0 drop-shadow-[0_0_30px_#f43f5e] transition-all duration-300">
+                        </div>
+                    `;
+                    let hitDone = false;
+
+                    return {
+                        update: (t, p) => {
+                            vortex.rotation.z += 0.05;
+                            const img = document.getElementById('dynamax-boss-img');
+                            const hpBar = document.getElementById('boss-hp-bar');
+                            const hpTxt = document.getElementById('boss-hp-txt');
+                            if (t < 3.0) {
+                                actBadge.textContent = 'ACT 1 / RAID ALERT';
+                                subMain.textContent = '⚠️ 極巨巢穴深處傳來傳說神獸的咆哮！';
+                                subSub.textContent = '暗影剪影覺醒中，準備發射極巨能量砲！';
+                                if (img) img.style.transform = `scale(${1 + Math.sin(t * 4) * 0.05})`;
+                            } else if (t < 6.8) {
+                                actBadge.textContent = 'ACT 2 / MAX BEAM';
+                                subMain.textContent = '⚡ 極巨能量砲全力轟擊！護盾連續碎裂！';
+                                subSub.textContent = '神獸現出真身！氣場正在瘋狂飆升！！';
+                                const remHp = Math.max(5, Math.round(100 - ((t - 3.0) / 3.8) * 95));
+                                if (hpBar) hpBar.style.width = `${remHp}%`;
+                                if (hpTxt) hpTxt.textContent = `HP ${remHp}%`;
+                                if (img) {
+                                    img.classList.remove('brightness-0');
+                                    img.style.filter = 'drop-shadow(0 0 32px rgba(250,204,21,0.9))';
+                                    img.style.transform = `translateX(${Math.sin(t * 28) * 6}px) scale(1.08)`;
+                                }
+                                beam.scale.x = 1 + Math.sin(t * 20) * 0.4;
+                            } else {
+                                actBadge.textContent = 'ACT 3 / SUPERNOVA';
+                                if (!hitDone) {
+                                    hitDone = true;
+                                    SoundEngine.fireworkBoom();
+                                    if (hpBar) hpBar.style.width = '0%';
+                                    if (hpTxt) hpTxt.textContent = 'DEFEATED!!';
+                                    centerCallout.innerHTML = `<div class="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-amber-400 to-rose-500 text-black font-black text-xl sm:text-2xl shadow-2xl">💥 超極巨神獸擊破！！</div>`;
+                                }
+                                subMain.textContent = '💥 超新星大爆炸！神獸掉落稀有秘寶卡片！';
+                                subSub.textContent = '✨ 正在開啟寶箱結算...';
+                            }
+                        }
+                    };
+                }
+
+                // 劇本 C: 真實 3D 物理大號鋼珠盤（無 zoom-in 文字提示，直接電影拉近特寫！）
+                if (script === 'pachinko') {
+                    const board = new THREE.Mesh(
+                        new THREE.CylinderGeometry(3.4, 3.4, 0.3, 48),
+                        new THREE.MeshStandardMaterial({ color: 0x0f172a, metalness: 0.75, roughness: 0.25 })
+                    );
+                    board.rotation.x = Math.PI / 2;
+                    this.scene.add(board);
+
+                    const ringColors = [0x3b82f6, 0x10b981, 0xa855f7, 0xf59e0b, 0xf43f5e];
+                    const ringPositions = [[-1.6, -1.3], [1.6, -1.3], [-1.3, 0.4], [1.3, 0.4], [0, -0.35]];
+                    ringPositions.forEach(([rx, ry], idx) => {
+                        const ring = new THREE.Mesh(
+                            new THREE.TorusGeometry(idx === 4 ? 0.68 : 0.52, 0.08, 16, 36),
+                            new THREE.MeshBasicMaterial({ color: ringColors[idx] })
+                        );
+                        ring.position.set(rx, ry, 0.22);
+                        this.scene.add(ring);
+                    });
+
+                    // 放大 1.6 倍的高反光 3D 鍍鉻大鋼珠
+                    const steelBall = new THREE.Mesh(
+                        new THREE.SphereGeometry(0.42, 32, 32),
+                        new THREE.MeshStandardMaterial({ color: 0xf8fafc, metalness: 0.95, roughness: 0.08 })
+                    );
+                    steelBall.position.set(0, 2.3, 0.45);
+                    this.scene.add(steelBall);
+
+                    let landed = false;
+                    const targetIdx = bestTier === 'S' ? 4 : bestTier === 'A' ? 3 : bestTier === 'B' ? 2 : bestTier === 'C' ? 1 : 0;
+                    const [tx, ty] = ringPositions[targetIdx];
+
+                    return {
+                        update: (t, p) => {
+                            if (t < 4.5) {
+                                actBadge.textContent = 'ACT 1 / DROP';
+                                subMain.textContent = '🎰 鍍鉻大鋼珠高速彈跳下墜！會落入哪個色圈？！';
+                                subSub.textContent = '🔵5等 ｜ 🟢4等 ｜ 🟣3等 ｜ 🟠2等 ｜ 🌈中央彩虹 1等圈！';
+                                const angle = t * 5.2;
+                                const radius = Math.max(0.2, 2.1 * (1 - t / 4.8));
+                                steelBall.position.x = Math.cos(angle) * radius;
+                                steelBall.position.y = 2.2 - (t / 4.5) * 2.4 + Math.abs(Math.sin(t * 9)) * 0.25;
+                                // 無縫拉近攝影機特寫，不顯示 zoom-in 字樣
+                                this.camera.position.lerp(new THREE.Vector3(steelBall.position.x * 0.4, steelBall.position.y * 0.4, 3.6), 0.08);
+                                this.camera.lookAt(steelBall.position.x * 0.5, steelBall.position.y * 0.5, 0);
+                            } else if (t < 7.2) {
+                                actBadge.textContent = 'ACT 2 / RIM SPIN';
+                                subMain.textContent = '💓 鋼珠卡在獎圈邊緣瘋狂旋轉！！';
+                                subSub.textContent = '進去啊！！就差最後一毫米！！';
+                                steelBall.position.x = tx + Math.cos(t * 16) * 0.22 * (1 - (t - 4.5) / 2.7);
+                                steelBall.position.y = ty + Math.sin(t * 16) * 0.22 * (1 - (t - 4.5) / 2.7);
+                                this.camera.position.lerp(new THREE.Vector3(tx * 0.6, ty * 0.6, 2.8), 0.1);
+                                this.camera.lookAt(tx, ty, 0);
+                            } else {
+                                actBadge.textContent = 'ACT 3 / POCKET IN!';
+                                steelBall.position.set(tx, ty, 0.25);
+                                if (!landed) {
+                                    landed = true;
+                                    SoundEngine.ballCaptureFanfare(isJackpot);
+                                    centerCallout.innerHTML = `<div class="px-5 py-2.5 rounded-2xl bg-amber-400 text-black font-black text-xl sm:text-2xl shadow-2xl">🎯 鋼珠成功入洞！！</div>`;
+                                }
+                                subMain.textContent = '🎯 完美落入獎圈！啟動彩燈大爆發！';
+                                subSub.textContent = '✨ 正在派發本次抽出卡片...';
+                            }
+                        }
+                    };
+                }
+
+                // 劇本 D: 第一人稱鍛造武士刀・斬碎花崗岩石碑
+                if (script === 'katana') {
+                    // 花崗岩石碑
+                    const steleLeft = new THREE.Mesh(
+                        new THREE.BoxGeometry(1.1, 3.2, 0.75),
+                        new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.88, metalness: 0.15 })
+                    );
+                    steleLeft.position.set(-0.56, 0, -0.5);
+                    const steleRight = new THREE.Mesh(
+                        new THREE.BoxGeometry(1.1, 3.2, 0.75),
+                        new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.88, metalness: 0.15 })
+                    );
+                    steleRight.position.set(0.56, 0, -0.5);
+                    this.scene.add(steleLeft, steleRight);
+
+                    // 寫實鍛造黑鋼武士刀
+                    const katana = new THREE.Group();
+                    const blade = new THREE.Mesh(
+                        new THREE.BoxGeometry(0.08, 2.8, 0.22),
+                        new THREE.MeshStandardMaterial({ color: 0xe2e8f0, metalness: 0.95, roughness: 0.12 })
+                    );
+                    blade.position.y = 1.4;
+                    const tsuba = new THREE.Mesh(
+                        new THREE.CylinderGeometry(0.24, 0.24, 0.06, 20),
+                        new THREE.MeshStandardMaterial({ color: 0xd97706, metalness: 0.85, roughness: 0.25 })
+                    );
+                    const hilt = new THREE.Mesh(
+                        new THREE.CylinderGeometry(0.09, 0.1, 0.85, 16),
+                        new THREE.MeshStandardMaterial({ color: 0x09090b, roughness: 0.9 })
+                    );
+                    hilt.position.y = -0.45;
+                    katana.add(blade, tsuba, hilt);
+                    katana.position.set(1.1, -0.8, 2.3);
+                    katana.rotation.set(-0.35, -0.3, 0.35);
+                    this.scene.add(katana);
+
+                    let slashCount = 0;
+                    let splitDone = false;
+
+                    return {
+                        update: (t, p) => {
+                            if (t < 5.5) {
+                                actBadge.textContent = 'ACT 1 / SLASH';
+                                subMain.textContent = '⚔️ 拔刀居合！高碳鋼武士刀連續劈砍遠古石碑！';
+                                subSub.textContent = '石碑表面浮現裂痕與金光！！';
+                                const swing = Math.sin(t * 7);
+                                katana.rotation.z = 0.35 + swing * 0.95;
+                                katana.position.x = 0.7 - Math.abs(swing) * 0.8;
+                                if (swing > 0.92 && slashCount < 3) {
+                                    slashCount++;
+                                    SoundEngine.katanaSlash();
+                                    SoundEngine.rockCrack();
+                                }
+                            } else {
+                                actBadge.textContent = 'ACT 2 / SHATTER!';
+                                if (!splitDone) {
+                                    splitDone = true;
+                                    SoundEngine.katanaSlash();
+                                    SoundEngine.fireworkBoom();
+                                    centerCallout.innerHTML = `<div class="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-amber-300 to-rose-500 text-black font-black text-xl sm:text-3xl shadow-2xl">⚔️ 一刀兩斷・封印解除！！</div>`;
+                                }
+                                subMain.textContent = '💥 轟隆巨響！花崗岩石碑從正中央一刀劈開！！';
+                                subSub.textContent = '✨ 封印在石碑內的稀有卡牌破石而出！';
+                                steleLeft.position.x -= 0.035;
+                                steleLeft.rotation.z += 0.018;
+                                steleRight.position.x += 0.035;
+                                steleRight.rotation.z -= 0.018;
+                            }
+                        }
+                    };
+                }
+
+                // 劇本 E: 霓虹夜市・黃金地鼠爆擊機
+                if (script === 'mole') {
+                    const cabinet = new THREE.Mesh(
+                        new THREE.BoxGeometry(3.8, 0.5, 3.0),
+                        new THREE.MeshStandardMaterial({ color: 0x311042, metalness: 0.6, roughness: 0.3 })
+                    );
+                    cabinet.position.y = -1.1;
+                    this.scene.add(cabinet);
+
+                    for (let r = -1; r <= 1; r++) {
+                        for (let c = -1; c <= 1; c++) {
+                            const hole = new THREE.Mesh(
+                                new THREE.CylinderGeometry(0.42, 0.42, 0.54, 24),
+                                new THREE.MeshBasicMaterial({ color: 0x05070c })
+                            );
+                            hole.position.set(c * 1.1, -1.08, r * 0.85);
+                            this.scene.add(hole);
+                        }
+                    }
+
+                    artOverlay.innerHTML = `
+                        <div class="flex flex-col items-center space-y-2">
+                            <span id="mole-combo-tag" class="px-3 py-1 rounded-full bg-amber-400 text-black font-display font-black text-xs shadow">COMBO x1</span>
+                            <img id="mole-sprite-img" src="${buildArtImg(50)}" referrerpolicy="no-referrer" class="w-40 h-40 sm:w-48 sm:h-48 object-contain drop-shadow-[0_0_24px_#facc15] transition-transform duration-150">
+                        </div>
+                    `;
+                    let combo = 1;
+                    let upgraded = false;
+
+                    return {
+                        update: (t, p) => {
+                            const mImg = document.getElementById('mole-sprite-img');
+                            const cTag = document.getElementById('mole-combo-tag');
+                            if (t < 5.5) {
+                                actBadge.textContent = 'ACT 1 / WHACK!';
+                                subMain.textContent = '🔨 夜市鐵槌連環爆擊！地鼠瘋狂彈出！！';
+                                subSub.textContent = '連擊 COMBO 越高，黃金三地鼠王出現率暴增！';
+                                const step = Math.floor(t * 2.5) + 1;
+                                if (step > combo) {
+                                    combo = step;
+                                    SoundEngine.arcadeHit(false);
+                                    if (cTag) cTag.textContent = `COMBO x${combo}!!`;
+                                    if (mImg) mImg.style.transform = `translate(${(Math.random() - 0.5) * 90}px, ${(Math.random() - 0.5) * 40}px) scale(1.1)`;
+                                }
+                            } else {
+                                actBadge.textContent = 'ACT 2 / GOLDEN KING!';
+                                if (!upgraded) {
+                                    upgraded = true;
+                                    SoundEngine.ballCaptureFanfare(true);
+                                    if (mImg) {
+                                        mImg.src = buildArtImg(51);
+                                        mImg.style.transform = 'scale(1.32)';
+                                        mImg.style.filter = 'drop-shadow(0 0 35px #facc15) saturate(1.8)';
+                                    }
+                                    centerCallout.innerHTML = `<div class="px-5 py-2.5 rounded-2xl bg-amber-400 text-black font-black text-xl sm:text-2xl shadow-2xl">👑 黃金三地鼠王大爆發！！</div>`;
+                                }
+                                subMain.textContent = '💰 敲出傳說黃金三地鼠王！噴出滿屏金幣大獎！';
+                                subSub.textContent = '✨ 正在結算獲得卡片...';
+                            }
+                        }
+                    };
+                }
+
+                // 劇本 F: 生化禁區・幽靈暗廊狙擊突圍
+                if (script === 'zombie') {
+                    this.scene.background = new THREE.Color(0x09040a);
+                    const corridor = new THREE.Mesh(
+                        new THREE.BoxGeometry(4.2, 3.6, 14),
+                        new THREE.MeshStandardMaterial({ color: 0x1e1b2e, side: THREE.BackSide, roughness: 0.7 })
+                    );
+                    this.scene.add(corridor);
+
+                    const redLight = new THREE.PointLight(0xef4444, 2.5, 12);
+                    redLight.position.set(0, 1.4, -2);
+                    this.scene.add(redLight);
+
+                    const cardColor = bestTier === 'S' ? 'from-rose-500 via-amber-400 to-cyan-400'
+                        : bestTier === 'A' ? 'from-amber-400 to-orange-500'
+                        : bestTier === 'B' ? 'from-fuchsia-500 to-purple-600'
+                        : 'from-sky-400 to-blue-600';
+
+                    artOverlay.innerHTML = `
+                        <div class="flex flex-col items-center space-y-3">
+                            <img id="zombie-gengar-img" src="${buildArtImg(94)}" referrerpolicy="no-referrer" class="w-44 h-44 sm:w-52 sm:h-52 object-contain drop-shadow-[0_0_28px_#a855f7] transition-all">
+                            <div id="security-id-card" class="hidden px-5 py-2.5 rounded-xl bg-gradient-to-r ${cardColor} text-black font-black text-sm shadow-2xl border-2 border-white">
+                                🪪 SECURITY CLEARANCE: ${TIER_LABEL_MAP[bestTier]}
+                            </div>
+                        </div>
+                    `;
+                    let shotFired = false;
+
+                    return {
+                        update: (t, p) => {
+                            redLight.intensity = 1.5 + Math.sin(t * 12) * 1.2;
+                            const gImg = document.getElementById('zombie-gengar-img');
+                            const idCard = document.getElementById('security-id-card');
+                            if (t < 5.5) {
+                                actBadge.textContent = 'ACT 1 / CONTAINMENT';
+                                subMain.textContent = '🚨 生化警報響起！暗影幽靈軍團從濃霧逼近！';
+                                subSub.textContent = '🔫 戰術狙擊瞄準鎖定！持續開火突圍中！！';
+                                if (gImg) gImg.style.transform = `scale(${0.85 + (t / 5.5) * 0.35}) translateX(${Math.sin(t * 14) * 8}px)`;
+                            } else {
+                                actBadge.textContent = 'ACT 2 / CLEARANCE!';
+                                if (!shotFired) {
+                                    shotFired = true;
+                                    SoundEngine.fireworkBoom();
+                                    if (gImg) gImg.style.opacity = '0.2';
+                                    if (idCard) idCard.classList.remove('hidden');
+                                }
+                                subMain.textContent = '🪪 擊破暗影首領！掉落最高機密安全等級 ID 卡！';
+                                subSub.textContent = '✨ 正在解鎖金庫領取卡片...';
+                            }
+                        }
+                    };
+                }
+
+                // 劇本 G: 月夜江戶川・百花繚亂花火大會
+                this.scene.background = new THREE.Color(0x040714);
+                const moon = new THREE.Mesh(
+                    new THREE.CircleGeometry(1.1, 32),
+                    new THREE.MeshBasicMaterial({ color: isJackpot ? 0xf43f5e : 0xfef08a })
+                );
+                moon.position.set(-1.6, 1.8, -4);
+                this.scene.add(moon);
+
+                const pCount = 260;
+                const geo = new THREE.BufferGeometry();
+                const pos = new Float32Array(pCount * 3);
+                const vel = [];
+                for (let i = 0; i < pCount; i++) {
+                    pos[i * 3] = 0;
+                    pos[i * 3 + 1] = -2;
+                    pos[i * 3 + 2] = 0;
+                    const theta = Math.random() * Math.PI * 2;
+                    const phi = Math.acos(2 * Math.random() - 1);
+                    const spd = 0.03 + Math.random() * 0.06;
+                    vel.push([
+                        Math.sin(phi) * Math.cos(theta) * spd,
+                        Math.sin(phi) * Math.sin(theta) * spd,
+                        Math.cos(phi) * spd
+                    ]);
+                }
+                geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+                const pMat = new THREE.PointsMaterial({ color: 0xfacc15, size: 0.16, transparent: true, opacity: 0.95 });
+                const fireworkPts = new THREE.Points(geo, pMat);
+                this.scene.add(fireworkPts);
+
+                let launched = false;
+                let boomed = false;
+                const fwColors = [0x38bdf8, 0xfacc15, 0xf43f5e, 0xa855f7, 0x34d399];
+
+                return {
+                    update: (t, p) => {
+                        if (t < 3.2) {
+                            actBadge.textContent = 'ACT 1 / LAUNCH';
+                            subMain.textContent = '🎆 特大三尺玉花火呼嘯升空！！';
+                            subSub.textContent = isJackpot ? '🌕 夜空滿月染成緋紅血月！大獎徵兆降臨！！' : '✨ 火花直衝雲霄，即將在夜空綻放！';
+                            if (!launched) {
+                                launched = true;
+                                SoundEngine.fireworkLaunch();
+                            }
+                            fireworkPts.position.y = -1.5 + (t / 3.2) * 2.3;
+                        } else {
+                            actBadge.textContent = 'ACT 2 / BLOSSOM!';
+                            if (!boomed) {
+                                boomed = true;
+                                SoundEngine.fireworkBoom();
+                                centerCallout.innerHTML = `<div class="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-amber-400 via-rose-500 to-indigo-500 text-white font-black text-xl sm:text-2xl shadow-2xl">🎆 百花繚亂・三尺玉大綻放！！</div>`;
+                            }
+                            subMain.textContent = '🎇 漫天彩虹星火照亮整個江戶川夜空！！';
+                            subSub.textContent = '✨ 正在呈現本次抽卡結果...';
+                            pMat.color.setHex(fwColors[Math.floor(t * 4) % fwColors.length]);
+                            const arr = geo.attributes.position.array;
+                            for (let i = 0; i < pCount; i++) {
+                                arr[i * 3] += vel[i][0];
+                                arr[i * 3 + 1] += vel[i][1] - 0.004;
+                                arr[i * 3 + 2] += vel[i][2];
+                            }
+                            geo.attributes.position.needsUpdate = true;
+                        }
+                    }
+                };
+            },
+
+            finish() {
+                const cfg = this.config;
+                this.cleanup();
+                TownBGM.resumeAfterCinema();
+                if (cfg) {
+                    openResultSettlement(cfg.poolTitle, cfg.cards, cfg.cost);
+                }
+            },
+
+            cleanup() {
+                this.active = false;
+                if (this.rafId) cancelAnimationFrame(this.rafId);
+                this.rafId = null;
+                if (this.renderer) {
+                    this.renderer.dispose();
+                    this.renderer = null;
+                }
+                this.scene = null;
+                this.camera = null;
+            }
+        };
+
+        /* ==========================================================================
+         * 11. 🌋 卡片熔爐系統 (PSA 10 歐洲大熔爐 + 5 階進階鍍金昇華爐 + 可捲動結果視窗)
+         * ========================================================================== */
+        const FurnaceSystem = {
+            mode: 'PSA10',
+            emberPct: 0,
+            mainCardUid: null,
+            fuelUids: new Set(),
+            forgeRenderer: null,
+            forgeRaf: null,
+
+            recipes: [
+                {
+                    id: 'rec-2to1',
+                    badge: '🔥 歐洲衝頂配方',
+                    title: '5 張 2 等賞 ➔ 拚高價值 1 等賞 PSA 10',
+                    reqTier: 'A',
+                    reqCount: 5,
+                    desc: '消耗任意 5 張【2等賞】，45% 機率直接鍛造出頂級【1等賞 PSA 10 神卡】！未中亦返還全新強化 2等賞 PSA 10！'
+                },
+                {
+                    id: 'rec-4to2-miracle',
+                    badge: '🌈 0.001% 宇宙奇蹟爐',
+                    title: '20 張 4 等賞 ➔ 拚全新 2 等賞 (0.001% 終極 RGB)',
+                    reqTier: 'C',
+                    reqCount: 20,
+                    desc: '將 20 張【4等賞】投入高壓坩堝！歐洲人有機會一舉煉出全新【2等賞 PSA 10】，更藏有 0.001% 傳說【30週年 夢幻 RGB】奇蹟爆擊！'
+                },
+                {
+                    id: 'rec-3to2',
+                    badge: '⚡ 中堅進階爐',
+                    title: '5 張 3 等賞 ➔ 拚全新 2 等賞 PSA 10',
+                    reqTier: 'B',
+                    reqCount: 5,
+                    desc: '消耗 5 張【3等賞】，35% 機率直接晉升為【2等賞 PSA 10】，保底獲得高估值 3等賞！'
+                },
+                {
+                    id: 'rec-5to3',
+                    badge: '♻️ 廢卡大煉丹',
+                    title: '10 張 5 等賞廢卡 ➔ 煉成全新 3 / 4 等賞',
+                    reqTier: 'D',
+                    reqCount: 10,
+                    desc: '把 10 張【5等賞廢卡】一鍵回爐重鑄，100% 進化為全新【4等賞】（25% 暴擊直出【3等賞】）！'
+                }
+            ],
+
+            switchMode(m) {
+                this.mode = m;
+                document.getElementById('furnace-panel-PSA10').classList.toggle('hidden', m !== 'PSA10');
+                document.getElementById('furnace-panel-GOLD').classList.toggle('hidden', m !== 'GOLD');
+                document.getElementById('furnace-mode-PSA10').className = m === 'PSA10'
+                    ? 'px-3.5 py-2 rounded-lg text-xs font-black bg-gradient-to-r from-orange-500 to-amber-400 text-black'
+                    : 'px-3.5 py-2 rounded-lg text-xs font-bold text-gray-300 hover:text-white';
+                document.getElementById('furnace-mode-GOLD').className = m === 'GOLD'
+                    ? 'px-3.5 py-2 rounded-lg text-xs font-black bg-gradient-to-r from-orange-500 to-amber-400 text-black'
+                    : 'px-3.5 py-2 rounded-lg text-xs font-bold text-gray-300 hover:text-white';
+                this.renderAll();
+            },
+
+            renderAll() {
+                this.renderRecipes();
+                this.renderGoldUI();
+            },
+
+            renderRecipes() {
+                const grid = document.getElementById('furnace-recipes-grid');
+                if (!grid) return;
+                grid.innerHTML = this.recipes.map(r => {
+                    const owned = state.vault.filter(c => c.tier === r.reqTier).length;
+                    const ready = owned >= r.reqCount;
+                    return `
+                    <div class="bg-slatecard border ${ready ? 'border-orange-400/70' : 'border-slateborder'} rounded-2xl p-4 flex flex-col justify-between space-y-3 shadow-lg">
+                        <div class="space-y-1.5">
+                            <div class="flex items-center justify-between gap-2">
+                                <span class="px-2 py-0.5 rounded bg-orange-500/20 text-orange-300 text-[10px] font-black">${r.badge}</span>
+                                <span class="text-xs font-mono font-black ${ready ? 'text-emerald-400' : 'text-gray-400'}">持有材料：${owned} / ${r.reqCount} 張</span>
+                            </div>
+                            <h3 class="text-sm sm:text-base font-black text-white">${r.title}</h3>
+                            <p class="text-xs text-gray-300 leading-relaxed">${r.desc}</p>
+                        </div>
+                        <button onclick="FurnaceSystem.executeRecipe('${r.id}')" ${ready ? '' : 'disabled'} class="w-full py-2.5 rounded-xl font-black text-xs transition-all ${ready ? 'bg-gradient-to-r from-orange-500 via-amber-400 to-rose-500 hover:brightness-110 text-black shadow-lg active:scale-95' : 'bg-slate-800 text-gray-500 cursor-not-allowed'}">
+                            ${ready ? `🔥 投入 ${r.reqCount} 張材料開始熔煉！` : `材料不足（尚缺 ${r.reqCount - owned} 張 ${TIER_LABEL_MAP[r.reqTier]}）`}
+                        </button>
+                    </div>
+                    `;
+                }).join('');
+            },
+
+            executeRecipe(recId) {
+                const rec = this.recipes.find(r => r.id === recId);
+                if (!rec) return;
+                const matching = state.vault.filter(c => c.tier === rec.reqTier);
+                if (matching.length < rec.reqCount) {
+                    showToast('❌ 保管庫材料張數不足！');
+                    return;
+                }
+
+                // 扣除最舊的 reqCount 張材料
+                const toConsume = new Set(matching.slice(-rec.reqCount).map(c => c.uid));
+                state.vault = state.vault.filter(c => !toConsume.has(c.uid));
+
+                let outCard = null;
+                let headline = '';
+                let desc = '';
+
+                const pickCard = (ids, tier, pt, isPSA10 = true) => {
+                    const id = ids[Math.floor(Math.random() * ids.length)];
+                    const ref = VERIFIED_CARDS[id] || VERIFIED_CARDS.C30_MEW_FUR;
+                    return {
+                        uid: `forge_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+                        cardId: id,
+                        name: isPSA10 ? `【PSA 10 熔爐神鍛】${ref.name}` : `【熔爐重鑄】${ref.name}`,
+                        img: ref.img,
+                        code: ref.code,
+                        rarity: ref.rarity,
+                        dex: ref.dex,
+                        tier,
+                        tierLabel: TIER_LABEL_MAP[tier],
+                        marketPt: pt,
+                        buybackPt: calcBuybackPt(pt, tier, false),
+                        isPSA10,
+                        forgeLevel: 0
+                    };
+                };
+
+                if (rec.id === 'rec-2to1') {
+                    const win1st = Math.random() < 0.45;
+                    if (win1st) {
+                        outCard = pickCard(['C30_MEW_RGB', 'PONCHO_CHARIZARD_PIKA', 'UMBREON_VMAX_SA', 'RAYQUAZA_VMAX_SA', 'MEGA_CHARIZARDX_MUR'], 'S', 185000, true);
+                        headline = '🌈🔥 歐洲大爆發！！煉出【1等賞 PSA 10 神卡】！！';
+                        desc = '5 張 2 等賞成功突破極限，晉升傳說 1 等賞 PSA 10！';
+                    } else {
+                        outCard = pickCard(['C30_MEW_FUR', 'VAN_GOGH_PIKACHU', 'ROCKET_MEWTWO_UR', 'MEGA_LUCARIO_MUR'], 'A', 65000, true);
+                        headline = '✨ 熔煉完成！獲得全新【強化 2 等賞 PSA 10】！';
+                        desc = '雖未觸發 1 等賞暴擊，但成功合出高價值 2 等賞 PSA 10！';
+                    }
+                } else if (rec.id === 'rec-4to2-miracle') {
+                    const roll = Math.random();
+                    if (roll < 0.00001) {
+                        outCard = pickCard(['C30_MEW_RGB'], 'S', 220000, true);
+                        headline = '🌌👑 0.001% 宇宙神蹟降臨！！【30週年 夢幻 RGB】！！';
+                        desc = '萬中選一的終極天選歐洲人！！';
+                    } else if (roll < 0.32) {
+                        outCard = pickCard(['C30_MEWTWO_FUR', 'TERASTAL_SYLVEON', 'N_ZOROARK_SAR', 'GOLD_MEW_UR'], 'A', 48000, true);
+                        headline = '🎉 20 張 4 等賞逆天改命！煉出全新【2等賞 PSA 10】！';
+                        desc = '以小博大成功！廢卡堆裡飛出金鳳凰！';
+                    } else {
+                        outCard = pickCard(['C30_PIKACHU_FUR', 'CHARIZARD_25TH', 'DIALGA_VSTAR_UR', 'IONO_SAR'], 'B', 14500, false);
+                        headline = '🔥 熔煉完成！獲得全新【3等賞精選好卡】！';
+                        desc = '20 張 4 等賞成功濃縮為高價 3 等賞！';
+                    }
+                } else if (rec.id === 'rec-3to2') {
+                    if (Math.random() < 0.35) {
+                        outCard = pickCard(['C30_MEW_FUR', 'GIRATINA_V_SA', 'LUGIA_V_SA', 'MEGA_GARDEVOIR_MUR'], 'A', 54000, true);
+                        headline = '✨ 晉升成功！5 張 3 等賞煉出【2等賞 PSA 10】！';
+                        desc = '純度大幅提升，晉升 PSA 10 鑑定大獎！';
+                    } else {
+                        outCard = pickCard(['C30_CHARIZARD_30TH', 'ROCKET_MOLTRES_SAR', 'SALAMENCE_SV9_SAR'], 'B', 13800, false);
+                        headline = '🔥 重鑄完成！獲得全新【高階 3 等賞】！';
+                        desc = '成功重鑄為全新的 3 等賞卡片！';
+                    }
+                } else {
+                    if (Math.random() < 0.25) {
+                        outCard = pickCard(['C30_PIKACHU_30TH', 'VENUSAUR_151_SAR', 'TERASTAL_GLACEON'], 'B', 11200, false);
+                        headline = '⚡ 廢卡大暴擊！10 張 5 等賞煉出【3等賞】！';
+                        desc = '廢卡變黃金，直接跳級獲得 3 等賞！';
+                    } else {
+                        outCard = pickCard(['PIKACHU_151_AR', 'SNORLAX_151', 'PSYDUCK_151', 'GENGAR_151'], 'C', 2400, false);
+                        headline = '♻️ 回爐重鑄完成！獲得全新【4等賞 AR/閃卡】！';
+                        desc = '10 張廢卡成功合成為全新的 4 等賞卡片！';
+                    }
+                }
+
+                state.vault.unshift(outCard);
+                updateWalletUI();
+                this.renderAll();
+                this.playForge3DCinema(outCard, headline, desc);
+            },
+
+            /* 5 階進階鍍金昇華爐 */
+            goldTiers: [
+                { lv: 1, tag: 'Lv.1 UR 鎏金特仕', mult: 1.8, rarity: 'UR' },
+                { lv: 2, tag: 'Lv.2 MUR 超級純金', mult: 2.2, rarity: 'MUR' },
+                { lv: 3, tag: 'Lv.3 BWR 黑金神殿', mult: 2.5, rarity: 'BWR' },
+                { lv: 4, tag: 'Lv.4 FUR 未來星鑽', mult: 2.8, rarity: 'FUR' },
+                { lv: 5, tag: 'Lv.5 RGB 虹彩終極', mult: 3.5, rarity: 'RGB' }
+            ],
+
+            selectMainCard(uid) {
+                if (this.mainCardUid === uid) {
+                    this.mainCardUid = null;
+                    this.fuelUids.clear();
+                } else {
+                    this.mainCardUid = uid;
+                    this.fuelUids.delete(uid);
+                }
+                this.renderGoldUI();
+            },
+
+            toggleFuelCard(uid) {
+                if (!this.mainCardUid) {
+                    this.selectMainCard(uid);
+                    return;
+                }
+                if (uid === this.mainCardUid) {
+                    this.selectMainCard(uid);
+                    return;
+                }
+                if (this.fuelUids.has(uid)) this.fuelUids.delete(uid);
+                else this.fuelUids.add(uid);
+                this.renderGoldUI();
+            },
+
+            clearGoldSelection() {
+                this.mainCardUid = null;
+                this.fuelUids.clear();
+                this.renderGoldUI();
+            },
+
+            autoSelectGoldFuel() {
+                if (!this.mainCardUid) {
+                    showToast('請先點選 1 張要鍍金的主卡！');
+                    return;
+                }
+                this.fuelUids.clear();
+                const candidates = state.vault.filter(c => c.uid !== this.mainCardUid && (c.tier === 'D' || c.tier === 'C'));
+                candidates.slice(0, 8).forEach(c => this.fuelUids.add(c.uid));
+                this.renderGoldUI();
+            },
+
+            calcGoldRate() {
+                if (!this.mainCardUid) return 0;
+                const main = state.vault.find(c => c.uid === this.mainCardUid);
+                if (!main) return 0;
+                const curLv = main.forgeLevel || 0;
+                const fuelCount = this.fuelUids.size;
+                if (fuelCount === 0 && this.emberPct < 100) return 0;
+                const base = Math.max(15, 32 - curLv * 4);
+                return Math.min(100, base + fuelCount * 9 + this.emberPct);
+            },
+
+            renderGoldUI() {
+                const emberBadge = document.getElementById('forge-ember-badge');
+                if (emberBadge) emberBadge.textContent = `🔥 餘燼保底: ${this.emberPct}%`;
+
+                const slot = document.getElementById('gold-main-slot');
+                const preview = document.getElementById('gold-tier-preview');
+                const main = state.vault.find(c => c.uid === this.mainCardUid);
+
+                if (!main) {
+                    slot.innerHTML = `<span class="text-3xl mb-1">🃏</span><span class="text-xs text-gray-400 font-bold">請從右側保管庫點選 1 張卡片作為主卡</span>`;
+                    preview.innerHTML = `<div>支援 5 階連續昇華：<strong class="text-amber-300">UR(1.8x) ➔ MUR(2.2x) ➔ BWR黑金(2.5x) ➔ FUR星鑽(2.8x) ➔ RGB虹彩(3.5x)</strong></div>`;
+                } else {
+                    const curLv = main.forgeLevel || 0;
+                    const nextSpec = this.goldTiers[Math.min(4, curLv)];
+                    const frameCls = curLv > 0 ? `forge-frame-${curLv}` : 'border border-amber-400';
+                    slot.innerHTML = `
+                        <div class="w-32 rounded-xl overflow-hidden bg-slate-900 p-1.5 ${frameCls}">
+                            <img src="${main.img}" alt="${main.name}" data-card-name="${main.name}" onerror="handleCardImgError(this)" referrerpolicy="no-referrer" class="w-full aspect-[3/3.8] object-contain">
+                        </div>
+                        <div class="text-xs font-black text-white mt-2">${main.name}</div>
+                        <div class="text-[11px] text-amber-300 font-bold">目前階段：Lv.${curLv} ｜ 估值 ${main.marketPt.toLocaleString()} PT</div>
+                    `;
+                    preview.innerHTML = curLv >= 5
+                        ? `<div class="text-fuchsia-300 font-black">🌈 已達最高【Lv.5 RGB 虹彩終極神卡】滿階！</div>`
+                        : `<div>下一階目標：<strong class="text-amber-300">${nextSpec.tag}</strong>（身價提升至 <strong class="text-emerald-400">${Math.round(main.marketPt * (nextSpec.mult / (curLv > 0 ? this.goldTiers[curLv - 1].mult : 1))).toLocaleString()} PT</strong> ＋ 升級 PSA 10 ＋ 80% 回收！）</div>`;
+                }
+
+                const rate = this.calcGoldRate();
+                document.getElementById('gold-fuel-count').textContent = this.fuelUids.size;
+                document.getElementById('gold-success-rate').textContent = `${rate}%`;
+                document.getElementById('gold-success-bar').style.width = `${rate}%`;
+
+                const picker = document.getElementById('gold-vault-picker');
+                if (!picker) return;
+                if (!state.vault.length) {
+                    picker.innerHTML = `<div class="col-span-full text-center text-xs text-gray-500 py-10">保管庫目前沒有卡片，先去抽卡或開包吧！</div>`;
+                    return;
+                }
+                picker.innerHTML = state.vault.map(c => {
+                    const isMain = c.uid === this.mainCardUid;
+                    const isFuel = this.fuelUids.has(c.uid);
+                    const cls = isMain
+                        ? 'border-amber-400 bg-amber-500/20 ring-2 ring-amber-400'
+                        : isFuel
+                            ? 'border-cyan-400 bg-cyan-500/20'
+                            : 'border-white/10 bg-obsidian hover:border-white/30';
+                    return `
+                    <div onclick="FurnaceSystem.toggleFuelCard('${c.uid}')" class="cursor-pointer rounded-xl border ${cls} p-1.5 text-center space-y-1 transition-all">
+                        <div class="flex justify-between text-[9px] font-black">
+                            <span class="text-gray-400">${c.tierLabel}</span>
+                            <span class="${isMain ? 'text-amber-300' : isFuel ? 'text-cyan-300' : 'text-gray-500'}">${isMain ? '★主卡' : isFuel ? '🔥燃料' : ''}</span>
+                        </div>
+                        <img src="${c.img}" alt="${c.name}" data-card-name="${c.name}" onerror="handleCardImgError(this)" referrerpolicy="no-referrer" class="w-full aspect-[3/3.8] object-contain p-0.5 rounded bg-slate-900">
+                        <div class="text-[9px] font-bold text-gray-200 truncate">${c.name}</div>
+                        <div class="text-[9px] font-display text-amber-300">${c.marketPt.toLocaleString()} PT</div>
+                    </div>
+                    `;
+                }).join('');
+            },
+
+            igniteGoldForge() {
+                const main = state.vault.find(c => c.uid === this.mainCardUid);
+                if (!main) {
+                    showToast('請先選擇 1 張要鍍金昇華的主卡！');
+                    return;
+                }
+                const curLv = main.forgeLevel || 0;
+                if (curLv >= 5) {
+                    showToast('🌈 這張卡已經是最高 Lv.5 RGB 虹彩終極神卡了！');
+                    return;
+                }
+                if (this.fuelUids.size === 0 && this.emberPct < 100) {
+                    showToast('請至少投入 1 張舊卡作為熔爐燃料！');
+                    return;
+                }
+
+                const rate = this.calcGoldRate();
+                const fuelCount = this.fuelUids.size;
+                // 消耗燃料卡（主卡保留）
+                state.vault = state.vault.filter(c => !this.fuelUids.has(c.uid));
+                this.fuelUids.clear();
+
+                const success = Math.random() * 100 < rate;
+                if (success) {
+                    const nextLv = curLv + 1;
+                    const spec = this.goldTiers[nextLv - 1];
+                    const prevMult = curLv > 0 ? this.goldTiers[curLv - 1].mult : 1;
+                    main.forgeLevel = nextLv;
+                    main.isPSA10 = true;
+                    main.rarity = spec.rarity;
+                    main.marketPt = Math.round((main.marketPt * (spec.mult / prevMult)) / 10) * 10;
+                    main.buybackPt = calcBuybackPt(main.marketPt, main.tier, true);
+                    const cleanName = main.name.replace(/^【Lv\.\d[^】]+】/, '');
+                    main.name = `【${spec.tag}】${cleanName}`;
+                    this.emberPct = 0;
+
+                    updateWalletUI();
+                    this.renderAll();
+                    this.playForge3DCinema(
+                        main,
+                        `✨ 鍍金昇華大成功！！晉升【${spec.tag}】！！`,
+                        `身價躍升至 ${main.marketPt.toLocaleString()} PT（晉升 PSA 10 並享 80% 高價回收）！`
+                    );
+                } else {
+                    this.emberPct = Math.min(100, this.emberPct + Math.max(15, fuelCount * 8));
+                    SoundEngine.rockCrack();
+                    updateWalletUI();
+                    this.renderAll();
+                    showToast(`💥 爐火稍欠火候！燃料化為餘燼保底（目前累積 ${this.emberPct}%，滿 100% 必成！）`);
+                }
+            },
+
+            /* 3D 熔爐動畫（完成時自動收合 3D 畫布並顯示可捲動結果卡片） */
+            playForge3DCinema(resultCard, headline, desc) {
+                const modal = document.getElementById('furnace-forge-modal');
+                const canvasWrap = document.getElementById('furnace-canvas-wrapper');
+                const resBox = document.getElementById('furnace-result-box');
+                const closeX = document.getElementById('btn-close-forge-x');
+
+                canvasWrap.classList.remove('hidden');
+                resBox.classList.add('hidden');
+                resBox.classList.remove('flex');
+                closeX.classList.add('hidden');
+                modal.scrollTop = 0;
+                modal.classList.remove('hidden');
+
+                const container = document.getElementById('threejs-furnace-container');
+                container.innerHTML = '';
+                const w = container.clientWidth || 420;
+                const h = container.clientHeight || 260;
+
+                const renderer = new THREE.WebGLRenderer({ antialias: true });
+                renderer.setSize(w, h);
+                container.appendChild(renderer.domElement);
+                this.forgeRenderer = renderer;
+
+                const scene = new THREE.Scene();
+                const camera = new THREE.PerspectiveCamera(50, w / h, 0.1, 50);
+                camera.position.set(0, 1.8, 4.6);
+                camera.lookAt(0, 0, 0);
+
+                const core = new THREE.Mesh(
+                    new THREE.OctahedronGeometry(0.95, 1),
+                    new THREE.MeshBasicMaterial({ color: 0xf97316, wireframe: false })
+                );
+                const ring1 = new THREE.Mesh(
+                    new THREE.TorusGeometry(1.55, 0.08, 16, 48),
+                    new THREE.MeshBasicMaterial({ color: 0xfacc15 })
+                );
+                ring1.rotation.x = Math.PI / 2.3;
+                const ring2 = new THREE.Mesh(
+                    new THREE.TorusGeometry(1.9, 0.06, 16, 48),
+                    new THREE.MeshBasicMaterial({ color: 0xf43f5e })
+                );
+                ring2.rotation.y = Math.PI / 3;
+                scene.add(core, ring1, ring2);
+
+                const start = performance.now();
+                const dur = 2.6;
+                const cap = document.getElementById('furnace-anim-caption');
+
+                const animateForge = (now) => {
+                    const t = (now - start) / 1000;
+                    core.rotation.y += 0.12;
+                    core.rotation.x += 0.07;
+                    ring1.rotation.z += 0.14;
+                    ring2.rotation.x += 0.11;
+
+                    if (t < 1.3) {
+                        cap.textContent = '🔥 熔岩坩堝高溫淬鍊中...';
+                    } else {
+                        cap.textContent = '🌟 耀眼金光迸發！新卡即將誕生！！';
+                        core.material.color.setHex(0xfef08a);
+                        core.scale.setScalar(1 + (t - 1.3) * 0.4);
+                    }
+
+                    renderer.render(scene, camera);
+
+                    if (t < dur) {
+                        this.forgeRaf = requestAnimationFrame(animateForge);
+                    } else {
+                        // 自動收合 3D 畫布，完整展示結果卡片與收下按鈕！
+                        canvasWrap.classList.add('hidden');
+                        closeX.classList.remove('hidden');
+                        resBox.classList.remove('hidden');
+                        resBox.classList.add('flex');
+
+                        const frameCls = resultCard.forgeLevel > 0 ? `forge-frame-${resultCard.forgeLevel}` : 'border-2 border-amber-400';
+                        document.getElementById('furnace-result-title').textContent = headline;
+                        document.getElementById('furnace-result-desc').textContent = desc;
+                        document.getElementById('furnace-result-card-wrap').innerHTML = `
+                            <div class="rounded-2xl overflow-hidden bg-slate-900 p-2 ${frameCls} space-y-1.5">
+                                <div class="flex justify-between text-[10px] font-black">
+                                    <span class="px-1.5 py-0.5 rounded bg-amber-400 text-black">${resultCard.rarity}</span>
+                                    <span class="text-emerald-300">${resultCard.marketPt.toLocaleString()} PT</span>
+                                </div>
+                                <img src="${resultCard.img}" alt="${resultCard.name}" data-card-name="${resultCard.name}" onerror="handleCardImgError(this)" referrerpolicy="no-referrer" class="w-full aspect-[3/3.8] object-contain">
+                                <div class="text-xs font-black text-white line-clamp-2">${resultCard.name}</div>
+                            </div>
+                        `;
+                        SoundEngine.ballCaptureFanfare(true);
+                        launchConfetti(45);
+                    }
+                };
+                this.forgeRaf = requestAnimationFrame(animateForge);
+            },
+
+            closeForgeModal() {
+                if (this.forgeRaf) cancelAnimationFrame(this.forgeRaf);
+                this.forgeRaf = null;
+                if (this.forgeRenderer) {
+                    this.forgeRenderer.dispose();
+                    this.forgeRenderer = null;
+                }
+                closeModal('furnace-forge-modal');
+                this.renderAll();
+            }
+        };
+
+        /* ==========================================================================
+         * 12. 🔨 即時拍賣競標會 (14 位 AI 真人模擬買家・短標 2 小時 / 長標 12 小時)
+         * ========================================================================== */
+        const AuctionSystem = {
+            lots: [],
+            activeLotId: null,
+            aiBuyers: [
+                { name: '台北神豪・阿凱', mult: 1.45 }, { name: '台中大課長・Mina', mult: 1.40 },
+                { name: '高雄神抽・Leo', mult: 1.30 }, { name: '桃園伊布控・小雪', mult: 1.38 },
+                { name: '信義區收藏家・Vivian', mult: 1.42 }, { name: '板橋火箭隊・Ryo', mult: 1.32 },
+                { name: '台南卡店收購商', mult: 1.15 }, { name: '尾盤狙擊手・Ghost', mult: 1.35 },
+                { name: '新竹工程師・Jay', mult: 1.28 }, { name: '京都鑑定王・Kenji', mult: 1.48 },
+                { name: '秋葉原買手・Sora', mult: 1.36 }, { name: '大阪神獸控・Ren', mult: 1.33 },
+                { name: '香港藏家・Marcus', mult: 1.44 }, { name: '新加坡獵人・Chloe', mult: 1.37 }
+            ],
+
+            init() {
+                if (!this.lots.length) this.spawnFreshLots();
+                setInterval(() => this.tick(), 1000);
+            },
+
+            spawnFreshLots() {
+                const samples = [
+                    { key: 'C30_MEW_FUR', tier: 'A', pt: 68000, hrs: 2, seller: '官方委託拍賣行' },
+                    { key: 'UMBREON_VMAX_SA', tier: 'S', pt: 148000, hrs: 12, seller: '京都鑑定王・Kenji' },
+                    { key: 'ROCKET_MEWTWO_SAR', tier: 'S', pt: 98000, hrs:
