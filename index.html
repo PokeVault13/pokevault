@@ -2108,4 +2108,1048 @@
             { id: 'box-m1l-brave', badge: '🥊 MEGA 超級進化', title: 'M1L 超級勇氣 (Mega Brave)', packPrice: 720, boxPrice: 6900, packsPerBox: 10, coverImg: buildArtImg(448), desc: '主打超級路卡利歐 ex MUR 純金特卡與莉莉艾的決心 SAR！' },
             { id: 'box-m2a-dream', badge: '🌠 MEGA 夢想高級包', title: 'M2a 超級夢想 ex (MEGA Dream ex)', packPrice: 880, boxPrice: 8200, packsPerBox: 10, coverImg: buildArtImg(25), desc: '每包高閃率！收錄夢想皮卡丘 ex SAR、超級噴火龍 Y MUR 與超級耿鬼 MA！' },
             { id: 'box-m1s-symphonia', badge: '🎶 MEGA 超級進化', title: 'M1S 超級交響樂 (Mega Symphonia)', packPrice: 720, boxPrice: 6900, packsPerBox: 10, coverImg: buildArtImg(282), desc: '主打超級沙奈朵 ex MUR 純金特卡與超級拉帝亞斯 ex SAR！' },
-            { id: 'box-m2-inferno', badge: '🔥 MEGA 蒼藍烈焰', title: 'M2 煉獄烈焰 X (Inferno X)', packPrice: 760, boxPrice: 7300, packsPerBox: 10, coverImg: buildArtImg(6), desc: '主打超級噴火龍 X ex MUR
+            { id: 'box-m2-inferno', badge: '🔥 MEGA 蒼藍烈焰', title: 'M2 煉獄烈焰 X (Inferno X)', packPrice: 760, boxPrice: 7300, packsPerBox: 10, coverImg: buildArtImg(6), desc: '主打超級噴火龍 X ex MUR 純金版與小光 SAR！' },
+            { id: 'box-sv11-bwr', badge: '⚡ 黑雷＆白焰 BWR', title: 'SV11 黑雷＆白焰 雙極擴充盒', packPrice: 780, boxPrice: 7500, packsPerBox: 10, coverImg: buildArtImg(644), desc: '收錄純黑捷克羅姆 BWR、純白萊希拉姆 BWR 與緋紅比克提尼 BWR！' },
+            { id: 'box-sv85-terastal', badge: '💎 太晶伊布全家福', title: 'SV8.5 太晶慶典 ex 高級盒', packPrice: 850, boxPrice: 8000, packsPerBox: 10, coverImg: buildArtImg(197), desc: '全 9 種太晶伊布家族 SAR ＆ 純金太晶皮卡丘 ex UR！' },
+            { id: 'box-sv9-partners', badge: '🤝 訓練家搭檔', title: 'SV9 對戰搭檔 (Battle Partners)', packPrice: 700, boxPrice: 6800, packsPerBox: 10, coverImg: buildArtImg(35), desc: '莉莉艾的皮皮 ex SAR、N 的索羅亞克 ex SAR 與奇樹的電肚蛙！' },
+            { id: 'box-151-sv2a', badge: '🔴 初代 151 經典', title: '強化擴充包 寶可夢 151 (SV2a)', packPrice: 820, boxPrice: 7800, packsPerBox: 10, coverImg: buildArtImg(6), desc: '初代關都 151 寶可夢全收錄，噴火龍 ex SAR 與艾莉絲的招待 SAR！' },
+            { id: 'box-25th-golden', badge: '🏆 25週年紀念復刻', title: '寶可夢 25週年黃金紀念箱 (25th)', packPrice: 950, boxPrice: 9000, packsPerBox: 10, coverImg: buildArtImg(25), desc: '與 30 週年完全區分！收錄 SWSH145 純金皮卡丘 V 與黃金色違夢幻 UR！' }
+        ];
+
+        /* ==========================================================================
+         * 6. 核心全域狀態、錢包與初始化引擎
+         * ========================================================================== */
+        const state = {
+            pt: 50000,
+            vault: [],
+            pools: [],
+            activeFilter: 'ALL',
+            lastScript: null,
+            activeTimers: [],
+            currentResultCards: [],
+            selectedBuybackIds: new Set()
+        };
+
+        function clearAllTimers() {
+            state.activeTimers.forEach(id => {
+                clearTimeout(id);
+                clearInterval(id);
+            });
+            state.activeTimers = [];
+        }
+
+        function initPoolsData() {
+            state.pools = POOL_CONFIGS.map(cfg => {
+                const items = cfg.featured.map(it => ({ ...it }));
+                const totalStock = items.reduce((sum, x) => sum + x.stock, 0);
+                return {
+                    ...cfg,
+                    items,
+                    totalStock,
+                    remainStock: totalStock,
+                    drawsCount: 0,
+                    aiActivityText: ''
+                };
+            });
+        }
+
+        function updateWalletUI() {
+            const el = document.getElementById('wallet-pt-display');
+            if (el) el.textContent = Math.floor(state.pt).toLocaleString();
+            const c1 = document.getElementById('nav-vault-count');
+            const c2 = document.getElementById('mob-vault-count');
+            if (c1) c1.textContent = state.vault.length;
+            if (c2) c2.textContent = state.vault.length;
+            if (typeof EmailWordAuth !== 'undefined' && EmailWordAuth.syncCurrentAccountProgress) {
+                EmailWordAuth.syncCurrentAccountProgress();
+            }
+        }
+
+        function openTopupModal() {
+            document.getElementById('topup-modal').classList.remove('hidden');
+        }
+
+        function closeModal(id) {
+            const el = document.getElementById(id);
+            if (el) el.classList.add('hidden');
+        }
+
+        function addFreePoints(amount) {
+            state.pt += amount;
+            SoundEngine.coin();
+            updateWalletUI();
+            closeModal('topup-modal');
+            showToast(`💎 已補充 +${amount.toLocaleString()} PT！`);
+        }
+
+        function showToast(msg) {
+            const box = document.getElementById('toast-box');
+            if (!box) return;
+            const item = document.createElement('div');
+            item.className = 'px-4 py-2.5 rounded-xl bg-slate-900/95 border border-amber-400/50 text-white text-xs font-black shadow-2xl backdrop-blur-md transition-all duration-300';
+            item.textContent = msg;
+            box.appendChild(item);
+            setTimeout(() => {
+                item.style.opacity = '0';
+                item.style.transform = 'translateY(8px)';
+                setTimeout(() => item.remove(), 300);
+            }, 2800);
+        }
+
+        function launchConfetti(count = 45) {
+            const colors = ['#facc15', '#fb7185', '#38bdf8', '#a855f7', '#34d399', '#f97316'];
+            for (let i = 0; i < count; i++) {
+                const p = document.createElement('div');
+                p.className = 'confetti-piece rounded-sm';
+                p.style.left = `${Math.random() * 100}vw`;
+                p.style.width = `${6 + Math.random() * 7}px`;
+                p.style.height = `${8 + Math.random() * 10}px`;
+                p.style.backgroundColor = colors[i % colors.length];
+                p.style.animationDuration = `${1.8 + Math.random() * 1.8}s`;
+                document.body.appendChild(p);
+                setTimeout(() => p.remove(), 3800);
+            }
+        }
+
+        function switchMainTab(tab) {
+            const views = ['pools', 'boxes', 'furnace', 'auction', 'arcade', 'inventory'];
+            views.forEach(v => {
+                const sec = document.getElementById(`view-${v}`);
+                if (sec) sec.classList.toggle('hidden', v !== tab);
+                const nb = document.getElementById(`nav-tab-${v}`);
+                if (nb) {
+                    nb.className = v === tab
+                        ? 'main-tab-btn px-3 py-1.5 rounded-lg text-xs font-black bg-amber-400 text-black transition-all'
+                        : 'main-tab-btn px-3 py-1.5 rounded-lg text-xs font-bold text-gray-300 hover:text-white transition-all';
+                }
+                const mb = document.getElementById(`mob-tab-${v}`);
+                if (mb) {
+                    mb.className = v === tab
+                        ? 'mob-tab-btn px-3 py-1.5 rounded-lg text-xs font-black bg-amber-400 text-black whitespace-nowrap'
+                        : 'mob-tab-btn px-3 py-1.5 rounded-lg text-xs font-bold text-gray-300 bg-slatecard whitespace-nowrap';
+                }
+            });
+            if (tab === 'inventory') renderVault();
+            if (tab === 'furnace') FurnaceSystem.renderAll();
+            if (tab === 'auction') AuctionSystem.renderGrid();
+            if (tab === 'arcade') ArcadeSystem.refreshUI();
+            if (tab === 'boxes') renderBoxesGrid();
+        }
+
+        function renderTicker() {
+            const samples = [
+                '🔥 台北歐皇・阿凱 剛在【30週年 M6a】抽出 夢幻 ex RGB 三原色隱藏版 (180,000 PT)！',
+                '⚡ 高雄課長・Mina 在【39 PT 奇蹟銅板池】一發入魂 變裝超級噴火龍 X 皮卡丘！',
+                '🌋 台中鍛造師 在【PSA 10 歐洲大熔爐】20 張 4 等賞奇蹟煉出 夢幻 ex FUR！',
+                '🔨 拍賣快訊：月亮伊布 VMAX SA PSA 10 剛以 152,000 PT 落槌成交！',
+                '🎡 2小時大轉盤獎池突破 24,500 PT，免費報名即可參與瓜分！'
+            ];
+            const el = document.getElementById('live-ticker-list');
+            if (!el) return;
+            const html = [...samples, ...samples].map(s => `<span class="inline-flex items-center gap-1.5 whitespace-nowrap">${s}</span>`).join('');
+            el.innerHTML = html;
+        }
+
+        function inspectCardDetail(name, img, code, rarity, marketPt, isPSA10 = false, forgeLevel = 0) {
+            const stage = document.getElementById('inspect-card-stage');
+            const frameClass = forgeLevel > 0 ? `forge-frame-${forgeLevel}` : 'border border-amber-400/50';
+            stage.innerHTML = `
+                <div class="relative rounded-xl overflow-hidden bg-slate-900 ${frameClass}">
+                    ${isPSA10 ? `<div class="bg-red-600 text-white text-[10px] font-black py-1 px-2 flex justify-between"><span>PSA GEM MT 10</span><span>${code}</span></div>` : ''}
+                    <img src="${img}" alt="${name}" data-card-name="${name}" onerror="handleCardImgError(this)" referrerpolicy="no-referrer" class="w-full aspect-[3/4.2] object-contain p-2 bg-gradient-to-br from-slate-800 via-indigo-950 to-slate-900">
+                </div>
+            `;
+            document.getElementById('inspect-card-name').textContent = name;
+            document.getElementById('inspect-card-meta').textContent = `${code} ｜ 官方稀有度: ${rarity} ｜ 估值: ${marketPt.toLocaleString()} PT`;
+            document.getElementById('card-inspect-modal').classList.remove('hidden');
+        }
+
+        /* ==========================================================================
+         * 7. 大廳卡池渲染 + AI 卡池即時參與玩家 + 卡盒專區渲染
+         * ========================================================================== */
+        function filterPoolsByTag(tag) {
+            state.activeFilter = tag;
+            document.querySelectorAll('.pool-tag-btn').forEach(btn => {
+                const isThis = btn.id === `pool-filter-${tag}`;
+                btn.className = isThis
+                    ? 'pool-tag-btn px-3.5 py-2 rounded-xl text-xs font-black bg-amber-400 text-black shadow transition-all'
+                    : 'pool-tag-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-slatecard text-gray-300 hover:text-white border border-slateborder transition-all';
+            });
+            renderPoolsGrid();
+        }
+
+        function renderLobbyQuickPacksBar() {
+            const bar = document.getElementById('lobby-quick-packs-bar');
+            if (!bar) return;
+            bar.innerHTML = BOX_SETS.slice(0, 6).map(b => `
+                <div class="flex-shrink-0 w-56 bg-obsidian/90 border border-white/10 hover:border-amber-400/60 rounded-xl p-2.5 flex items-center gap-2.5 transition-all">
+                    <img src="${b.coverImg}" alt="${b.title}" data-card-name="${b.title}" onerror="handleCardImgError(this)" referrerpolicy="no-referrer" class="w-12 h-16 rounded-lg object-contain bg-slate-900 p-1 border border-white/10 flex-shrink-0">
+                    <div class="min-w-0 flex-1 space-y-1">
+                        <div class="text-[11px] font-black text-white truncate">${b.title}</div>
+                        <div class="text-[10px] text-amber-300 font-display font-bold">${b.packPrice} PT / 包</div>
+                        <button onclick="openBoxOrPack('${b.id}', 1)" class="w-full py-1 rounded-lg bg-gradient-to-r from-amber-400 to-orange-500 text-black font-black text-[10px] active:scale-95">
+                            ✂️ 單開偷看邊邊
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderPoolsGrid() {
+            const grid = document.getElementById('pools-grid');
+            if (!grid) return;
+            const list = state.activeFilter === 'ALL'
+                ? state.pools
+                : state.pools.filter(p => p.tag === state.activeFilter);
+
+            grid.innerHTML = list.map(pool => {
+                const topCards = pool.items.filter(it => it.tier === 'S' || it.tier === 'A').slice(0, 3);
+                const pct = Math.max(2, Math.round((pool.remainStock / pool.totalStock) * 100));
+                const nextMilestone = (Math.floor(pool.drawsCount / pool.milestoneInterval) + 1) * pool.milestoneInterval;
+                const drawsToMilestone = Math.max(1, nextMilestone - pool.drawsCount);
+
+                return `
+                <div class="bg-slatecard border border-slateborder hover:border-amber-400/60 rounded-2xl overflow-hidden flex flex-col justify-between shadow-xl transition-all">
+                    <div>
+                        <!-- 頂部標籤與剩餘口數 -->
+                        <div class="px-3.5 py-2.5 bg-[#0c1120] border-b border-white/10 flex items-center justify-between gap-2">
+                            <span class="px-2 py-0.5 rounded-md bg-amber-400/20 border border-amber-400/40 text-amber-300 text-[10px] font-black truncate">${pool.badge}</span>
+                            <span class="text-[11px] font-mono font-black text-cyan-300 flex-shrink-0">剩 ${pool.remainStock} / ${pool.totalStock} 口</span>
+                        </div>
+
+                        <!-- 主打大獎預覽三卡展示 -->
+                        <div class="p-3.5 bg-gradient-to-b from-[#161f38] to-slatecard space-y-3">
+                            <div class="grid grid-cols-3 gap-2">
+                                ${topCards.map(c => `
+                                    <div onclick="inspectCardDetail('${c.name.replace(/'/g, '')}', '${c.img}', '${c.code}', '${c.rarity}', ${c.marketPt}, ${c.isPSA10})" class="cursor-pointer group bg-obsidian/90 border border-white/10 hover:border-amber-400 rounded-xl p-1.5 text-center space-y-1">
+                                        <div class="flex items-center justify-between text-[9px] font-black">
+                                            <span class="px-1 rounded ${c.tier === 'S' ? 'bg-rose-600 text-white' : 'bg-amber-400 text-black'}">${c.tierLabel}</span>
+                                            <span class="text-gray-400">剩${c.stock}</span>
+                                        </div>
+                                        <img src="${c.img}" alt="${c.name}" loading="lazy" data-card-name="${c.name}" onerror="handleCardImgError(this)" referrerpolicy="no-referrer" class="w-full aspect-[3/3.6] object-contain p-1 rounded-lg bg-slate-900 group-hover:scale-105 transition-transform">
+                                        <div class="text-[10px] font-bold text-gray-200 truncate">${c.name}</div>
+                                        <div class="text-[10px] font-display font-black text-amber-300">${c.marketPt.toLocaleString()} PT</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+
+                            <!-- 標題與進度條 -->
+                            <div class="space-y-1.5">
+                                <h3 class="text-sm font-black text-white leading-snug line-clamp-2">${pool.title}</h3>
+                                <div class="w-full h-2 bg-obsidian rounded-full overflow-hidden border border-white/10">
+                                    <div class="h-full bg-gradient-to-r from-rose-500 via-amber-400 to-emerald-400" style="width:${pct}%"></div>
+                                </div>
+                            </div>
+
+                            <!-- 最後一抽賞 & 整數口獎（中高等好卡定位） -->
+                            <div class="grid grid-cols-2 gap-1.5 text-[10px]">
+                                <div class="bg-obsidian/80 border border-purple-500/30 rounded-lg p-1.5 truncate">
+                                    <span class="text-purple-300 font-black">👑 最後一抽：</span>
+                                    <span class="text-gray-200">${pool.lastOne.name}</span>
+                                </div>
+                                <div class="bg-obsidian/80 border border-cyan-500/30 rounded-lg p-1.5 truncate">
+                                    <span class="text-cyan-300 font-black">🎯 差${drawsToMilestone}口整數獎：</span>
+                                    <span class="text-gray-200">${pool.milestoneCard.name}</span>
+                                </div>
+                            </div>
+
+                            ${pool.aiActivityText ? `<div class="text-[10px] font-bold text-emerald-300 bg-emerald-950/40 border border-emerald-500/30 rounded-lg px-2 py-1 truncate">${pool.aiActivityText}</div>` : ''}
+                        </div>
+                    </div>
+
+                    <!-- 底部抽卡操作按鈕 -->
+                    <div class="p-3.5 pt-0 space-y-2">
+                        <div class="grid grid-cols-2 gap-2">
+                            <button onclick="startPoolPull('${pool.id}', 1)" class="py-2.5 px-2 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 hover:brightness-110 text-black font-black text-xs shadow-lg active:scale-95">
+                                1 抽 (${pool.price.toLocaleString()} PT)
+                            </button>
+                            <button onclick="startPoolPull('${pool.id}', 10)" class="py-2.5 px-2 rounded-xl bg-gradient-to-r from-rose-500 via-fuchsia-600 to-indigo-600 hover:brightness-110 text-white font-black text-xs shadow-lg active:scale-95">
+                                10 連抽 (${(pool.price * 10).toLocaleString()} PT)
+                            </button>
+                        </div>
+                        <button onclick="openPoolOddsModal('${pool.id}')" class="w-full py-1.5 rounded-lg bg-obsidian hover:bg-slate-800 border border-white/10 text-[11px] font-bold text-gray-300">
+                            📋 查看 1〜5 等機率表 & 全部收錄卡 (${pool.items.length} 種)
+                        </button>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        function openPoolOddsModal(poolId) {
+            const pool = state.pools.find(p => p.id === poolId);
+            if (!pool) return;
+            document.getElementById('odds-modal-title').textContent = pool.title;
+            document.getElementById('odds-modal-sub').textContent = `單抽 ${pool.price.toLocaleString()} PT ｜ 剩餘 ${pool.remainStock} / ${pool.totalStock} 口 ｜ 收錄 ${pool.items.length} 種正版卡片`;
+
+            const tiers = ['S', 'A', 'B', 'C', 'D'];
+            const body = document.getElementById('odds-modal-body');
+            body.innerHTML = tiers.map(t => {
+                const sub = pool.items.filter(x => x.tier === t);
+                if (!sub.length) return '';
+                const tierStock = sub.reduce((s, x) => s + x.stock, 0);
+                const rate = pool.remainStock > 0 ? ((tierStock / pool.remainStock) * 100).toFixed(2) : '0.00';
+                return `
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between bg-obsidian px-3 py-2 rounded-xl border border-white/10">
+                        <span class="text-xs font-black text-amber-300">${TIER_LABEL_MAP[t]}（剩餘 ${tierStock} 張）</span>
+                        <span class="text-xs font-mono font-black text-cyan-300">目前中賞率：${rate}%</span>
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-2.5">
+                        ${sub.map(c => `
+                            <div class="bg-obsidian/90 border border-white/10 rounded-xl p-2 text-center space-y-1">
+                                <img src="${c.img}" alt="${c.name}" loading="lazy" data-card-name="${c.name}" onerror="handleCardImgError(this)" referrerpolicy="no-referrer" class="w-full aspect-[3/3.8] object-contain p-1 rounded bg-slate-900">
+                                <div class="text-[10px] font-bold text-gray-200 line-clamp-2">${c.name}</div>
+                                <div class="text-[9px] text-gray-400">${c.code} · ${c.rarity}</div>
+                                <div class="text-[10px] font-display font-black text-amber-300">${c.marketPt.toLocaleString()} PT (剩${c.stock})</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                `;
+            }).join('');
+            document.getElementById('pool-odds-modal').classList.remove('hidden');
+        }
+
+        /* AI 卡池即時模擬參與系統 */
+        const PoolAISystem = {
+            names: ['台北歐皇・阿凱', '台中大課長・Mina', '高雄神抽・Leo', '桃園伊布控・小雪', '台南獵人・Ken', '新竹工程師・Jay', '板橋火箭隊・Ryo', '信義區收藏家・Vivian'],
+            timerId: null,
+            start() {
+                if (this.timerId) clearInterval(this.timerId);
+                this.timerId = setInterval(() => {
+                    if (!state.pools.length) return;
+                    const activePools = state.pools.filter(p => p.remainStock > 3);
+                    if (!activePools.length) return;
+                    const pool = activePools[Math.floor(Math.random() * activePools.length)];
+                    const aiName = this.names[Math.floor(Math.random() * this.names.length)];
+                    const count = Math.random() < 0.72 ? 1 : 3;
+
+                    let pulledTier = 'D';
+                    for (let i = 0; i < count; i++) {
+                        if (pool.remainStock <= 1) break;
+                        const avail = pool.items.filter(x => x.stock > 0);
+                        if (!avail.length) break;
+                        const pick = avail[Math.floor(Math.random() * avail.length)];
+                        pick.stock--;
+                        pool.remainStock--;
+                        pool.drawsCount++;
+                        if (TIER_WEIGHT[pick.tier] > TIER_WEIGHT[pulledTier]) pulledTier = pick.tier;
+                    }
+
+                    const msg = `🤖 ${aiName} 在【${pool.badge}】抽了 ${count} 口（剩 ${pool.remainStock} 口）`;
+                    pool.aiActivityText = msg;
+                    const line = document.getElementById('pool-ai-live-line');
+                    if (line) line.textContent = msg;
+                    const onlineEl = document.getElementById('pool-ai-online-count');
+                    if (onlineEl) onlineEl.textContent = `🟢 在線 AI：${14 + Math.floor(Math.random() * 11)} 人`;
+
+                    if (!document.getElementById('view-pools').classList.contains('hidden')) {
+                        renderPoolsGrid();
+                    }
+                }, 4800);
+            }
+        };
+
+        /* 單包 / 單盒專區渲染與盒內卡表檢視 */
+        function renderBoxesGrid() {
+            const grid = document.getElementById('boxes-grid');
+            if (!grid) return;
+            grid.innerHTML = BOX_SETS.map(box => {
+                const seriesCards = BOX_SERIES_POOLS[box.id] || [];
+                const preview4 = seriesCards.slice(0, 4);
+                return `
+                <div class="bg-slatecard border border-slateborder hover:border-amber-400/60 rounded-2xl overflow-hidden flex flex-col justify-between shadow-xl">
+                    <div class="p-4 space-y-3">
+                        <div class="flex items-start gap-3">
+                            <img src="${box.coverImg}" alt="${box.title}" data-card-name="${box.title}" onerror="handleCardImgError(this)" referrerpolicy="no-referrer" class="w-20 h-28 rounded-xl object-contain p-1.5 bg-gradient-to-br from-slate-800 to-indigo-950 border border-amber-400/40 flex-shrink-0">
+                            <div class="min-w-0 space-y-1">
+                                <span class="inline-block px-2 py-0.5 rounded bg-amber-400/20 text-amber-300 text-[10px] font-black">${box.badge}</span>
+                                <h3 class="text-sm sm:text-base font-black text-white leading-snug">${box.title}</h3>
+                                <p class="text-[11px] text-gray-400 leading-relaxed">${box.desc}</p>
+                            </div>
+                        </div>
+
+                        <!-- 本盒必出重點大獎預覽 -->
+                        <div class="bg-obsidian/90 border border-white/10 rounded-xl p-2.5 space-y-1.5">
+                            <div class="flex items-center justify-between text-[10px] font-black">
+                                <span class="text-amber-300">✨ 本盒專屬收錄大獎預覽（100% 系列純淨）</span>
+                                <button onclick="viewBoxCardList('${box.id}')" class="text-cyan-300 hover:underline">📋 全部卡表 (${seriesCards.length})</button>
+                            </div>
+                            <div class="grid grid-cols-4 gap-1.5">
+                                ${preview4.map(c => `
+                                    <div onclick="viewBoxCardList('${box.id}')" class="cursor-pointer bg-slate-900/90 border border-white/10 rounded-lg p-1 text-center">
+                                        <img src="${c.img}" alt="${c.name}" loading="lazy" data-card-name="${c.name}" onerror="handleCardImgError(this)" referrerpolicy="no-referrer" class="w-full aspect-[3/3.7] object-contain">
+                                        <div class="text-[9px] font-bold text-gray-300 truncate mt-0.5">${c.rarity}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 單包 / 5包 / 1BOX 開封按鈕（直接進入撕開＋3D偷看卡邊，免看抽卡動畫） -->
+                    <div class="p-4 pt-0 space-y-2">
+                        <div class="grid grid-cols-3 gap-1.5">
+                            <button onclick="openBoxOrPack('${box.id}', 1)" class="py-2.5 px-1.5 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 hover:brightness-110 text-black font-black text-[11px] shadow active:scale-95">
+                                ✂️ 單開 1 包<br><span class="font-display">${box.packPrice} PT</span>
+                            </button>
+                            <button onclick="openBoxOrPack('${box.id}', 5)" class="py-2.5 px-1.5 rounded-xl bg-gradient-to-r from-sky-400 to-indigo-500 hover:brightness-110 text-black font-black text-[11px] shadow active:scale-95">
+                                👀 5 包連開<br><span class="font-display">${(box.packPrice * 5).toLocaleString()} PT</span>
+                            </button>
+                            <button onclick="openBoxOrPack('${box.id}', 10)" class="py-2.5 px-1.5 rounded-xl bg-gradient-to-r from-rose-500 to-fuchsia-600 hover:brightness-110 text-white font-black text-[11px] shadow active:scale-95">
+                                📦 1BOX 全開<br><span class="font-display">${box.boxPrice.toLocaleString()} PT</span>
+                            </button>
+                        </div>
+                        <button onclick="viewBoxCardList('${box.id}')" class="w-full py-1.5 rounded-lg bg-obsidian hover:bg-slate-800 border border-white/10 text-[11px] font-bold text-gray-300">
+                            📋 查看本盒完整開出卡表 & 機率說明
+                        </button>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        function viewBoxCardList(boxId) {
+            const box = BOX_SETS.find(b => b.id === boxId);
+            const cards = BOX_SERIES_POOLS[boxId] || [];
+            if (!box) return;
+            document.getElementById('odds-modal-title').textContent = `${box.title} — 盒內完整收錄卡表`;
+            document.getElementById('odds-modal-sub').textContent = `單包 ${box.packPrice} PT ｜ 1BOX (${box.packsPerBox}包) ${box.boxPrice.toLocaleString()} PT ｜ 35% 機率保底超越盒價`;
+            document.getElementById('odds-modal-body').innerHTML = `
+                <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-3">
+                    ${cards.map(c => `
+                        <div class="bg-obsidian border border-white/10 rounded-xl p-2 text-center space-y-1">
+                            <span class="inline-block px-1.5 py-0.5 rounded bg-amber-400/20 text-amber-300 text-[9px] font-black">${c.rarity} · ${c.tierLabel}</span>
+                            <img src="${c.img}" alt="${c.name}" data-card-name="${c.name}" onerror="handleCardImgError(this)" referrerpolicy="no-referrer" class="w-full aspect-[3/3.8] object-contain p-1 rounded bg-slate-900">
+                            <div class="text-[10px] font-bold text-gray-200 line-clamp-2">${c.name}</div>
+                            <div class="text-[9px] text-gray-400">${c.code}</div>
+                            <div class="text-[10px] font-display font-black text-amber-300">${c.marketPt.toLocaleString()} PT</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            document.getElementById('pool-odds-modal').classList.remove('hidden');
+        }
+
+        /* ==========================================================================
+         * 8. 卡包 / 5包 / 1BOX 滑動撕開 ＋ 3D 側邊偷看卡邊引擎 (PackOpener，免看抽卡動畫)
+         * ========================================================================== */
+        function generatePackCards(box, packCount) {
+            const series = BOX_SERIES_POOLS[box.id] || [];
+            const sCards = series.filter(c => c.tier === 'S');
+            const aCards = series.filter(c => c.tier === 'A');
+            const bCards = series.filter(c => c.tier === 'B');
+            const cCards = series.filter(c => c.tier === 'C');
+            const dCards = series.filter(c => c.tier === 'D');
+
+            const pickFrom = (arr, fallback) => {
+                const pool = arr.length ? arr : (fallback.length ? fallback : series);
+                const tpl = pool[Math.floor(Math.random() * pool.length)];
+                return {
+                    uid: `card_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+                    cardId: tpl.cardId,
+                    name: tpl.name,
+                    img: tpl.img,
+                    code: tpl.code,
+                    rarity: tpl.rarity,
+                    dex: tpl.dex,
+                    tier: tpl.tier,
+                    tierLabel: tpl.tierLabel,
+                    marketPt: tpl.marketPt,
+                    buybackPt: tpl.buybackPt,
+                    isPSA10: false,
+                    forgeLevel: 0
+                };
+            };
+
+            const pulled = [];
+            for (let p = 0; p < packCount; p++) {
+                // 每包 5 張：前 3 張普卡，第 4 張進階，第 5 張王牌槽（低 1/2/3 等機率，高 4/5 等機率）
+                pulled.push(pickFrom(dCards, series));
+                pulled.push(pickFrom(dCards, series));
+                pulled.push(pickFrom(dCards, series));
+                pulled.push(pickFrom(Math.random() < 0.35 ? cCards : dCards, series));
+
+                const r = Math.random();
+                if (r < 0.003) pulled.push(pickFrom(sCards, aCards));
+                else if (r < 0.016) pulled.push(pickFrom(aCards, bCards));
+                else if (r < 0.085) pulled.push(pickFrom(bCards, cCards));
+                else if (r < 0.36) pulled.push(pickFrom(cCards, dCards));
+                else pulled.push(pickFrom(dCards, series));
+            }
+
+            // 若為整盒 (10包)，最後一張「確定枠」：35% 機率單張價值超越卡盒售價（其中 27% 中高等超越盒價，8% 爆擊大獎），65% 為低於盒價的中高等卡
+            if (packCount >= 10 && pulled.length > 0) {
+                const beatBox = Math.random() < 0.35;
+                let guarTpl = null;
+                if (beatBox) {
+                    const bigRoll = Math.random();
+                    if (bigRoll < 0.22 && sCards.length) guarTpl = sCards[Math.floor(Math.random() * sCards.length)];
+                    else if (aCards.length) guarTpl = aCards[Math.floor(Math.random() * aCards.length)];
+                } else {
+                    const midPool = [...bCards, ...cCards].filter(c => c.marketPt < box.boxPrice);
+                    const pool = midPool.length ? midPool : (bCards.length ? bCards : cCards);
+                    if (pool.length) guarTpl = pool[Math.floor(Math.random() * pool.length)];
+                }
+                if (guarTpl) {
+                    pulled[pulled.length - 1] = {
+                        uid: `card_${Date.now()}_guar_${Math.random().toString(36).slice(2, 6)}`,
+                        cardId: guarTpl.cardId,
+                        name: guarTpl.name,
+                        img: guarTpl.img,
+                        code: guarTpl.code,
+                        rarity: guarTpl.rarity,
+                        dex: guarTpl.dex,
+                        tier: guarTpl.tier,
+                        tierLabel: guarTpl.tierLabel,
+                        marketPt: guarTpl.marketPt,
+                        buybackPt: guarTpl.buybackPt,
+                        isPSA10: false,
+                        forgeLevel: 0
+                    };
+                }
+            }
+            return pulled;
+        }
+
+        function openBoxOrPack(boxId, packCount) {
+            const box = BOX_SETS.find(b => b.id === boxId);
+            if (!box) return;
+            const cost = packCount >= 10 ? box.boxPrice : box.packPrice * packCount;
+            if (state.pt < cost) {
+                showToast('❌ PT 點數不足！請先免費補充點數');
+                openTopupModal();
+                return;
+            }
+            state.pt -= cost;
+            updateWalletUI();
+            SoundEngine.coin();
+
+            const cards = generatePackCards(box, packCount);
+            const label = packCount >= 10 ? `${box.title}（1BOX 10包全開）` : `${box.title}（${packCount} 包）`;
+            PackOpener.start(label, box.coverImg, cards, cost);
+        }
+
+        const PackOpener = {
+            cards: [],
+            idx: 0,
+            cost: 0,
+            title: '',
+            ripped: false,
+            rotY: 0,
+            rotX: 0,
+            dragging: false,
+            startX: 0,
+            startY: 0,
+            bound: false,
+
+            start(title, coverImg, cards, cost) {
+                this.title = title;
+                this.cost = cost;
+                // 依稀有度由低到高排列，把最高賞藏在最底層，讓側邊偷看卡邊更有懸念！
+                this.cards = [...cards].sort((a, b) => TIER_WEIGHT[a.tier] - TIER_WEIGHT[b.tier]);
+                this.idx = 0;
+                this.ripped = false;
+                this.rotY = 0;
+                this.rotX = 0;
+
+                document.getElementById('pack-rip-title').textContent = title;
+                document.getElementById('pack-rip-cover-img').src = coverImg;
+                const strip = document.getElementById('pack-tear-strip');
+                strip.classList.remove('pack-top-ripped');
+                strip.style.transform = '';
+                document.getElementById('pack-tear-progress').style.width = '0%';
+
+                document.getElementById('pack-step-tear').classList.remove('hidden');
+                document.getElementById('pack-step-peek').classList.add('hidden');
+                document.getElementById('pack-step-peek').classList.remove('flex');
+                document.getElementById('pack-rip-modal').classList.remove('hidden');
+
+                if (!this.bound) {
+                    this.bindInteractions();
+                    this.bound = true;
+                }
+            },
+
+            bindInteractions() {
+                const strip = document.getElementById('pack-tear-strip');
+                const prog = document.getElementById('pack-tear-progress');
+                let tearStartX = null;
+
+                const onTearStart = (clientX) => {
+                    if (this.ripped) return;
+                    tearStartX = clientX;
+                };
+                const onTearMove = (clientX) => {
+                    if (tearStartX === null || this.ripped) return;
+                    const dx = Math.max(0, clientX - tearStartX);
+                    const pct = Math.min(100, (dx / 140) * 100);
+                    prog.style.width = `${pct}%`;
+                    strip.style.transform = `translateX(${dx * 0.45}px)`;
+                    if (pct >= 85) {
+                        tearStartX = null;
+                        this.completeTear();
+                    }
+                };
+                const onTearEnd = () => {
+                    if (tearStartX === null || this.ripped) return;
+                    tearStartX = null;
+                    // 若用戶直接點擊封條也幫忙俐落撕開，提升手機單手體驗
+                    this.completeTear();
+                };
+
+                strip.addEventListener('mousedown', e => onTearStart(e.clientX));
+                window.addEventListener('mousemove', e => onTearMove(e.clientX));
+                window.addEventListener('mouseup', () => onTearEnd());
+                strip.addEventListener('touchstart', e => {
+                    if (e.touches[0]) onTearStart(e.touches[0].clientX);
+                }, { passive: true });
+                strip.addEventListener('touchmove', e => {
+                    if (e.touches[0]) onTearMove(e.touches[0].clientX);
+                }, { passive: true });
+                strip.addEventListener('touchend', () => onTearEnd());
+
+                // 3D 卡片堆傾斜偷看側邊卡邊
+                const stack = document.getElementById('pack-card-stack');
+                const applyTilt = (ry, rx) => {
+                    this.rotY = Math.max(-52, Math.min(52, ry));
+                    this.rotX = Math.max(-22, Math.min(22, rx));
+                    stack.style.transform = `rotateY(${this.rotY}deg) rotateX(${this.rotX}deg)`;
+                };
+
+                stack.addEventListener('mousedown', e => {
+                    this.dragging = true;
+                    this.startX = e.clientX;
+                    this.startY = e.clientY;
+                });
+                window.addEventListener('mousemove', e => {
+                    if (!this.dragging) return;
+                    applyTilt((e.clientX - this.startX) * 0.45, -(e.clientY - this.startY) * 0.25);
+                });
+                window.addEventListener('mouseup', () => {
+                    if (!this.dragging) return;
+                    this.dragging = false;
+                    applyTilt(0, 0);
+                });
+
+                stack.addEventListener('touchstart', e => {
+                    if (!e.touches[0]) return;
+                    this.dragging = true;
+                    this.startX = e.touches[0].clientX;
+                    this.startY = e.touches[0].clientY;
+                }, { passive: true });
+                stack.addEventListener('touchmove', e => {
+                    if (!this.dragging || !e.touches[0]) return;
+                    applyTilt((e.touches[0].clientX - this.startX) * 0.5, -(e.touches[0].clientY - this.startY) * 0.25);
+                }, { passive: true });
+                stack.addEventListener('touchend', () => {
+                    if (!this.dragging) return;
+                    this.dragging = false;
+                    applyTilt(0, 0);
+                });
+
+                // 按住偷看按鈕
+                const holdBtn = document.getElementById('btn-hold-peek');
+                holdBtn.addEventListener('mousedown', () => applyTilt(-42, 8));
+                holdBtn.addEventListener('mouseup', () => applyTilt(0, 0));
+                holdBtn.addEventListener('mouseleave', () => applyTilt(0, 0));
+                holdBtn.addEventListener('touchstart', e => { e.preventDefault(); applyTilt(-42, 8); });
+                holdBtn.addEventListener('touchend', () => applyTilt(0, 0));
+            },
+
+            completeTear() {
+                if (this.ripped) return;
+                this.ripped = true;
+                SoundEngine.packTear();
+                const strip = document.getElementById('pack-tear-strip');
+                strip.classList.add('pack-top-ripped');
+                setTimeout(() => {
+                    document.getElementById('pack-step-tear').classList.add('hidden');
+                    const peek = document.getElementById('pack-step-peek');
+                    peek.classList.remove('hidden');
+                    peek.classList.add('flex');
+                    this.renderCardStack();
+                }, 380);
+            },
+
+            renderCardStack() {
+                const stack = document.getElementById('pack-card-stack');
+                const remain = this.cards.length - this.idx;
+                document.getElementById('pack-remain-num').textContent = remain;
+                if (remain <= 0) {
+                    this.finishToSettle();
+                    return;
+                }
+
+                // 最多渲染頂部 10 層，確保 1BOX (50張) 也能絲滑偷看整疊側邊色條！
+                const visibleSlice = this.cards.slice(this.idx, this.idx + 10);
+                stack.innerHTML = visibleSlice.map((card, layerIdx) => {
+                    const zIndex = 30 - layerIdx;
+                    const zOffset = -layerIdx * 4;
+                    const yOffset = layerIdx * 2;
+                    return `
+                    <div id="stack-layer-${this.idx + layerIdx}" style="z-index:${zIndex}; transform: translate3d(0, ${yOffset}px, ${zOffset}px);" class="stacked-card-layer bg-slate-900 border-2 border-amber-400/50 overflow-visible">
+                        <div class="card-edge-right edge-${card.tier}"></div>
+                        <div class="card-edge-left edge-${card.tier}"></div>
+                        <div class="w-full h-full rounded-[12px] overflow-hidden bg-gradient-to-br from-slate-800 via-indigo-950 to-slate-950 flex flex-col justify-between p-2.5">
+                            <div class="flex items-center justify-between text-[10px] font-black">
+                                <span class="px-2 py-0.5 rounded bg-amber-400 text-black">${card.rarity} · ${card.tierLabel}</span>
+                                <span class="text-amber-300 font-display">${card.marketPt.toLocaleString()} PT</span>
+                            </div>
+                            <img src="${card.img}" alt="${card.name}" data-card-name="${card.name}" onerror="handleCardImgError(this)" referrerpolicy="no-referrer" class="w-full h-48 sm:h-56 object-contain pointer-events-none">
+                            <div class="text-center">
+                                <div class="text-xs font-black text-white truncate">${card.name}</div>
+                                <div class="text-[10px] text-gray-400">${card.code}</div>
+                            </div>
+                        </div>
+                    </div>
+                    `;
+                }).join('');
+            },
+
+            revealNextCard() {
+                if (this.idx >= this.cards.length) {
+                    this.finishToSettle();
+                    return;
+                }
+                const currentCard = this.cards[this.idx];
+                SoundEngine.cardSlideSound(currentCard.tier);
+                const layerEl = document.getElementById(`stack-layer-${this.idx}`);
+                if (layerEl) layerEl.classList.add('card-swipe-out');
+                this.idx++;
+                setTimeout(() => {
+                    if (this.idx >= this.cards.length) this.finishToSettle();
+                    else this.renderCardStack();
+                }, 260);
+            },
+
+            revealAllCards() {
+                const topTier = this.cards[this.cards.length - 1]?.tier || 'D';
+                SoundEngine.cardSlideSound(topTier);
+                this.finishToSettle();
+            },
+
+            skipToSettle() {
+                this.finishToSettle();
+            },
+
+            finishToSettle() {
+                closeModal('pack-rip-modal');
+                // 直接開啟結算頁面（跳過 3D 劇場動畫！）
+                openResultSettlement(this.title, this.cards, this.cost);
+            }
+        };
+
+        /* ==========================================================================
+         * 9. 線上一番賞抽卡邏輯 + 7 大自動隨機 Three.js 3D 電影級劇場引擎
+         * ========================================================================== */
+        function drawCardsFromPool(pool, count) {
+            const pulled = [];
+            for (let i = 0; i < count; i++) {
+                if (pool.remainStock <= 0) break;
+                const avail = pool.items.filter(it => it.stock > 0);
+                if (!avail.length) break;
+
+                // 依剩餘庫存加權抽取
+                const totalW = avail.reduce((s, x) => s + x.stock, 0);
+                let r = Math.random() * totalW;
+                let chosen = avail[0];
+                for (let k = 0; k < avail.length; k++) {
+                    r -= avail[k].stock;
+                    if (r <= 0) {
+                        chosen = avail[k];
+                        break;
+                    }
+                }
+
+                chosen.stock--;
+                pool.remainStock--;
+                pool.drawsCount++;
+
+                pulled.push({
+                    uid: `pull_${Date.now()}_${i}_${Math.random().toString(36).slice(2, 7)}`,
+                    cardId: chosen.cardId,
+                    name: chosen.name,
+                    img: chosen.img,
+                    code: chosen.code,
+                    rarity: chosen.rarity,
+                    dex: chosen.dex,
+                    tier: chosen.tier,
+                    tierLabel: chosen.tierLabel,
+                    marketPt: chosen.marketPt,
+                    buybackPt: chosen.buybackPt,
+                    isPSA10: chosen.isPSA10,
+                    forgeLevel: 0
+                });
+
+                // 檢查整數獎 (每 50 抽必贈中高等好卡)
+                if (pool.milestoneInterval && pool.drawsCount % pool.milestoneInterval === 0) {
+                    const m = pool.milestoneCard;
+                    pulled.push({
+                        uid: `mile_${Date.now()}_${i}`,
+                        cardId: 'MILESTONE',
+                        name: `🎯【第 ${pool.drawsCount} 抽整數獎】${m.name}`,
+                        img: m.img,
+                        code: m.code,
+                        rarity: m.rarity,
+                        dex: 25,
+                        tier: 'B',
+                        tierLabel: '整數獎',
+                        marketPt: m.marketPt,
+                        buybackPt: calcBuybackPt(m.marketPt, 'B', false),
+                        isPSA10: false,
+                        forgeLevel: 0
+                    });
+                }
+
+                // 檢查最後一抽獎 (最後 1 口贈送中高等精選好卡，並自動補貨重置卡池)
+                if (pool.remainStock === 0) {
+                    const lo = pool.lastOne;
+                    pulled.push({
+                        uid: `lastone_${Date.now()}`,
+                        cardId: 'LASTONE',
+                        name: `👑【最後一抽賞】${lo.name}`,
+                        img: lo.img,
+                        code: lo.code,
+                        rarity: lo.rarity,
+                        dex: 197,
+                        tier: 'B',
+                        tierLabel: '最後一抽',
+                        marketPt: lo.marketPt,
+                        buybackPt: calcBuybackPt(lo.marketPt, 'B', false),
+                        isPSA10: false,
+                        forgeLevel: 0
+                    });
+                    // 自動重置卡池庫存供持續遊玩
+                    pool.items.forEach(it => { it.stock = it.initialStock; });
+                    pool.remainStock = pool.totalStock;
+                    pool.drawsCount = 0;
+                    showToast('👑 恭喜奪得最後一抽賞！系統已自動為本池補滿新箱！');
+                }
+            }
+            return pulled;
+        }
+
+        function startPoolPull(poolId, count) {
+            const pool = state.pools.find(p => p.id === poolId);
+            if (!pool) return;
+            const cost = pool.price * count;
+            if (state.pt < cost) {
+                showToast('❌ PT 點數不足！請先免費補充點數');
+                openTopupModal();
+                return;
+            }
+            state.pt -= cost;
+            updateWalletUI();
+            SoundEngine.coin();
+
+            const cards = drawCardsFromPool(pool, count);
+            renderPoolsGrid();
+
+            // 找出最高賞決定期待度顏色昇格燈號
+            let bestTier = 'D';
+            let bestCard = cards[0];
+            cards.forEach(c => {
+                if (TIER_WEIGHT[c.tier] > TIER_WEIGHT[bestTier]) {
+                    bestTier = c.tier;
+                    bestCard = c;
+                }
+            });
+
+            // 全自動隨機挑選 7 大 3D 電影劇場（絕不連續重複上一套）
+            const scripts = ['ball', 'dynamax', 'pachinko', 'katana', 'mole', 'zombie', 'fireworks'];
+            const availScripts = scripts.filter(s => s !== state.lastScript);
+            const chosenScript = availScripts[Math.floor(Math.random() * availScripts.length)];
+            state.lastScript = chosenScript;
+
+            CinemaEngine.play({
+                poolTitle: `${pool.title} (${count}連抽)`,
+                script: chosenScript,
+                bestTier,
+                bestCard,
+                cards,
+                cost
+            });
+        }
+
+        function skipCinemaToResults() {
+            CinemaEngine.finish();
+        }
+
+        function openResultSettlement(title, cards, cost) {
+            state.currentResultCards = cards;
+            state.selectedBuybackIds = new Set();
+
+            document.getElementById('stage-pool-title').textContent = title;
+            document.getElementById('stage-cinema-wrap').classList.add('hidden');
+            document.getElementById('btn-skip-cinema').classList.add('hidden');
+            document.getElementById('stage-result-wrap').classList.remove('hidden');
+            document.getElementById('gacha-stage-modal').classList.remove('hidden');
+
+            const totalMarket = cards.reduce((s, c) => s + c.marketPt, 0);
+            const hasTop = cards.some(c => c.tier === 'S' || c.tier === 'A');
+            document.getElementById('result-summary-headline').textContent = hasTop
+                ? '🌈✨ 歐皇神抽大爆發！！恭喜斬獲頂級大獎！！'
+                : `🎉 開抽完成！共獲得 ${cards.length} 張卡片`;
+            document.getElementById('result-summary-value').textContent =
+                `總市場估值：${totalMarket.toLocaleString()} PT ｜ 消耗：${cost.toLocaleString()} PT`;
+
+            if (hasTop) launchConfetti(55);
+            renderResultCardsGrid();
+        }
+
+        function renderResultCardsGrid() {
+            const grid = document.getElementById('result-cards-grid');
+            grid.innerHTML = state.currentResultCards.map(c => {
+                const checked = state.selectedBuybackIds.has(c.uid);
+                const borderCls = c.tier === 'S'
+                    ? 'border-rose-500 shadow-[0_0_20px_rgba(244,63,94,0.6)]'
+                    : c.tier === 'A'
+                        ? 'border-amber-400 shadow-[0_0_16px_rgba(250,204,21,0.5)]'
+                        : 'border-white/15';
+                return `
+                <div onclick="toggleBuybackCard('${c.uid}')" class="cursor-pointer rounded-xl bg-slatecard border-2 ${checked ? 'border-emerald-400 ring-2 ring-emerald-400/50' : borderCls} p-2 flex flex-col justify-between space-y-1.5 transition-all">
+                    <div class="flex items-center justify-between text-[10px] font-black">
+                        <span class="px-1.5 py-0.5 rounded ${c.tier === 'S' ? 'bg-rose-600 text-white' : c.tier === 'A' ? 'bg-amber-400 text-black' : 'bg-slate-800 text-gray-300'}">${c.tierLabel}</span>
+                        <span class="px-1.5 py-0.5 rounded ${checked ? 'bg-emerald-400 text-black' : 'bg-slate-800 text-gray-400'}">${checked ? '✓ 換PT' : '保留'}</span>
+                    </div>
+                    <img src="${c.img}" alt="${c.name}" data-card-name="${c.name}" onerror="handleCardImgError(this)" referrerpolicy="no-referrer" class="w-full aspect-[3/3.8] object-contain p-1 rounded-lg bg-slate-900">
+                    <div class="text-[10px] font-bold text-white line-clamp-2 leading-tight">${c.name}</div>
+                    <div class="text-[10px] font-display font-black text-amber-300">估 ${c.marketPt.toLocaleString()} PT</div>
+                    <div class="text-[9px] text-emerald-300 font-bold">回收 +${c.buybackPt.toLocaleString()} PT</div>
+                </div>
+                `;
+            }).join('');
+            updateSelectedBuybackTotal();
+        }
+
+        function toggleBuybackCard(uid) {
+            if (state.selectedBuybackIds.has(uid)) state.selectedBuybackIds.delete(uid);
+            else state.selectedBuybackIds.add(uid);
+            renderResultCardsGrid();
+        }
+
+        function selectLowTierForBuyback() {
+            state.selectedBuybackIds.clear();
+            state.currentResultCards.forEach(c => {
+                if (c.tier === 'C' || c.tier === 'D') state.selectedBuybackIds.add(c.uid);
+            });
+            renderResultCardsGrid();
+        }
+
+        function updateSelectedBuybackTotal() {
+            let sum = 0;
+            state.currentResultCards.forEach(c => {
+                if (state.selectedBuybackIds.has(c.uid)) sum += c.buybackPt;
+            });
+            const el = document.getElementById('result-selected-pt');
+            if (el) el.textContent = `${sum.toLocaleString()} PT`;
+        }
+
+        function confirmResultDecision(sellSelected) {
+            let refund = 0;
+            let keptCount = 0;
+            state.currentResultCards.forEach(c => {
+                if (sellSelected && state.selectedBuybackIds.has(c.uid)) {
+                    refund += c.buybackPt;
+                } else {
+                    state.vault.unshift(c);
+                    keptCount++;
+                }
+            });
+            if (refund > 0) {
+                state.pt += refund;
+                SoundEngine.coin();
+            }
+            updateWalletUI();
+            closeModal('gacha-stage-modal');
+            showToast(`✅ 已回收 +${refund.toLocaleString()} PT，並將 ${keptCount} 張卡片存入保管庫！`);
+        }
+
+        /* ==========================================================================
+         * 10. Three.js WebGL 7 大全自動電影級 3D 劇場引擎 (CinemaEngine)
+         * ========================================================================== */
+        const CinemaEngine = {
+            renderer: null,
+            scene: null,
+            camera: null,
+            rafId: null,
+            active: false,
+            config: null,
+            startTime: 0,
+            duration: 9.5,
+            lastStep: -1,
+
+            play(cfg) {
+                this.cleanup();
+                this.config = cfg;
+                this.active = true;
+                this.startTime = performance.now();
+                this.lastStep = -1;
+                TownBGM.pauseForCinema();
+
+                document.getElementById('stage-pool-title').textContent = cfg.poolTitle;
+                document.getElementById('stage-cinema-wrap').classList.remove('hidden');
+                document.getElementById('btn-skip-cinema').classList.remove('hidden');
+                document.getElementById('stage-result-wrap').classList.add('hidden');
+                document.getElementById('gacha-stage-modal').classList.remove('hidden');
+                document.getElementById('cinema-art-overlay').innerHTML = '';
+                document.getElementById('cinema-center-callout').innerHTML = '';
+                this.setLamp(0);
+
+                const container = document.getElementById('threejs-cinema-container');
+                container.innerHTML = '';
+                const w = container.clientWidth || 360;
+                const h = container.clientHeight || 440;
+
+                this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+                this.renderer.setSize(w, h);
+                this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+                container.appendChild(this.renderer.domElement);
+
+                this.scene = new THREE.Scene();
+                this.camera = new THREE.PerspectiveCamera(w < h ? 58 : 48, w / h, 0.1, 100);
+                this.camera.position.set(0, 1.4, w < h ? 7.2 : 5.8);
+                this.camera.lookAt(0, 0, 0);
+
+                const amb = new THREE.AmbientLight(0xffffff, 0.85);
+                const dir = new THREE.DirectionalLight(0xffeedd, 1.35);
+                dir.position.set(4, 8, 6);
+                this.scene.add(amb, dir);
+
+                const targetLamp = cfg.bestTier === 'S' ? 5 : cfg.bestTier === 'A' ? 4 : cfg.bestTier === 'B' ? 3 : cfg.bestTier === 'C' ? 2 : 1;
+                const scriptNames = {
+                    ball: '🔴 3D 精靈球捕捉・彩虹大師球進化',
+                    dynamax: '🌋 極巨巢穴・超極巨傳說神獸對決',
+                    pachinko: '🎰 真實 3D 物理大號鋼珠盤',
+                    katana: '⚔️ 第一人稱鍛造武士刀・斬碎花崗岩石碑',
+                    mole: '🔨 霓虹夜市・黃金地鼠爆擊機',
+                    zombie: '🧟 生化禁區・幽靈暗廊狙擊突圍',
+                    fireworks: '🎆 月夜江戶川・百花繚亂花火大會'
+                };
+                document.getElementById('cinema-script-name').textContent = scriptNames[cfg.script] || '3D 劇場';
+
+                const actor = this.buildScriptScene(cfg.script, cfg.bestCard, cfg.bestTier);
+
+                const loop = (now) => {
+                    if (!this.active) return;
+                    const t = (now - this.startTime) / 1000;
+                    const progress = Math.min(1, t / this.duration);
+                    document.getElementById('cinema-timer-badge').textContent = `${t.toFixed(1)}s`;
+
+                    // 期待度燈號隨進度逐步昇格
+                    const curStep = Math.min(targetLamp, Math.floor(progress * (targetLamp + 0.95)));
+                    if (curStep !== this.lastStep) {
+                        this.lastStep = curStep;
+                        this.setLamp(curStep);
+                    }
+
+                    if (actor && actor.update) actor.update(t, progress);
+                    if (this.renderer && this.scene && this.camera) {
+                        this.renderer.render(this.scene, this.camera);
+                    }
+
+                    if (t >= this.duration) {
+                        this.finish();
+                    } else {
+                        this.rafId = requestAnimationFrame(loop);
