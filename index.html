@@ -4178,4 +4178,1195 @@
                 const samples = [
                     { key: 'C30_MEW_FUR', tier: 'A', pt: 68000, hrs: 2, seller: '官方委託拍賣行' },
                     { key: 'UMBREON_VMAX_SA', tier: 'S', pt: 148000, hrs: 12, seller: '京都鑑定王・Kenji' },
-                    { key: 'ROCKET_MEWTWO_SAR', tier: 'S', pt: 98000, hrs:
+                    { key: 'ROCKET_MEWTWO_SAR', tier: 'S', pt: 98000, hrs: 2, seller: '板橋火箭隊・Ryo' },
+                    { key: 'MEGA_LUCARIO_MUR', tier: 'A', pt: 56000, hrs: 12, seller: '台北神豪・阿凱' },
+                    { key: 'TERASTAL_UMBREON', tier: 'S', pt: 92000, hrs: 2, seller: '桃園伊布控・小雪' },
+                    { key: 'VAN_GOGH_PIKACHU', tier: 'A', pt: 58000, hrs: 12, seller: '信義區收藏家・Vivian' }
+                ];
+                samples.forEach((s, idx) => {
+                    const ref = VERIFIED_CARDS[s.key];
+                    const startBid = Math.round((s.pt * 0.55) / 100) * 100;
+                    this.lots.unshift({
+                        id: `lot_${Date.now()}_${idx}`,
+                        card: {
+                            uid: `auc_card_${Date.now()}_${idx}`,
+                            cardId: s.key,
+                            name: `【PSA 10】${ref.name}`,
+                            img: ref.img,
+                            code: ref.code,
+                            rarity: ref.rarity,
+                            dex: ref.dex,
+                            tier: s.tier,
+                            tierLabel: TIER_LABEL_MAP[s.tier],
+                            marketPt: s.pt,
+                            buybackPt: calcBuybackPt(s.pt, s.tier, false),
+                            isPSA10: true,
+                            forgeLevel: 0
+                        },
+                        seller: s.seller,
+                        isPlayerSeller: false,
+                        durationHours: s.hrs,
+                        endTime: Date.now() + s.hrs * 3600 * 1000,
+                        currentBid: startBid,
+                        buyoutPrice: Math.round((s.pt * 1.35) / 100) * 100,
+                        highBidder: '起標待機中',
+                        isPlayerHigh: false,
+                        history: [`🏁 起標價 ${startBid.toLocaleString()} PT（${s.hrs}小時標）`]
+                    });
+                });
+                this.lots = this.lots.slice(0, 9);
+                this.renderGrid();
+                showToast('🔨 已補充最新 2小時短標 / 12小時長標拍賣品！');
+            },
+
+            formatRemain(ms) {
+                if (ms <= 0) return '已結標';
+                const totalSec = Math.floor(ms / 1000);
+                const h = String(Math.floor(totalSec / 3600)).padStart(2, '0');
+                const m = String(Math.floor((totalSec % 3600) / 60)).padStart(2, '0');
+                const s = String(totalSec % 60).padStart(2, '0');
+                return `${h}:${m}:${s}`;
+            },
+
+            tick() {
+                const now = Date.now();
+                let changed = false;
+
+                this.lots.forEach(lot => {
+                    if (lot.settled) return;
+                    const rem = lot.endTime - now;
+
+                    // AI 真人模擬自動競標
+                    if (rem > 0 && Math.random() < 0.22) {
+                        const buyer = this.aiBuyers[Math.floor(Math.random() * this.aiBuyers.length)];
+                        const capMult = lot.durationHours === 12 ? buyer.mult : buyer.mult * 0.92;
+                        const maxWilling = lot.card.marketPt * capMult;
+                        const step = Math.max(200, Math.round((lot.currentBid * 0.06) / 100) * 100);
+                        if (lot.currentBid + step <= maxWilling && lot.highBidder !== buyer.name) {
+                            // 若原本是玩家最高標，立即退還託管 PT！
+                            if (lot.isPlayerHigh) {
+                                state.pt += lot.currentBid;
+                                updateWalletUI();
+                                showToast(`⚠️ 你的出價被 ${buyer.name} 超過！已自動退還 ${lot.currentBid.toLocaleString()} PT`);
+                            }
+                            lot.currentBid += step;
+                            lot.highBidder = buyer.name;
+                            lot.isPlayerHigh = false;
+                            lot.history.unshift(`🤖 ${buyer.name} 出價 ${lot.currentBid.toLocaleString()} PT`);
+                            if (rem < 10000) lot.endTime = now + 15000; // 反狙擊保護
+                            changed = true;
+                        }
+                    }
+
+                    // 結標結算
+                    if (rem <= 0) {
+                        lot.settled = true;
+                        changed = true;
+                        if (lot.isPlayerHigh) {
+                            state.vault.unshift(lot.card);
+                            updateWalletUI();
+                            showToast(`🎉 恭喜得標！【${lot.card.name}】已送入你的保管庫！`);
+                        } else if (lot.isPlayerSeller) {
+                            if (lot.highBidder !== '起標待機中') {
+                                state.pt += lot.currentBid;
+                                updateWalletUI();
+                                showToast(`💰 你上架的【${lot.card.name}】以 ${lot.currentBid.toLocaleString()} PT 售出！`);
+                            } else {
+                                state.vault.unshift(lot.card);
+                                updateWalletUI();
+                                showToast(`📦 你上架的【${lot.card.name}】流標，已退回保管庫。`);
+                            }
+                        }
+                    }
+                });
+
+                this.lots = this.lots.filter(l => !l.settled);
+                if (!document.getElementById('view-auction').classList.contains('hidden')) {
+                    this.renderGrid();
+                }
+                if (this.activeLotId && changed) {
+                    this.renderDetail(this.activeLotId);
+                }
+            },
+
+            renderGrid() {
+                const grid = document.getElementById('auction-grid');
+                if (!grid) return;
+                const now = Date.now();
+                grid.innerHTML = this.lots.map(lot => {
+                    const remStr = this.formatRemain(lot.endTime - now);
+                    const isShort = lot.durationHours === 2;
+                    return `
+                    <div class="bg-slatecard border ${lot.isPlayerHigh ? 'border-emerald-400' : 'border-slateborder'} rounded-2xl p-4 flex flex-col justify-between space-y-3 shadow-xl">
+                        <div class="space-y-2.5">
+                            <div class="flex items-center justify-between gap-2 text-[10px] font-black">
+                                <span class="px-2 py-0.5 rounded ${isShort ? 'bg-amber-400 text-black' : 'bg-indigo-500 text-white'}">
+                                    ${isShort ? '⚡ 短標 2小時' : '🌙 長標 12小時'}
+                                </span>
+                                <span class="font-mono text-rose-400">⏳ ${remStr}</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <img src="${lot.card.img}" alt="${lot.card.name}" data-card-name="${lot.card.name}" onerror="handleCardImgError(this)" referrerpolicy="no-referrer" class="w-20 h-28 object-contain p-1 rounded-xl bg-slate-900 border border-white/10 flex-shrink-0">
+                                <div class="min-w-0 space-y-1">
+                                    <div class="text-xs font-black text-white line-clamp-2">${lot.card.name}</div>
+                                    <div class="text-[10px] text-gray-400">賣家：${lot.seller}</div>
+                                    <div class="text-[10px] text-gray-400">參考市價：${lot.card.marketPt.toLocaleString()} PT</div>
+                                    <div class="text-sm font-display font-black text-amber-300">目前：${lot.currentBid.toLocaleString()} PT</div>
+                                    <div class="text-[10px] font-bold ${lot.isPlayerHigh ? 'text-emerald-400' : 'text-cyan-300'} truncate">領先者：${lot.highBidder}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button onclick="AuctionSystem.placeBid('${lot.id}')" class="py-2 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-black text-xs active:scale-95">
+                                🔨 加價競標
+                            </button>
+                            <button onclick="AuctionSystem.openDetail('${lot.id}')" class="py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-gray-200 font-bold text-xs">
+                                📋 競標室 / 快轉
+                            </button>
+                        </div>
+                    </div>
+                    `;
+                }).join('');
+            },
+
+            placeBid(lotId) {
+                const lot = this.lots.find(l => l.id === lotId);
+                if (!lot) return;
+                const step = Math.max(200, Math.round((lot.currentBid * 0.06) / 100) * 100);
+                const nextBid = lot.isPlayerHigh ? lot.currentBid + step : lot.currentBid + step;
+                const extraNeeded = lot.isPlayerHigh ? step : nextBid;
+
+                if (state.pt < extraNeeded) {
+                    showToast('❌ PT 不足，無法出價！');
+                    openTopupModal();
+                    return;
+                }
+                state.pt -= extraNeeded;
+                updateWalletUI();
+                SoundEngine.coin();
+
+                lot.currentBid = nextBid;
+                lot.highBidder = '👑 你（訓練家）';
+                lot.isPlayerHigh = true;
+                lot.history.unshift(`👑 你 出價 ${nextBid.toLocaleString()} PT`);
+                if (lot.endTime - Date.now() < 10000) lot.endTime = Date.now() + 15000;
+
+                this.renderGrid();
+                if (this.activeLotId === lotId) this.renderDetail(lotId);
+                showToast(`🔨 出價成功！目前由你以 ${nextBid.toLocaleString()} PT 領先！`);
+            },
+
+            buyout(lotId) {
+                const lot = this.lots.find(l => l.id === lotId);
+                if (!lot) return;
+                const refund = lot.isPlayerHigh ? lot.currentBid : 0;
+                const netCost = lot.buyoutPrice - refund;
+                if (state.pt < netCost) {
+                    showToast('❌ PT 不足直購價！');
+                    return;
+                }
+                state.pt -= netCost;
+                state.vault.unshift(lot.card);
+                this.lots = this.lots.filter(l => l.id !== lotId);
+                updateWalletUI();
+                SoundEngine.ballCaptureFanfare(true);
+                this.closeDetail();
+                this.renderGrid();
+                showToast(`⚡ 直購成功！【${lot.card.name}】已直接存入你的保管庫！`);
+            },
+
+            openDetail(lotId) {
+                this.activeLotId = lotId;
+                this.renderDetail(lotId);
+                document.getElementById('auction-detail-modal').classList.remove('hidden');
+            },
+
+            closeDetail() {
+                this.activeLotId = null;
+                closeModal('auction-detail-modal');
+            },
+
+            renderDetail(lotId) {
+                const lot = this.lots.find(l => l.id === lotId);
+                if (!lot) {
+                    this.closeDetail();
+                    return;
+                }
+                const body = document.getElementById('auction-detail-body');
+                body.innerHTML = `
+                    <div class="flex flex-col sm:flex-row items-center gap-4">
+                        <img src="${lot.card.img}" alt="${lot.card.name}" data-card-name="${lot.card.name}" onerror="handleCardImgError(this)" referrerpolicy="no-referrer" class="w-32 h-44 object-contain p-2 rounded-xl bg-slate-900 border border-amber-400/50">
+                        <div class="flex-1 space-y-2 text-xs">
+                            <div class="text-base font-black text-white">${lot.card.name}</div>
+                            <div>時長制度：<strong class="text-amber-300">${lot.durationHours === 2 ? '⚡ 短標 2 小時' : '🌙 長標 12 小時'}</strong> ｜ 剩餘：<strong class="font-mono text-rose-400">${this.formatRemain(lot.endTime - Date.now())}</strong></div>
+                            <div>目前最高出價：<strong class="font-display text-lg text-amber-300">${lot.currentBid.toLocaleString()} PT</strong>（${lot.highBidder}）</div>
+                            <div class="flex flex-wrap gap-2 pt-1">
+                                <button onclick="AuctionSystem.placeBid('${lot.id}')" class="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-black">🔨 立即加價競標</button>
+                                <button onclick="AuctionSystem.buyout('${lot.id}')" class="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 text-black font-black">⚡ 直購 (${lot.buyoutPrice.toLocaleString()} PT)</button>
+                                <button onclick="AuctionSystem.fastForward('${lot.id}')" class="px-3 py-2 rounded-xl bg-fuchsia-500/25 border border-fuchsia-400 text-fuchsia-200 font-black">⏩ 模擬快轉至最後 15 秒</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-obsidian border border-white/10 rounded-xl p-3 max-h-40 overflow-y-auto space-y-1 text-xs">
+                        <div class="font-black text-cyan-300 mb-1">📜 即時出價紀錄</div>
+                        ${lot.history.map(h => `<div class="text-gray-300 border-b border-white/5 py-1">${h}</div>`).join('')}
+                    </div>
+                `;
+            },
+
+            fastForward(lotId) {
+                const lot = this.lots.find(l => l.id === lotId);
+                if (!lot) return;
+                lot.endTime = Date.now() + 15000;
+                this.renderDetail(lotId);
+                showToast('⏩ 已快轉至最後 15 秒！AI 尾盤搶標戰開始！');
+            },
+
+            openListModal() {
+                if (!state.vault.length) {
+                    showToast('🎒 保管庫目前沒有卡片可以上架！');
+                    return;
+                }
+                const sel = document.getElementById('auction-list-card-select');
+                sel.innerHTML = state.vault.map(c => `<option value="${c.uid}">${c.name} (估 ${c.marketPt.toLocaleString()} PT)</option>`).join('');
+                const first = state.vault[0];
+                document.getElementById('auction-list-start-price').value = Math.max(100, Math.round((first.marketPt * 0.6) / 100) * 100);
+                document.getElementById('auction-list-buyout-price').value = Math.max(200, Math.round((first.marketPt * 1.4) / 100) * 100);
+                document.getElementById('auction-list-modal').classList.remove('hidden');
+            },
+
+            confirmListItem() {
+                const uid = document.getElementById('auction-list-card-select').value;
+                const cardIdx = state.vault.findIndex(c => c.uid === uid);
+                if (cardIdx === -1) return;
+                const card = state.vault.splice(cardIdx, 1)[0];
+                const hrs = Number(document.getElementById('auction-list-duration').value) || 2;
+                const startPrice = Math.max(100, Number(document.getElementById('auction-list-start-price').value) || 500);
+                const buyoutPrice = Math.max(startPrice + 100, Number(document.getElementById('auction-list-buyout-price').value) || startPrice * 2);
+
+                this.lots.unshift({
+                    id: `player_lot_${Date.now()}`,
+                    card,
+                    seller: '👑 你（訓練家）',
+                    isPlayerSeller: true,
+                    durationHours: hrs,
+                    endTime: Date.now() + hrs * 3600 * 1000,
+                    currentBid: startPrice,
+                    buyoutPrice,
+                    highBidder: '起標待機中',
+                    isPlayerHigh: false,
+                    history: [`👑 你上架了卡片，起標價 ${startPrice.toLocaleString()} PT（${hrs}小時標）`]
+                });
+                updateWalletUI();
+                closeModal('auction-list-modal');
+                this.renderGrid();
+                showToast(`🔨 已成功上架【${card.name}】！AI 買家即將開始競標！`);
+            }
+        };
+
+        /* ==========================================================================
+         * 13. 🎡 每 2 小時幸運大轉盤獎池活動 (含 AI 參與玩家・PT 獎勵分發)
+         * ========================================================================== */
+        const WheelEventSystem = {
+            round: 1,
+            endTime: Date.now() + 2 * 3600 * 1000,
+            poolPt: 12000,
+            participants: [],
+            history: [],
+            spinning: false,
+            rotation: 0,
+
+            init() {
+                this.resetRound(false);
+                setInterval(() => this.tick(), 1000);
+            },
+
+            resetRound(inc = true) {
+                if (inc) this.round++;
+                this.endTime = Date.now() + 2 * 3600 * 1000;
+                this.poolPt = 10000 + Math.floor(Math.random() * 5000);
+                this.participants = [
+                    { name: '🤖 台北歐皇・阿凱', tickets: 2, isPlayer: false },
+                    { name: '🤖 高雄課長・Mina', tickets: 2, isPlayer: false },
+                    { name: '🤖 台中獵人・Ken', tickets: 1, isPlayer: false },
+                    { name: '🤖 桃園伊布控・小雪', tickets: 1, isPlayer: false },
+                    { name: '🤖 板橋火箭隊・Ryo', tickets: 1, isPlayer: false },
+                    { name: '🤖 新竹工程師・Jay', tickets: 1, isPlayer: false }
+                ];
+                this.updateBannerAndModal();
+            },
+
+            tick() {
+                const now = Date.now();
+                const rem = this.endTime - now;
+
+                // AI 玩家定時報名並推高獎池
+                if (!this.spinning && rem > 5000 && Math.random() < 0.25 && this.participants.length < 24) {
+                    const aiPool = ['🤖 台南神抽・Leo', '🤖 信義藏家・Vivian', '🤖 京都鑑定王', '🤖 秋葉原買手', '🤖 嘉義歐皇・Ben', '🤖 基隆釣手・Ray'];
+                    const name = aiPool[Math.floor(Math.random() * aiPool.length)] + ` #${Math.floor(10 + Math.random() * 89)}`;
+                    const boost = Math.random() < 0.35;
+                    this.participants.push({ name, tickets: boost ? 2 : 1, isPlayer: false });
+                    this.poolPt += boost ? 800 : 300;
+                }
+
+                if (rem <= 0 && !this.spinning) {
+                    this.spinAndDistribute();
+                } else {
+                    this.updateBannerAndModal();
+                }
+            },
+
+            updateBannerAndModal() {
+                const rem = Math.max(0, this.endTime - Date.now());
+                const h = String(Math.floor(rem / 3600000)).padStart(2, '0');
+                const m = String(Math.floor((rem % 3600000) / 60000)).padStart(2, '0');
+                const s = String(Math.floor((rem % 60000) / 1000)).padStart(2, '0');
+                const tStr = `${h}:${m}:${s}`;
+
+                const pEntry = this.participants.find(p => p.isPlayer);
+                const totalTickets = this.participants.reduce((sum, p) => sum + p.tickets, 0);
+
+                const bRound = document.getElementById('wheel-banner-round');
+                const bPool = document.getElementById('wheel-banner-pool');
+                const bPlayers = document.getElementById('wheel-banner-players');
+                const bTimer = document.getElementById('wheel-banner-timer');
+                const bJoined = document.getElementById('wheel-banner-joined-badge');
+                if (bRound) bRound.textContent = `第 #${this.round} 輪`;
+                if (bPool) bPool.textContent = `${this.poolPt.toLocaleString()} PT`;
+                if (bPlayers) bPlayers.textContent = `${this.participants.length} 位玩家(含AI)參與中`;
+                if (bTimer) bTimer.textContent = tStr;
+                if (bJoined) bJoined.classList.toggle('hidden', !pEntry);
+
+                const mTimer = document.getElementById('wheel-modal-timer');
+                const mPool = document.getElementById('wheel-modal-pool');
+                if (mTimer) mTimer.textContent = tStr;
+                if (mPool) mPool.textContent = `${this.poolPt.toLocaleString()} PT`;
+
+                const oddsEl = document.getElementById('wheel-player-odds');
+                if (oddsEl) {
+                    oddsEl.textContent = pEntry
+                        ? `你持有 ${pEntry.tickets} 券（中獎率 ${((pEntry.tickets / totalTickets) * 100).toFixed(1)}%）`
+                        : '尚未報名';
+                }
+
+                const listEl = document.getElementById('wheel-participants-list');
+                if (listEl) {
+                    listEl.innerHTML = this.participants.map(p => `
+                        <div class="flex items-center justify-between px-2.5 py-1.5 rounded-lg ${p.isPlayer ? 'bg-emerald-500/20 border border-emerald-400/50 text-emerald-200 font-black' : 'bg-slate-900/80 text-gray-300'}">
+                            <span>${p.name}</span>
+                            <span class="font-mono text-[10px] text-amber-300">🎟️ ${p.tickets} 券</span>
+                        </div>
+                    `).join('');
+                }
+                this.drawWheelCanvas();
+            },
+
+            drawWheelCanvas() {
+                const canvas = document.getElementById('wheel-event-canvas');
+                if (!canvas) return;
+                const ctx = canvas.getContext('2d');
+                const cx = canvas.width / 2;
+                const cy = canvas.height / 2;
+                const r = cx - 8;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                const slices = this.participants.slice(0, 12);
+                const step = (Math.PI * 2) / Math.max(1, slices.length);
+                const colors = ['#0ea5e9', '#f59e0b', '#ec4899', '#10b981', '#8b5cf6', '#f97316'];
+
+                slices.forEach((p, i) => {
+                    const a0 = this.rotation + i * step;
+                    const a1 = a0 + step;
+                    ctx.beginPath();
+                    ctx.moveTo(cx, cy);
+                    ctx.arc(cx, cy, r, a0, a1);
+                    ctx.closePath();
+                    ctx.fillStyle = p.isPlayer ? '#22c55e' : colors[i % colors.length];
+                    ctx.fill();
+                    ctx.strokeStyle = '#090d17';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+
+                    ctx.save();
+                    ctx.translate(cx, cy);
+                    ctx.rotate(a0 + step / 2);
+                    ctx.fillStyle = '#ffffff';
+                    ctx.font = 'bold 10px sans-serif';
+                    ctx.fillText(p.isPlayer ? '👑 你' : p.name.replace('🤖 ', '').slice(0, 5), r * 0.42, 4);
+                    ctx.restore();
+                });
+            },
+
+            joinFree() {
+                if (this.participants.some(p => p.isPlayer)) {
+                    showToast('✅ 你已經免費報名本輪大轉盤了！');
+                    return;
+                }
+                this.participants.unshift({ name: '👑 你（訓練家）', tickets: 1, isPlayer: true });
+                this.poolPt += 500;
+                SoundEngine.coin();
+                this.updateBannerAndModal();
+                showToast('🎟️ 免費報名成功！已獲得 +1 張幸運抽獎券！');
+            },
+
+            boostEntry() {
+                if (state.pt < 500) {
+                    showToast('❌ PT 不足 500 點！');
+                    return;
+                }
+                state.pt -= 500;
+                updateWalletUI();
+                const existing = this.participants.find(p => p.isPlayer);
+                if (existing) existing.tickets += 2;
+                else this.participants.unshift({ name: '👑 你（訓練家）', tickets: 2, isPlayer: true });
+                this.poolPt += 1000;
+                SoundEngine.coin();
+                this.updateBannerAndModal();
+                showToast('🔥 加碼成功！幸運券 +2，總獎池再提升 +1,000 PT！');
+            },
+
+            fastForwardTo10s() {
+                if (this.spinning) return;
+                this.endTime = Date.now() + 3000;
+                this.updateBannerAndModal();
+                showToast('⏩ 已快轉至開獎倒數 3 秒！大轉盤即將啟動！');
+            },
+
+            spinAndDistribute() {
+                this.spinning = true;
+                const statusEl = document.getElementById('wheel-spin-status');
+                if (statusEl) statusEl.textContent = '🎡 大轉盤高速旋轉開獎中...';
+
+                const start = performance.now();
+                const dur = 3200;
+                const anim = (now) => {
+                    const t = (now - start) / 1000;
+                    this.rotation += 0.32 * (1 - t / 3.4);
+                    this.drawWheelCanvas();
+                    if (t < 3.2) {
+                        requestAnimationFrame(anim);
+                    } else {
+                        // 加權抽出前三名
+                        const ticketBag = [];
+                        this.participants.forEach(p => {
+                            for (let k = 0; k < p.tickets; k++) ticketBag.push(p);
+                        });
+                        const pickWinner = () => ticketBag[Math.floor(Math.random() * ticketBag.length)];
+                        const w1 = pickWinner();
+                        const w2 = pickWinner();
+                        const w3 = pickWinner();
+
+                        const p1 = Math.round(this.poolPt * 0.50);
+                        const p2 = Math.round(this.poolPt * 0.30);
+                        const p3 = Math.round(this.poolPt * 0.20);
+
+                        let playerWon = 0;
+                        if (w1.isPlayer) playerWon += p1;
+                        if (w2.isPlayer) playerWon += p2;
+                        if (w3.isPlayer) playerWon += p3;
+                        const playerJoined = this.participants.some(p => p.isPlayer);
+                        if (playerJoined && playerWon === 0) playerWon = 300; // 參與幸運紅包
+
+                        if (playerWon > 0) {
+                            state.pt += playerWon;
+                            updateWalletUI();
+                            SoundEngine.ballCaptureFanfare(true);
+                            launchConfetti(40);
+                            showToast(`🎉 第 #${this.round} 輪大轉盤開獎！你獲得 +${playerWon.toLocaleString()} PT 獎勵！`);
+                        } else {
+                            showToast(`🎡 第 #${this.round} 輪大轉盤開獎完畢！快報名參加下一輪！`);
+                        }
+
+                        const recHtml = `<div class="border-b border-white/10 pb-1"><strong>第 #${this.round} 輪</strong>（獎池 ${this.poolPt.toLocaleString()} PT）：🥇${w1.name} (+${p1.toLocaleString()}) · 🥈${w2.name} (+${p2.toLocaleString()})</div>`;
+                        const histEl = document.getElementById('wheel-history-list');
+                        if (histEl) {
+                            if (histEl.textContent.includes('尚無歷屆')) histEl.innerHTML = '';
+                            histEl.insertAdjacentHTML('afterbegin', recHtml);
+                        }
+
+                        this.spinning = false;
+                        this.resetRound(true);
+                    }
+                };
+                requestAnimationFrame(anim);
+            },
+
+            openModal() {
+                this.updateBannerAndModal();
+                document.getElementById('wheel-event-modal').classList.remove('hidden');
+            },
+            closeModal() {
+                closeModal('wheel-event-modal');
+            }
+        };
+
+        /* ==========================================================================
+         * 14. 🎮 玉虹 PT 遊藝場 (777 老虎機 + 精靈球三色賭盤 + 高難度每日1000PT反應挑戰)
+         * ========================================================================== */
+        const ArcadeSystem = {
+            slotBet: 500,
+            slotSpinning: false,
+            rouletteSpinning: false,
+            netProfit: 0,
+            bestWin: 0,
+
+            // 高難度免費小遊戲狀態（每日最高 1,000 PT 上限）
+            DAILY_FREE_CAP: 1000,
+            reflexRunning: false,
+            reflexScore: 0,
+            reflexCombo: 0,
+            reflexCells: Array(9).fill(null),
+            reflexTickId: null,
+            reflexSpawnId: null,
+
+            init() {
+                this.renderRouletteStrip();
+                this.refreshUI();
+            },
+
+            getTodayKey() {
+                const d = new Date();
+                return `pokevault_daily_free_${d.getFullYear()}_${d.getMonth() + 1}_${d.getDate()}`;
+            },
+
+            getDailyFreeEarned() {
+                try {
+                    return Number(localStorage.getItem(this.getTodayKey()) || '0');
+                } catch (e) {
+                    return 0;
+                }
+            },
+
+            addDailyFreeEarned(pts) {
+                const cur = this.getDailyFreeEarned();
+                const allowed = Math.max(0, Math.min(pts, this.DAILY_FREE_CAP - cur));
+                try {
+                    localStorage.setItem(this.getTodayKey(), String(cur + allowed));
+                } catch (e) {}
+                return allowed;
+            },
+
+            refreshUI() {
+                const netEl = document.getElementById('arcade-net-profit');
+                if (netEl) {
+                    netEl.textContent = `${this.netProfit >= 0 ? '+' : ''}${this.netProfit.toLocaleString()} PT`;
+                    netEl.className = `font-display ${this.netProfit >= 0 ? 'text-emerald-400' : 'text-rose-400'}`;
+                }
+                const bestEl = document.getElementById('arcade-best-win');
+                if (bestEl) bestEl.textContent = `${this.bestWin.toLocaleString()} PT`;
+
+                const earned = this.getDailyFreeEarned();
+                const freeEl = document.getElementById('arcade-free-earned');
+                if (freeEl) freeEl.textContent = `+${earned.toLocaleString()} / 1,000 PT`;
+                const qText = document.getElementById('reflex-daily-quota-text');
+                const qBar = document.getElementById('reflex-daily-quota-bar');
+                if (qText) qText.textContent = `${earned.toLocaleString()} / 1,000 PT`;
+                if (qBar) qBar.style.width = `${Math.min(100, (earned / this.DAILY_FREE_CAP) * 100)}%`;
+            },
+
+            switchGame(g) {
+                ['slot', 'roulette', 'reflex'].forEach(k => {
+                    document.getElementById(`arcade-game-${k}`).classList.toggle('hidden', k !== g);
+                    document.getElementById(`arcade-tab-${k}`).className = k === g
+                        ? 'px-3 py-2 rounded-lg text-xs font-black bg-amber-400 text-black'
+                        : 'px-3 py-2 rounded-lg text-xs font-bold text-gray-300';
+                });
+                this.refreshUI();
+            },
+
+            setSlotBet(val) {
+                this.slotBet = val;
+                document.getElementById('slot-bet-display').textContent = val.toLocaleString();
+                document.querySelectorAll('.slot-bet-btn').forEach(btn => {
+                    const isThis = btn.textContent.replace(/,/g, '').startsWith(String(val));
+                    btn.className = isThis
+                        ? 'slot-bet-btn px-3 py-1.5 rounded-lg bg-amber-400 text-black text-xs font-black'
+                        : 'slot-bet-btn px-3 py-1.5 rounded-lg bg-slate-800 text-gray-200 text-xs font-bold';
+                });
+            },
+
+            spinSlot() {
+                if (this.slotSpinning) return;
+                if (state.pt < this.slotBet) {
+                    showToast('❌ PT 點數不足！');
+                    openTopupModal();
+                    return;
+                }
+                this.slotSpinning = true;
+                state.pt -= this.slotBet;
+                this.netProfit -= this.slotBet;
+                updateWalletUI();
+                this.refreshUI();
+
+                const symbols = ['7️⃣', '⚡', '🟣', '🔥', '🍒', '💎'];
+                const reels = [0, 1, 2].map(i => document.getElementById(`slot-reel-${i}`));
+                let ticks = 0;
+                const spinId = setInterval(() => {
+                    ticks++;
+                    SoundEngine.slotSpinTick(1 + (ticks % 3) * 0.1);
+                    reels.forEach(r => { r.textContent = symbols[Math.floor(Math.random() * symbols.length)]; });
+                    if (ticks >= 18) {
+                        clearInterval(spinId);
+                        const res = [0, 1, 2].map(() => symbols[Math.floor(Math.random() * symbols.length)]);
+                        reels.forEach((r, idx) => { r.textContent = res[idx]; });
+
+                        let mult = 0;
+                        if (res[0] === res[1] && res[1] === res[2]) {
+                            if (res[0] === '7️⃣') mult = 50;
+                            else if (res[0] === '⚡') mult = 15;
+                            else if (res[0] === '🟣') mult = 10;
+                            else if (res[0] === '🔥') mult = 6;
+                            else mult = 4;
+                        } else if (res[0] === res[1] || res[1] === res[2] || res[0] === res[2]) {
+                            mult = 1.4;
+                        }
+
+                        const banner = document.getElementById('slot-result-banner');
+                        if (mult > 0) {
+                            const win = Math.round(this.slotBet * mult);
+                            state.pt += win;
+                            this.netProfit += win;
+                            if (win > this.bestWin) this.bestWin = win;
+                            updateWalletUI();
+                            SoundEngine.slotWin(mult >= 10);
+                            if (mult >= 10) launchConfetti(35);
+                            banner.textContent = `🎉 連線成功（${mult}x）！獲得 +${win.toLocaleString()} PT！`;
+                            banner.className = 'text-center text-sm font-black text-emerald-400 min-h-[24px]';
+                        } else {
+                            banner.textContent = '💨 差一點點！再拉一次試試手氣！';
+                            banner.className = 'text-center text-sm font-black text-gray-400 min-h-[24px]';
+                        }
+                        this.refreshUI();
+                        this.slotSpinning = false;
+                    }
+                }, 70);
+            },
+
+            renderRouletteStrip() {
+                const strip = document.getElementById('roulette-strip');
+                if (!strip) return;
+                const pattern = ['RED', 'BLUE', 'RED', 'BLUE', 'MASTER', 'RED', 'BLUE', 'RED', 'BLUE', 'RED', 'BLUE', 'RED', 'BLUE', 'RED', 'BLUE'];
+                const repeated = [...pattern, ...pattern, ...pattern, ...pattern];
+                strip.innerHTML = repeated.map(c => {
+                    const cls = c === 'MASTER'
+                        ? 'bg-gradient-to-b from-fuchsia-500 to-purple-800 border-amber-300'
+                        : c === 'RED'
+                            ? 'bg-gradient-to-b from-rose-500 to-red-800 border-rose-300/40'
+                            : 'bg-gradient-to-b from-sky-500 to-blue-800 border-sky-300/40';
+                    const icon = c === 'MASTER' ? '🟣' : c === 'RED' ? '🔴' : '🔵';
+                    return `<div class="w-16 h-16 rounded-xl border ${cls} flex-shrink-0 flex items-center justify-center text-2xl shadow">${icon}</div>`;
+                }).join('');
+            },
+
+            modRouletteBet(mult) {
+                const inp = document.getElementById('roulette-bet-input');
+                inp.value = Math.max(100, Math.round((Number(inp.value) || 1000) * mult));
+            },
+
+            setRouletteMax() {
+                document.getElementById('roulette-bet-input').value = Math.max(100, Math.floor(state.pt));
+            },
+
+            spinRoulette(choice) {
+                if (this.rouletteSpinning) return;
+                const bet = Math.max(100, Math.floor(Number(document.getElementById('roulette-bet-input').value) || 0));
+                if (state.pt < bet) {
+                    showToast('❌ PT 點數不足！');
+                    return;
+                }
+                this.rouletteSpinning = true;
+                state.pt -= bet;
+                this.netProfit -= bet;
+                updateWalletUI();
+                this.refreshUI();
+
+                const strip = document.getElementById('roulette-strip');
+                strip.style.transition = 'none';
+                strip.style.transform = 'translateX(0px)';
+
+                const roll = Math.random();
+                const outcome = roll < 0.068 ? 'MASTER' : roll < 0.534 ? 'RED' : 'BLUE';
+                const targetSlot = outcome === 'MASTER' ? 34 : outcome === 'RED' ? 32 : 33;
+                const offset = -(targetSlot * 72 - 180 + (Math.random() - 0.5) * 30);
+
+                requestAnimationFrame(() => {
+                    strip.style.transition = 'transform 3.4s cubic-bezier(0.12, 0.86, 0.18, 1)';
+                    strip.style.transform = `translateX(${offset}px)`;
+                });
+
+                setTimeout(() => {
+                    const statusEl = document.getElementById('roulette-status');
+                    const hist = document.getElementById('roulette-history');
+                    if (hist) {
+                        const badge = outcome === 'MASTER' ? '🟣' : outcome === 'RED' ? '🔴' : '🔵';
+                        hist.insertAdjacentHTML('afterbegin', `<span class="text-sm">${badge}</span>`);
+                    }
+                    if (choice === outcome) {
+                        const mult = outcome === 'MASTER' ? 14 : 2;
+                        const win = bet * mult;
+                        state.pt += win;
+                        this.netProfit += win;
+                        if (win > this.bestWin) this.bestWin = win;
+                        updateWalletUI();
+                        SoundEngine.slotWin(mult === 14);
+                        if (mult === 14) launchConfetti(45);
+                        statusEl.textContent = `🎉 命中 ${outcome}（${mult}x）！贏得 +${win.toLocaleString()} PT！`;
+                    } else {
+                        statusEl.textContent = `💨 開出 ${outcome}，未命中，再試一次！`;
+                    }
+                    this.refreshUI();
+                    this.rouletteSpinning = false;
+                }, 3550);
+            },
+
+            /* 高難度免費反應挑戰（每日最高 1,000 PT 上限） */
+            startReflexGame() {
+                if (this.reflexRunning) return;
+                if (this.getDailyFreeEarned() >= this.DAILY_FREE_CAP) {
+                    showToast('📅 今日免費獲得 PT 已達 1,000 PT 上限，請明天再來挑戰！');
+                    return;
+                }
+                this.reflexRunning = true;
+                this.reflexScore = 0;
+                this.reflexCombo = 0;
+                document.getElementById('btn-reflex-start').disabled = true;
+                document.getElementById('reflex-score').textContent = '+0 PT';
+                document.getElementById('reflex-combo').textContent = '0 COMBO';
+
+                const endAt = performance.now() + 15000;
+                this.reflexTickId = setInterval(() => {
+                    const rem = Math.max(0, (endAt - performance.now()) / 1000);
+                    document.getElementById('reflex-timer').textContent = `${rem.toFixed(1)}s`;
+                    if (rem <= 0) this.endReflexGame();
+                }, 80);
+
+                // 高難度 380ms 急速刷新，同時出現 2~3 個目標且 45% 頑皮雷彈炸彈干擾
+                this.reflexSpawnId = setInterval(() => {
+                    this.reflexCells.fill(null);
+                    const count = Math.random() < 0.55 ? 2 : 3;
+                    for (let k = 0; k < count; k++) {
+                        const idx = Math.floor(Math.random() * 9);
+                        const r = Math.random();
+                        this.reflexCells[idx] = r < 0.45 ? 'BOMB' : r < 0.55 ? 'MEW' : 'PIKA';
+                    }
+                    this.renderReflexGrid();
+                }, 380);
+            },
+
+            renderReflexGrid() {
+                for (let i = 0; i < 9; i++) {
+                    const cell = document.getElementById(`reflex-cell-${i}`);
+                    if (!cell) continue;
+                    const t = this.reflexCells[i];
+                    if (!t) {
+                        cell.className = 'aspect-square rounded-2xl bg-[#0f172a] border-2 border-emerald-500/20 flex flex-col items-center justify-center';
+                        cell.innerHTML = `<span class="text-slate-700 text-lg font-mono">●</span>`;
+                    } else if (t === 'PIKA') {
+                        cell.className = 'aspect-square rounded-2xl bg-amber-500/20 border-2 border-amber-400 flex flex-col items-center justify-center reflex-target-pop';
+                        cell.innerHTML = `<img src="${buildArtImg(25)}" referrerpolicy="no-referrer" class="w-12 h-12 object-contain"><span class="text-[10px] font-black text-amber-300">+35</span>`;
+                    } else if (t === 'MEW') {
+                        cell.className = 'aspect-square rounded-2xl bg-fuchsia-500/25 border-2 border-fuchsia-400 flex flex-col items-center justify-center reflex-target-pop';
+                        cell.innerHTML = `<img src="${buildArtImg(151)}" referrerpolicy="no-referrer" class="w-12 h-12 object-contain"><span class="text-[10px] font-black text-fuchsia-300">+120</span>`;
+                    } else {
+                        cell.className = 'aspect-square rounded-2xl bg-rose-600/25 border-2 border-rose-500 flex flex-col items-center justify-center reflex-target-pop';
+                        cell.innerHTML = `<img src="${buildArtImg(100)}" referrerpolicy="no-referrer" class="w-12 h-12 object-contain"><span class="text-[10px] font-black text-rose-400">-80</span>`;
+                    }
+                }
+            },
+
+            tapReflexCell(idx) {
+                if (!this.reflexRunning) return;
+                const t = this.reflexCells[idx];
+                if (!t) return;
+                this.reflexCells[idx] = null;
+
+                if (t === 'BOMB') {
+                    this.reflexCombo = 0;
+                    this.reflexScore = Math.max(0, this.reflexScore - 80);
+                    SoundEngine.arcadeBomb();
+                } else {
+                    this.reflexCombo++;
+                    const bonus = Math.min(30, Math.floor(this.reflexCombo / 3) * 5);
+                    const gain = (t === 'MEW' ? 120 : 35) + bonus;
+                    this.reflexScore += gain;
+                    SoundEngine.arcadeHit(t === 'MEW');
+                }
+                document.getElementById('reflex-combo').textContent = `${this.reflexCombo} COMBO`;
+                document.getElementById('reflex-score').textContent = `+${this.reflexScore} PT`;
+                this.renderReflexGrid();
+            },
+
+            endReflexGame() {
+                this.reflexRunning = false;
+                clearInterval(this.reflexTickId);
+                clearInterval(this.reflexSpawnId);
+                this.reflexCells.fill(null);
+                this.renderReflexGrid();
+                document.getElementById('btn-reflex-start').disabled = false;
+
+                const actualAward = this.addDailyFreeEarned(this.reflexScore);
+                if (actualAward > 0) {
+                    state.pt += actualAward;
+                    updateWalletUI();
+                    SoundEngine.slotWin(false);
+                }
+                this.refreshUI();
+                showToast(
+                    actualAward > 0
+                        ? `⚡ 挑戰結束！實際入帳 +${actualAward} PT（今日累計 ${this.getDailyFreeEarned()} / 1,000 PT）`
+                        : '📅 今日免費獲得額度已滿 1,000 PT 上限！'
+                );
+            }
+        };
+
+        /* ==========================================================================
+         * 15. 🎒 保管庫渲染與操作
+         * ========================================================================== */
+        function renderVault() {
+            const grid = document.getElementById('vault-grid');
+            const totalEl = document.getElementById('vault-total-value');
+            const sum = state.vault.reduce((s, c) => s + c.marketPt, 0);
+            if (totalEl) totalEl.textContent = `${sum.toLocaleString()} PT`;
+
+            if (!grid) return;
+            if (!state.vault.length) {
+                grid.innerHTML = `<div class="col-span-full text-center text-sm text-gray-500 py-14">🎒 保管庫目前空空如也，快去抽卡或開卡包吧！</div>`;
+                return;
+            }
+            grid.innerHTML = state.vault.map((c, idx) => {
+                const frameCls = c.forgeLevel > 0 ? `forge-frame-${c.forgeLevel}` : 'border border-slateborder';
+                return `
+                <div class="bg-slatecard ${frameCls} rounded-2xl p-2.5 flex flex-col justify-between space-y-2 shadow">
+                    <div class="space-y-1.5">
+                        <div class="flex items-center justify-between text-[10px] font-black">
+                            <span class="px-1.5 py-0.5 rounded bg-amber-400/20 text-amber-300">${c.tierLabel} · ${c.rarity}</span>
+                            ${c.isPSA10 ? `<span class="px-1.5 py-0.5 rounded bg-rose-600 text-white">PSA10</span>` : ''}
+                        </div>
+                        <img onclick="inspectCardDetail('${c.name.replace(/'/g, '')}', '${c.img}', '${c.code}', '${c.rarity}', ${c.marketPt}, ${c.isPSA10}, ${c.forgeLevel || 0})" src="${c.img}" alt="${c.name}" loading="lazy" data-card-name="${c.name}" onerror="handleCardImgError(this)" referrerpolicy="no-referrer" class="cursor-pointer w-full aspect-[3/3.8] object-contain p-1 rounded-xl bg-slate-900">
+                        <div class="text-[11px] font-bold text-white line-clamp-2 leading-tight">${c.name}</div>
+                        <div class="text-[11px] font-display font-black text-amber-300">估 ${c.marketPt.toLocaleString()} PT</div>
+                    </div>
+                    <div class="space-y-1">
+                        <button onclick="sellSingleVaultCard(${idx})" class="w-full py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/35 border border-amber-400/50 text-amber-300 font-black text-[10px]">
+                            💰 換回 +${c.buybackPt.toLocaleString()} PT
+                        </button>
+                        <button onclick="sendToGoldFurnace(${idx})" class="w-full py-1.5 rounded-lg bg-orange-500/20 hover:bg-orange-500/35 border border-orange-400/40 text-orange-300 font-bold text-[10px]">
+                            🌋 進階鍍金昇華
+                        </button>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        function sellSingleVaultCard(idx) {
+            const card = state.vault.splice(idx, 1)[0];
+            if (!card) return;
+            state.pt += card.buybackPt;
+            SoundEngine.coin();
+            updateWalletUI();
+            renderVault();
+            showToast(`💰 已將【${card.name}】換回 +${card.buybackPt.toLocaleString()} PT！`);
+        }
+
+        function sellAllLowTierVault() {
+            let gain = 0;
+            let sold = 0;
+            state.vault = state.vault.filter(c => {
+                if (c.tier === 'C' || c.tier === 'D') {
+                    gain += c.buybackPt;
+                    sold++;
+                    return false;
+                }
+                return true;
+            });
+            if (sold === 0) {
+                showToast('目前保管庫內沒有 4/5 等廢卡！');
+                return;
+            }
+            state.pt += gain;
+            SoundEngine.coin();
+            updateWalletUI();
+            renderVault();
+            showToast(`💰 已一鍵賣出 ${sold} 張 4/5 等廢卡，獲得 +${gain.toLocaleString()} PT！`);
+        }
+
+        function sendToGoldFurnace(idx) {
+            const card = state.vault[idx];
+            if (!card) return;
+            switchMainTab('furnace');
+            FurnaceSystem.switchMode('GOLD');
+            FurnaceSystem.selectMainCard(card.uid);
+        }
+
+        function openShippingModal() {
+            document.getElementById('ship-count').textContent = state.vault.length;
+            document.getElementById('shipping-modal').classList.remove('hidden');
+        }
+
+        function confirmSimulatedShipping() {
+            if (!state.vault.length) {
+                showToast('保管庫目前沒有卡片可寄送！');
+                return;
+            }
+            const count = state.vault.length;
+            state.vault = [];
+            updateWalletUI();
+            renderVault();
+            closeModal('shipping-modal');
+            showToast(`🚚 已送出 ${count} 件藏品的模擬免運寄送申請！`);
+        }
+
+        /* ==========================================================================
+         * 16. 📧 Email 綁定登入 & Microsoft Word (.doc) 檔案讀寫存取 + 純淨 GitHub 匯出
+         * ========================================================================== */
+        const EmailWordAuth = {
+            currentEmail: '',
+            accounts: {},
+
+            init() {
+                try {
+                    const raw = localStorage.getItem('pokevault_email_accounts');
+                    if (raw) this.accounts = JSON.parse(raw);
+                    const cur = localStorage.getItem('pokevault_current_email');
+                    if (cur && this.accounts[cur]) {
+                        this.currentEmail = cur;
+                        const acc = this.accounts[cur];
+                        state.pt = acc.pt;
+                        state.vault = acc.vault || [];
+                        this.updateHeaderLabel();
+                    }
+                } catch (e) {}
+            },
+
+            saveStorage() {
+                try {
+                    localStorage.setItem('pokevault_email_accounts', JSON.stringify(this.accounts));
+                    localStorage.setItem('pokevault_current_email', this.currentEmail);
+                } catch (e) {}
+            },
+
+            syncCurrentAccountProgress() {
+                if (!this.currentEmail || !this.accounts[this.currentEmail]) return;
+                this.accounts[this.currentEmail].pt = Math.floor(state.pt);
+                this.accounts[this.currentEmail].vault = state.vault;
+                this.accounts[this.currentEmail].updatedAt = new Date().toLocaleString();
+                this.saveStorage();
+            },
+
+            updateHeaderLabel() {
+                const lbl = document.getElementById('nav-email-label');
+                if (!lbl) return;
+                if (this.currentEmail && this.accounts[this.currentEmail]) {
+                    lbl.textContent = this.accounts[this.currentEmail].nick || this.currentEmail.split('@')[0];
+                } else {
+                    lbl.textContent = '登入';
+                }
+            },
+
+            openModal() {
+                this.renderModalState();
+                document.getElementById('email-auth-modal').classList.remove('hidden');
+            },
+
+            renderModalState() {
+                const st = document.getElementById('email-current-status');
+                if (this.currentEmail && this.accounts[this.currentEmail]) {
+                    const a = this.accounts[this.currentEmail];
+                    st.innerHTML = `✅ 已登入綁定：<strong class="text-sky-300">${this.currentEmail}</strong>（${a.nick}）｜ 目前持有 <strong class="text-amber-300">${Math.floor(state.pt).toLocaleString()} PT</strong> / 藏品 ${state.vault.length} 張`;
+                } else {
+                    st.textContent = '目前為訪客模式（首次綁定 Email 立即贈送 +5,000 PT！）';
+                }
+
+                const listEl = document.getElementById('email-accounts-list');
+                const emails = Object.keys(this.accounts);
+                listEl.innerHTML = emails.length
+                    ? emails.map(em => {
+                        const a = this.accounts[em];
+                        return `<div class="flex items-center justify-between bg-obsidian px-2.5 py-1.5 rounded-lg border border-white/10">
+                            <span class="truncate text-gray-200">${em} (${a.nick}) · ${a.pt.toLocaleString()} PT</span>
+                            <button onclick="EmailWordAuth.quickSwitch('${em}')" class="text-sky-300 font-black ml-2 flex-shrink-0">切換</button>
+                        </div>`;
+                    }).join('')
+                    : `<div class="text-gray-500 text-center py-2">尚無已儲存的 Email 帳號紀錄</div>`;
+            },
+
+            quickSwitch(em) {
+                if (!this.accounts[em]) return;
+                this.currentEmail = em;
+                state.pt = this.accounts[em].pt;
+                state.vault = this.accounts[em].vault || [];
+                this.saveStorage();
+                this.updateHeaderLabel();
+                updateWalletUI();
+                this.renderModalState();
+                showToast(`🔐 已切換至 ${em}！`);
+            },
+
+            loginOrBind() {
+                const em = (document.getElementById('auth-email-input').value || '').trim().toLowerCase();
+                const nick = (document.getElementById('auth-nick-input').value || '').trim() || em.split('@')[0];
+                if (!em || !em.includes('@')) {
+                    showToast('❌ 請輸入正確的 Email 格式！');
+                    return;
+                }
+                if (!this.accounts[em]) {
+                    state.pt += 5000;
+                    this.accounts[em] = {
+                        email: em,
+                        nick,
+                        pt: Math.floor(state.pt),
+                        vault: state.vault,
+                        updatedAt: new Date().toLocaleString()
+                    };
+                    SoundEngine.coin();
+                    showToast(`🎉 首次綁定 Email 成功！贈送 +5,000 PT 並建立專屬存檔！`);
+                } else {
+                    state.pt = this.accounts[em].pt;
+                    state.vault = this.accounts[em].vault || [];
+                    showToast(`🔐 歡迎回來，${this.accounts[em].nick}！已載入存檔！`);
+                }
+                this.currentEmail = em;
+                this.saveStorage();
+                this.updateHeaderLabel();
+                updateWalletUI();
+                this.renderModalState();
+            },
+
+            exportWordFile() {
+                this.syncCurrentAccountProgress();
+                const payload = JSON.stringify({ currentEmail: this.currentEmail, accounts: this.accounts });
+                const rows = Object.values(this.accounts).map(a =>
+                    `<tr><td>${a.email}</td><td>${a.nick}</td><td>${a.pt}</td><td>${(a.vault || []).length}</td><td>${a.updatedAt || ''}</td></tr>`
+                ).join('') || '<tr><td colspan="5">尚無綁定帳號</td></tr>';
+
+                const wordHtml = `
+                    <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+                    <head><meta charset='utf-8'><title>PokeVault Email Accounts</title></head>
+                    <body style="font-family:Arial,sans-serif;">
+                        <h2>POKÉVAULT 訓練家 Email 帳號與資產存檔表</h2>
+                        <table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse;width:100%;">
+                            <tr style="background:#facc15;"><th>Email</th><th>訓練家暱稱</th><th>持有 PT</th><th>藏品數量</th><th>最後更新</th></tr>
+                            ${rows}
+                        </table>
+                        <!-- POKEVAULT_WORD_SAVE_START -->
+                        <div style="display:none;" id="pokevault-word-json">${encodeURIComponent(payload)}</div>
+                        <!-- POKEVAULT_WORD_SAVE_END -->
+                    </body></html>
+                `;
+                const blob = new Blob(['\ufeff', wordHtml], { type: 'application/msword;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'PokeVault_Email_Accounts.doc';
+                a.click();
+                setTimeout(() => URL.revokeObjectURL(url), 2000);
+                showToast('💾 已匯出並下載 Word 存檔 (PokeVault_Email_Accounts.doc)！');
+            },
+
+            importWordFile(ev) {
+                const file = ev.target.files && ev.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = () => {
+                    try {
+                        const text = String(reader.result || '');
+                        const m = text.match(/id="pokevault-word-json">([^<]+)</);
+                        if (!m) {
+                            showToast('❌ 此 Word 檔內找不到 POKÉVAULT 存檔資料！');
+                            return;
+                        }
+                        const parsed = JSON.parse(decodeURIComponent(m[1]));
+                        if (parsed && parsed.accounts) {
+                            this.accounts = { ...this.accounts, ...parsed.accounts };
+                            if (parsed.currentEmail && this.accounts[parsed.currentEmail]) {
+                                this.quickSwitch(parsed.currentEmail);
+                            } else {
+                                this.saveStorage();
+                                this.renderModalState();
+                            }
+                            showToast('📂 已成功從 Word 檔匯入 Email 帳號紀錄！');
+                        }
+                    } catch (e) {
+                        showToast('❌ 讀取 Word 檔失敗，請確認檔案格式正確！');
+                    }
+                };
+                reader.readAsText(file);
+            }
+        };
+
+        /* 純淨版 GitHub Pages index.html 匯出（徹底過濾任何預覽沙盒注入腳本與金鑰） */
+        function getCleanDocumentHtml() {
+            const clone = document.documentElement.cloneNode(true);
+            clone.querySelectorAll('script').forEach(s => {
+                const txt = s.textContent || '';
+                if (txt.includes('__app_id') || txt.includes('apiKey') || txt.includes('AIzaSy')) {
+                    s.remove();
+                }
+            });
+            clone.querySelectorAll('.confetti-piece').forEach(el => el.remove());
+            const toast = clone.querySelector('#toast-box');
+            if (toast) toast.innerHTML = '';
+            return '<!DOCTYPE html>\n' + clone.outerHTML;
+        }
+
+        function downloadGithubIndexHtml() {
+            const cleanHtml = getCleanDocumentHtml();
+            const blob = new Blob([cleanHtml], { type: 'text/html;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'index.html';
+            a.click();
+            setTimeout(() => URL.revokeObjectURL(url), 2000);
+            showToast('⬇️ 已下載純淨版 index.html（無任何環境金鑰警告，可直接上傳 GitHub）！');
+        }
+
+        function copyGithubIndexHtml() {
+            const cleanHtml = getCleanDocumentHtml();
+            const ta = document.createElement('textarea');
+            ta.value = cleanHtml;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            try {
+                document.execCommand('copy');
+                showToast('📋 已複製純淨版完整 HTML 程式碼！可直接貼進 GitHub index.html！');
+            } catch (e) {
+                showToast('⚠️ 複製失敗，請改用「⬇️ 下載 GitHub index.html」按鈕！');
+            }
+            ta.remove();
+        }
+
+        /* ==========================================================================
+         * 17. Window Load 安全啟動入口
+         * ========================================================================== */
+        window.onload = function () {
+            try {
+                I18N.init();
+                initPoolsData();
+                EmailWordAuth.init();
+                updateWalletUI();
+                renderTicker();
+                renderLobbyQuickPacksBar();
+                renderPoolsGrid();
+                renderBoxesGrid();
+                PoolAISystem.start();
+                AuctionSystem.init();
+                WheelEventSystem.init();
+                ArcadeSystem.init();
+
+                // 補救任何提前載入失敗的圖片
+                document.querySelectorAll('img').forEach(img => {
+                    if (img.complete && img.naturalWidth === 0 && img.getAttribute('src')) {
+                        handleCardImgError(img);
+                    }
+                });
+            } catch (err) {
+                console.error('POKÉVAULT init error:', err);
+            }
+        };
+    </script>
+</body>
+</html>
