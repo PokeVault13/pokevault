@@ -1030,4 +1030,1082 @@
                     <div class="lg:col-span-6 flex flex-col justify-between space-y-4">
                         <div class="space-y-2">
                             <div class="flex items-center justify-between text-xs font-black">
-                                <span class="text-cyan-30
+                                <span class="text-cyan-300">👥 本輪參與玩家清單（含 AI 玩家）</span>
+                                <span id="wheel-player-odds" class="text-amber-300 font-mono text-[11px]">尚未報名</span>
+                            </div>
+                            <div id="wheel-participants-list" class="bg-obsidian border border-white/10 rounded-xl p-2.5 max-h-56 overflow-y-auto space-y-1.5 text-xs"></div>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="text-xs font-black text-amber-300">🏆 歷屆 2 小時大轉盤開獎紀錄</div>
+                            <div id="wheel-history-list" class="bg-obsidian border border-white/10 rounded-xl p-2.5 max-h-40 overflow-y-auto space-y-1.5 text-[11px] text-gray-300">
+                                <div class="text-center text-gray-500 py-3">尚無歷屆開獎紀錄，快報名或點快轉體驗開獎！</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4I. 📧 Email 綁定登入 & Microsoft Word (.doc) 帳號檔案存取彈窗 -->
+    <div id="email-auth-modal" class="fixed inset-0 z-[68] hidden bg-black/90 backdrop-blur-md overflow-y-auto p-3 sm:p-5">
+        <div class="min-h-full flex items-center justify-center py-4">
+            <div class="bg-slatecard border border-sky-400/50 rounded-2xl max-w-lg w-full p-5 space-y-4 shadow-2xl">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-base font-black text-sky-300">📧 Email 綁定登入 & Word (.doc) 存取中心</h3>
+                    <button onclick="closeModal('email-auth-modal')" class="w-8 h-8 rounded-lg bg-slate-800 text-gray-300 font-bold">✕</button>
+                </div>
+                <div id="email-current-status" class="p-3 rounded-xl bg-obsidian border border-white/10 text-xs text-gray-300 font-bold">
+                    目前為訪客模式（首次綁定 Email 立即贈送 +5,000 PT！）
+                </div>
+                <div class="space-y-2.5 text-xs">
+                    <input id="auth-email-input" type="email" placeholder="輸入你的 Email（例如 trainer@gmail.com）" class="w-full px-3.5 py-2.5 rounded-xl bg-obsidian border border-white/15 text-white font-bold">
+                    <input id="auth-nick-input" type="text" placeholder="訓練家暱稱（例如 台北歐皇）" class="w-full px-3.5 py-2.5 rounded-xl bg-obsidian border border-white/15 text-white font-bold">
+                    <button onclick="EmailWordAuth.loginOrBind()" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-sky-400 to-indigo-500 text-black font-black text-sm shadow-lg active:scale-95">
+                        🔐 綁定 / 登入此 Email 帳號
+                    </button>
+                </div>
+                <div class="border-t border-white/10 pt-3 space-y-2">
+                    <div class="text-xs font-black text-amber-300">📝 Microsoft Word (.doc) 帳號存檔管理</div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <button onclick="EmailWordAuth.exportWordFile()" class="py-2.5 px-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-black text-xs">
+                            💾 下載 Word 檔 (.doc)
+                        </button>
+                        <label class="py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-white/15 text-gray-200 font-black text-xs text-center cursor-pointer">
+                            📂 讀取 Word 檔匯入
+                            <input type="file" accept=".doc,.html,.htm" onchange="EmailWordAuth.importWordFile(event)" class="hidden">
+                        </label>
+                    </div>
+                    <div id="email-accounts-list" class="max-h-32 overflow-y-auto space-y-1 text-[11px]"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4J. 💎 免費補充 PT 彈窗 -->
+    <div id="topup-modal" class="fixed inset-0 z-[68] hidden bg-black/90 backdrop-blur-md p-4 flex items-center justify-center">
+        <div class="bg-slatecard border border-amber-400/50 rounded-2xl max-w-md w-full p-5 space-y-4 shadow-2xl">
+            <div class="flex items-center justify-between">
+                <h3 class="text-base font-black text-amber-300">💎 模擬點數 (PT) 補給中心</h3>
+                <button onclick="closeModal('topup-modal')" class="w-8 h-8 rounded-lg bg-slate-800 text-gray-300 font-bold">✕</button>
+            </div>
+            <p class="text-xs text-gray-300">本網站為純免費模擬體驗，點選下方即可立即補充虛擬 PT 暢玩所有 3D 卡池、10萬天堂地獄池與 AI 拍賣！</p>
+            <div class="grid grid-cols-2 gap-2.5">
+                <button onclick="addFreePoints(10000)" class="py-3 rounded-xl bg-obsidian hover:bg-slate-800 border border-amber-400/40 font-display font-black text-amber-300 text-sm">+10,000 PT</button>
+                <button onclick="addFreePoints(50000)" class="py-3 rounded-xl bg-obsidian hover:bg-slate-800 border border-amber-400/60 font-display font-black text-amber-300 text-sm">+50,000 PT</button>
+                <button onclick="addFreePoints(150000)" class="py-3 rounded-xl bg-gradient-to-r from-amber-500/20 to-orange-500/20 hover:brightness-125 border border-amber-400 font-display font-black text-amber-300 text-sm">+150,000 PT</button>
+                <button onclick="addFreePoints(500000)" class="py-3 rounded-xl bg-gradient-to-r from-fuchsia-600/30 to-amber-500/30 hover:brightness-125 border border-fuchsia-400 font-display font-black text-fuchsia-200 text-sm">+500,000 PT</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4K. 🚚 實體出貨模擬彈窗 -->
+    <div id="shipping-modal" class="fixed inset-0 z-[68] hidden bg-black/90 backdrop-blur-md p-4 flex items-center justify-center">
+        <div class="bg-slatecard border border-emerald-400/50 rounded-2xl max-w-md w-full p-5 space-y-4 shadow-2xl">
+            <div class="flex items-center justify-between">
+                <h3 class="text-base font-black text-emerald-300">🚚 模擬實體鑑定卡免運寄送</h3>
+                <button onclick="closeModal('shipping-modal')" class="w-8 h-8 rounded-lg bg-slate-800 text-gray-300 font-bold">✕</button>
+            </div>
+            <p class="text-xs text-gray-300">目前保管庫共有 <strong id="ship-count" class="text-amber-300">0</strong> 件藏品。此為模擬流程，不會產生真實寄件或費用。</p>
+            <input id="ship-address" type="text" placeholder="收件人與模擬寄送地址（選填）" class="w-full px-3 py-2.5 rounded-xl bg-obsidian border border-white/15 text-xs text-white">
+            <button onclick="confirmSimulatedShipping()" class="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-400 text-black font-black text-sm">📦 確認申請模擬出貨</button>
+        </div>
+    </div>
+
+    <!-- 5. 訊息提示 Toast -->
+    <div id="toast-box" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-[95] flex flex-col items-center gap-2 pointer-events-none w-[92%] max-w-md"></div>
+
+    <!-- ==================== 6. 核心 JavaScript 引擎 ==================== -->
+    <script>
+        /* ==========================================================================
+         * 1. 原作寶可夢音效引擎 (SoundEngine) + Classic Pokémon Lo-Fi BGM (Gen 1-3)
+         * ========================================================================== */
+        const SoundEngine = {
+            ctx: null,
+            muted: false,
+            ensureCtx() {
+                if (this.muted) return null;
+                if (!this.ctx) {
+                    const AC = window.AudioContext || window.webkitAudioContext;
+                    if (AC) this.ctx = new AC();
+                }
+                if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume().catch(() => {});
+                return this.ctx;
+            },
+            toggleMute() {
+                this.muted = !this.muted;
+                const btn = document.getElementById('btn-sfx-toggle');
+                if (btn) btn.textContent = this.muted ? '🔇' : '🔊';
+                if (this.muted) TownBGM.stop();
+                showToast(this.muted ? '🔇 已靜音所有音效與背景音樂' : '🔊 已開啟音效');
+            },
+            tone(freq, dur = 0.12, type = 'sine', vol = 0.12, slideTo = null) {
+                const ctx = this.ensureCtx();
+                if (!ctx) return;
+                const t = ctx.currentTime;
+                const osc = ctx.createOscillator();
+                const g = ctx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, t);
+                if (slideTo) osc.frequency.exponentialRampToValueAtTime(Math.max(20, slideTo), t + dur);
+                g.gain.setValueAtTime(vol, t);
+                g.gain.exponentialRampToValueAtTime(0.0008, t + dur);
+                osc.connect(g);
+                g.connect(ctx.destination);
+                osc.start(t);
+                osc.stop(t + dur + 0.02);
+            },
+            noiseBurst(dur = 0.15, vol = 0.08, highpass = 800) {
+                const ctx = this.ensureCtx();
+                if (!ctx) return;
+                const len = Math.floor(ctx.sampleRate * dur);
+                const buf = ctx.createBuffer(1, len, ctx.sampleRate);
+                const data = buf.getChannelData(0);
+                for (let i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / len);
+                const src = ctx.createBufferSource();
+                src.buffer = buf;
+                const filt = ctx.createBiquadFilter();
+                filt.type = 'highpass';
+                filt.frequency.value = highpass;
+                const g = ctx.createGain();
+                g.gain.value = vol;
+                src.connect(filt);
+                filt.connect(g);
+                g.connect(ctx.destination);
+                src.start();
+            },
+            coin() {
+                this.tone(987.77, 0.08, 'square', 0.08);
+                setTimeout(() => this.tone(1318.5, 0.18, 'square', 0.08), 70);
+            },
+            // 原作精靈球丟出破空＋彈開＋吸入紅光＋搖晃＋收服叮咚
+            ballThrow() {
+                this.noiseBurst(0.22, 0.09, 1200);
+                this.tone(240, 0.22, 'triangle', 0.11, 780);
+            },
+            ballOpenAbsorb() {
+                this.tone(920, 0.14, 'sawtooth', 0.08, 220);
+                setTimeout(() => this.tone(360, 0.25, 'sine', 0.1, 1280), 90);
+            },
+            ballBounce(i = 0) {
+                this.tone(200 - i * 28, 0.09, 'triangle', 0.13, 95);
+            },
+            ballShake() {
+                this.tone(290, 0.11, 'triangle', 0.09, 440);
+            },
+            ballCaptureFanfare(isJackpot) {
+                const notes = isJackpot ? [523, 659, 784, 1046, 1318, 1568] : [523, 659, 784, 1046];
+                notes.forEach((f, idx) => setTimeout(() => this.tone(f, 0.22, 'triangle', 0.11), idx * 90));
+            },
+            katanaSlash() {
+                this.noiseBurst(0.18, 0.15, 2200);
+                this.tone(1600, 0.16, 'sawtooth', 0.07, 190);
+            },
+            rockCrack() {
+                this.noiseBurst(0.22, 0.14, 240);
+                this.tone(110, 0.18, 'square', 0.11, 45);
+            },
+            fireworkLaunch() {
+                this.tone(320, 0.55, 'sine', 0.06, 1500);
+                this.noiseBurst(0.35, 0.04, 2500);
+            },
+            fireworkBoom() {
+                this.noiseBurst(0.45, 0.16, 120);
+                this.tone(95, 0.38, 'sine', 0.18, 32);
+            },
+            packTear() {
+                this.noiseBurst(0.32, 0.13, 1800);
+                this.tone(420, 0.18, 'triangle', 0.07, 920);
+            },
+            cardSlideSound(tier) {
+                this.noiseBurst(0.08, 0.07, 2600);
+                if (tier === 'S') this.ballCaptureFanfare(true);
+                else if (tier === 'A') this.tone(880, 0.28, 'triangle', 0.12, 1320);
+                else if (tier === 'B') this.tone(660, 0.18, 'sine', 0.09, 880);
+                else this.tone(460, 0.09, 'sine', 0.06);
+            },
+            slotSpinTick(pitch = 1) {
+                this.tone(540 * pitch, 0.04, 'triangle', 0.06);
+            },
+            slotWin(big = false) {
+                const seq = big ? [523, 659, 784, 1046, 1318, 1568] : [523, 659, 784];
+                seq.forEach((n, i) => setTimeout(() => this.tone(n, 0.18, 'triangle', 0.1), i * 85));
+            },
+            arcadeHit(isMew) {
+                this.tone(isMew ? 1174 : 784, 0.11, 'triangle', 0.11, isMew ? 1760 : 1046);
+            },
+            arcadeBomb() {
+                this.noiseBurst(0.25, 0.16, 150);
+                this.tone(140, 0.26, 'sawtooth', 0.12, 42);
+            }
+        };
+
+        /* Classic Pokémon Lo-Fi (Gen 1-3: Kanto, Johto, Hoenn) Web Audio Chillhop Synthesizer */
+        const TownBGM = {
+            playing: false,
+            pausedByCinema: false,
+            trackIdx: 0,
+            step: 0,
+            timerId: null,
+            vinylNode: null,
+            tracks: [
+                { name: '🎧 Pallet Town Lo-Fi', tempo: 390, chords: [[261.6,329.6,392.0,493.9],[220.0,261.6,329.6,392.0],[174.6,220.0,261.6,329.6],[196.0,246.9,293.7,349.2]], mel: [523,494,440,392, 659,587,523,494, 440,523,587,523, 392,440,392,330] },
+                { name: '🎧 Cerulean City Lo-Fi', tempo: 360, chords: [[293.7,370.0,440.0,554.4],[246.9,293.7,370.0,440.0],[196.0,246.9,293.7,370.0],[220.0,277.2,329.6,392.0]], mel: [587,659,740,880, 740,659,587,494, 587,740,659,587, 440,494,554,587] },
+                { name: '🎧 Ecruteak City Lo-Fi', tempo: 410, chords: [[246.9,293.7,370.0,440.0],[196.0,246.9,293.7,370.0],[220.0,277.2,329.6,392.0],[185.0,220.0,277.2,329.6]], mel: [494,587,659,740, 659,587,494,440, 392,440,494,587, 554,494,440,370] },
+                { name: '🎧 National Park Lo-Fi', tempo: 400, chords: [[261.6,329.6,392.0,493.9],[174.6,220.0,261.6,329.6],[293.7,349.2,440.0,523.3],[196.0,246.9,293.7,349.2]], mel: [659,587,523,392, 440,523,659,587, 523,494,440,392, 440,494,523,0] },
+                { name: '🎧 Littleroot Town Lo-Fi', tempo: 380, chords: [[174.6,220.0,261.6,329.6],[261.6,329.6,392.0,493.9],[293.7,349.2,440.0,523.3],[233.1,293.7,349.2,440.0]], mel: [523,587,659,698, 659,587,523,440, 466,523,587,523, 440,392,349,0] },
+                { name: '🎧 Goldenrod City Lo-Fi', tempo: 370, chords: [[233.1,293.7,349.2,440.0],[196.0,233.1,293.7,349.2],[174.6,220.0,261.6,329.6],[261.6,311.1,392.0,466.2]], mel: [587,523,466,392, 466,523,587,698, 659,587,523,466, 440,466,523,0] },
+                { name: '🎧 Slateport City Lo-Fi', tempo: 385, chords: [[220.0,277.2,329.6,415.3],[293.7,370.0,440.0,554.4],[246.9,293.7,370.0,440.0],[329.6,415.3,493.9,587.3]], mel: [554,659,740,659, 587,554,494,440, 494,554,659,587, 554,494,440,0] },
+                { name: '🎧 Lavender Chill Lo-Fi', tempo: 430, chords: [[261.6,329.6,392.0,493.9],[196.0,246.9,293.7,392.0],[220.0,261.6,329.6,392.0],[174.6,220.0,261.6,329.6]], mel: [523,494,392,330, 523,494,392,330, 440,494,523,659, 587,523,494,392] }
+            ],
+            start() {
+                if (SoundEngine.muted) return;
+                const ctx = SoundEngine.ensureCtx();
+                if (!ctx) return;
+                this.playing = true;
+                this.pausedByCinema = false;
+                this.updateUI();
+                this.scheduleLoop();
+            },
+            stop() {
+                this.playing = false;
+                if (this.timerId) clearInterval(this.timerId);
+                this.timerId = null;
+                this.updateUI();
+            },
+            toggle() {
+                if (this.playing) this.stop();
+                else {
+                    this.trackIdx = Math.floor(Math.random() * this.tracks.length);
+                    this.start();
+                    showToast(`🎵 開始播放 ${this.tracks[this.trackIdx].name}`);
+                }
+            },
+            nextTrack() {
+                this.trackIdx = (this.trackIdx + 1) % this.tracks.length;
+                this.step = 0;
+                if (this.playing) this.scheduleLoop();
+                else this.start();
+                this.updateUI();
+                showToast(`⏭ 切換至 ${this.tracks[this.trackIdx].name}`);
+            },
+            pauseForCinema() {
+                if (this.playing) {
+                    this.pausedByCinema = true;
+                    this.stop();
+                }
+            },
+            resumeAfterCinema() {
+                if (this.pausedByCinema && !SoundEngine.muted) {
+                    this.pausedByCinema = false;
+                    this.start();
+                }
+            },
+            updateUI() {
+                const btn = document.getElementById('btn-bgm-toggle');
+                const lbl = document.getElementById('bgm-track-name');
+                if (btn) btn.textContent = this.playing ? '⏸' : '🎵';
+                if (lbl) lbl.textContent = this.playing ? this.tracks[this.trackIdx].name : 'Lo-Fi 音樂';
+            },
+            scheduleLoop() {
+                if (this.timerId) clearInterval(this.timerId);
+                const tr = this.tracks[this.trackIdx];
+                this.timerId = setInterval(() => {
+                    if (!this.playing || SoundEngine.muted) return;
+                    const ctx = SoundEngine.ensureCtx();
+                    if (!ctx) return;
+                    const t = ctx.currentTime;
+                    const s = this.step % 16;
+
+                    // 1. 溫暖 Rhodes 電鋼琴七和弦 (每 4 拍換一次和弦)
+                    if (s % 4 === 0) {
+                        const chord = tr.chords[Math.floor(s / 4) % tr.chords.length];
+                        chord.forEach(f => {
+                            const osc = ctx.createOscillator();
+                            const filt = ctx.createBiquadFilter();
+                            const g = ctx.createGain();
+                            osc.type = 'triangle';
+                            osc.frequency.setValueAtTime(f, t);
+                            filt.type = 'lowpass';
+                            filt.frequency.value = 780;
+                            g.gain.setValueAtTime(0.001, t);
+                            g.gain.linearRampToValueAtTime(0.018, t + 0.08);
+                            g.gain.exponentialRampToValueAtTime(0.0005, t + 1.45);
+                            osc.connect(filt);
+                            filt.connect(g);
+                            g.connect(ctx.destination);
+                            osc.start(t);
+                            osc.stop(t + 1.5);
+                        });
+                    }
+
+                    // 2. Lo-Fi 柔和主旋律
+                    const note = tr.mel[s];
+                    if (note > 0) {
+                        const osc = ctx.createOscillator();
+                        const filt = ctx.createBiquadFilter();
+                        const g = ctx.createGain();
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(note, t);
+                        filt.type = 'lowpass';
+                        filt.frequency.value = 1100;
+                        g.gain.setValueAtTime(0.001, t);
+                        g.gain.linearRampToValueAtTime(0.032, t + 0.03);
+                        g.gain.exponentialRampToValueAtTime(0.0006, t + 0.42);
+                        osc.connect(filt);
+                        filt.connect(g);
+                        g.connect(ctx.destination);
+                        osc.start(t);
+                        osc.stop(t + 0.45);
+                    }
+
+                    // 3. 輕柔 Boom-Bap Lo-Fi 鼓點 (Kick & Dusty Snare)
+                    if (s % 4 === 0) {
+                        const kick = ctx.createOscillator();
+                        const kg = ctx.createGain();
+                        kick.frequency.setValueAtTime(110, t);
+                        kick.frequency.exponentialRampToValueAtTime(42, t + 0.14);
+                        kg.gain.setValueAtTime(0.06, t);
+                        kg.gain.exponentialRampToValueAtTime(0.001, t + 0.16);
+                        kick.connect(kg);
+                        kg.connect(ctx.destination);
+                        kick.start(t);
+                        kick.stop(t + 0.18);
+                    } else if (s % 4 === 2) {
+                        SoundEngine.noiseBurst(0.07, 0.018, 1200);
+                    }
+
+                    this.step++;
+                    if (this.step >= 64) {
+                        this.step = 0;
+                        this.trackIdx = (this.trackIdx + 1) % this.tracks.length;
+                        this.updateUI();
+                    }
+                }, tr.tempo);
+            }
+        };
+
+        /* ==========================================================================
+         * 2. 多國語系字典 (繁體中文 / 日本語 / English)
+         * ========================================================================== */
+        const I18N = {
+            lang: 'zh',
+            dict: {
+                zh: {
+                    tab_pools: '🔥 線上一番賞', tab_boxes: '📦 單包/單盒', tab_furnace: '🌋 卡片熔爐',
+                    tab_auction: '🔨 拍賣競標', tab_arcade: '🎮 PT遊藝場', tab_vault: '🎒 保管庫',
+                    btn_login: '登入', filter_all: '🔥 全部限定卡池 (14)', filter_30th: '👑 30週年 M6a / MEGA', filter_vip: '🏆 10萬 PT 天堂地獄 / VIP'
+                },
+                ja: {
+                    tab_pools: '🔥 オンラインオリパ', tab_boxes: '📦 パック/BOX', tab_furnace: '🌋 カード錬成炉',
+                    tab_auction: '🔨 オークション', tab_arcade: '🎮 ゲームコーナー', tab_vault: '🎒 保管庫',
+                    btn_login: 'ログイン', filter_all: '🔥 全てのオリパ (14)', filter_30th: '👑 30周年 M6a / MEGA', filter_vip: '🏆 10万PT 天国と地獄 / VIP'
+                },
+                en: {
+                    tab_pools: '🔥 Oripa Pools', tab_boxes: '📦 Packs / Boxes', tab_furnace: '🌋 Card Furnace',
+                    tab_auction: '🔨 AI Auction', tab_arcade: '🎮 Game Corner', tab_vault: '🎒 Vault',
+                    btn_login: 'Login', filter_all: '🔥 All Pools (14)', filter_30th: '👑 30th M6a / MEGA', filter_vip: '🏆 100K Heaven/Hell & VIP'
+                }
+            },
+            init() {
+                try {
+                    const saved = localStorage.getItem('pokevault_lang');
+                    if (saved && this.dict[saved]) this.lang = saved;
+                } catch (e) {}
+                this.apply();
+            },
+            setLang(l) {
+                if (!this.dict[l]) return;
+                this.lang = l;
+                try { localStorage.setItem('pokevault_lang', l); } catch (e) {}
+                this.apply();
+            },
+            apply() {
+                const map = this.dict[this.lang];
+                document.querySelectorAll('[data-i18n]').forEach(el => {
+                    const k = el.getAttribute('data-i18n');
+                    if (map[k]) el.textContent = map[k];
+                });
+                ['zh', 'ja', 'en'].forEach(code => {
+                    const b = document.getElementById(`lang-btn-${code}`);
+                    if (!b) return;
+                    b.className = code === this.lang
+                        ? 'px-1.5 py-1 rounded-lg bg-amber-400 text-black'
+                        : 'px-1.5 py-1 rounded-lg text-gray-400 hover:text-white';
+                });
+            }
+        };
+
+        /* ==========================================================================
+         * 3. 100% 嚴格核對的官方 PTCG 卡牌圖鑑表 + 現代 11 系列獨立卡池 + 60 張 151 擴充卡
+         * ========================================================================== */
+        const buildCardImg = (setCode, num) => `https://images.pokemontcg.io/${setCode}/${num}_hires.png`;
+        const buildArtImg = (dexId) => `${OFFICIAL_ART_BASE}/${dexId}.png`;
+
+        // 賞別常數與經濟配率（已提前宣告，徹底杜絕 TDZ 報錯）
+        const TIER_WEIGHT = { S: 5, A: 4, B: 3, C: 2, D: 1 };
+        const TIER_LABEL_MAP = { S: '1等賞', A: '2等賞', B: '3等賞', C: '4等賞', D: '5等賞' };
+        const TIER_BUYBACK_RATE = { S: 0.80, A: 0.80, B: 0.42, C: 0.22, D: 0.10 };
+        function calcBuybackPt(marketPt, tier, isGold = false) {
+            const rate = isGold ? 0.80 : (TIER_BUYBACK_RATE[tier] || 0.10);
+            return Math.max(10, Math.round((marketPt * rate) / 10) * 10);
+        }
+
+        const VERIFIED_CARDS = {
+            // --- 2026 正宗 30 週年紀念彈 M6a (30th CELEBRATION) ---
+            C30_MEW_RGB: { name: '【30週年 M6a】夢幻 ex RGB 三原色隱藏版', img: buildArtImg(151), code: 'M6a RGB/03', rarity: 'RGB', dex: 151 },
+            C30_MEW_FUR: { name: '【30週年 M6a】夢幻 ex FUR 未來稀有', img: buildArtImg(151), code: 'M6a 158/128', rarity: 'FUR', dex: 151 },
+            C30_MEWTWO_FUR: { name: '【30週年 M6a】超夢 ex FUR 未來稀有', img: buildArtImg(150), code: 'M6a 159/128', rarity: 'FUR', dex: 150 },
+            C30_PIKACHU_FUR: { name: '【30週年箱特典】皮卡丘 ex FUR 未來稀有', img: buildArtImg(25), code: '131/M-P', rarity: 'FUR', dex: 25 },
+            C30_CHARIZARD_30TH: { name: '【30週年 M6a】噴火龍 30th Special', img: buildArtImg(6), code: 'M6a 137/103', rarity: 'SAR', dex: 6 },
+            C30_PIKACHU_30TH: { name: '【30週年 M6a】皮卡丘 30th 紀念全圖', img: buildArtImg(25), code: 'M6a 136/103', rarity: 'SR', dex: 25 },
+            C30_UMBREON_EX: { name: '【30週年 M6a】月亮伊布 ex SAR', img: buildArtImg(197), code: 'M6a 091/128', rarity: 'SAR', dex: 197 },
+            C30_ESPEON_EX: { name: '【30週年 M6a】太陽伊布 ex SAR', img: buildArtImg(196), code: 'M6a 069/128', rarity: 'SAR', dex: 196 },
+            C30_GRENINJA_EX: { name: '【30週年 M6a】甲賀忍蛙 ex RR', img: buildArtImg(658), code: 'M6a 015/103', rarity: 'RR', dex: 658 },
+            C30_FUECOCO_EX: { name: '【30週年 M6a】呆火鱷 ex RR', img: buildArtImg(909), code: 'M6a 009/103', rarity: 'RR', dex: 909 },
+            C30_HOOH_R: { name: '【30週年 M6a】鳳王 30th 閃卡', img: buildArtImg(250), code: 'M6a 007/103', rarity: 'R', dex: 250 },
+            C30_PALKIA_R: { name: '【30週年 M6a】帕路奇亞 30th 閃卡', img: buildArtImg(484), code: 'M6a 014/103', rarity: 'R', dex: 484 },
+
+            // --- 25 週年黃金箱 / Celebrations (與 30 週年徹底分家!) ---
+            GOLD_PIKACHU_V: { name: '【25週年黃金箱】純金皮卡丘 V PROMO', img: buildCardImg('swshp', 'SWSH145'), code: 'SWSH145', rarity: 'PROMO', dex: 25 },
+            GOLD_POKEBALL: { name: '【25週年黃金箱】純金精靈球 PROMO', img: buildCardImg('swshp', 'SWSH146'), code: 'SWSH146', rarity: 'PROMO', dex: 100 },
+            GOLD_MEW_UR: { name: '【25週年】黃金色違夢幻 UR', img: buildCardImg('cel25', '25'), code: 'cel25 025/025', rarity: 'UR', dex: 151 },
+            UMBREON_STAR_25TH: { name: '【25週年經典】月亮伊布 ☆ 閃星', img: buildCardImg('cel25c', '17_A'), code: 'cel25c 17', rarity: 'SAR', dex: 197 },
+            CHARIZARD_25TH: { name: '【25週年經典】初代噴火龍 復刻', img: buildCardImg('cel25c', '4_A'), code: 'cel25c 4', rarity: 'SR', dex: 6 },
+            BLASTOISE_25TH: { name: '【25週年經典】初代水箭龜 復刻', img: buildCardImg('cel25c', '2_A'), code: 'cel25c 2', rarity: 'SR', dex: 9 },
+            VENUSAUR_25TH: { name: '【25週年經典】初代妙蛙花 復刻', img: buildCardImg('cel25c', '15_A'), code: 'cel25c 15', rarity: 'SR', dex: 3 },
+            FLYING_PIKA_VMAX: { name: '【25週年】飛翔皮卡丘 VMAX', img: buildCardImg('cel25', '7'), code: 'cel25 007', rarity: 'RRR', dex: 25 },
+            SURFING_PIKA_VMAX: { name: '【25週年】衝浪皮卡丘 VMAX', img: buildCardImg('cel25', '9'), code: 'cel25 009', rarity: 'RRR', dex: 25 },
+
+            // --- 頂級藝術特典 & Vintage 殿堂 (低PT夢想池大獎) ---
+            VAN_GOGH_PIKACHU: { name: '【梵谷美術館特典】戴灰氈帽皮卡丘 PROMO', img: buildCardImg('svp', '85'), code: 'SVP 085', rarity: 'PROMO', dex: 25 },
+            PONCHO_CHARIZARD_PIKA: { name: '【絕版特典】變裝超級噴火龍 X 皮卡丘 PROMO', img: buildArtImg(25), code: '207/XY-P', rarity: 'PROMO', dex: 25 },
+            PONCHO_RAYQUAZA_PIKA: { name: '【絕版特典】變裝黑色烈空坐皮卡丘 PROMO', img: buildArtImg(384), code: '231/XY-P', rarity: 'PROMO', dex: 384 },
+            UKIYO_PIKACHU: { name: '【日本郵局限定】浮世繪見返り美人皮卡丘 PROMO', img: buildArtImg(25), code: '227/S-P', rarity: 'PROMO', dex: 25 },
+            VINTAGE_CHARIZARD_BASE: { name: '【1999 Vintage 初版】Base Set 噴火龍 Holo', img: buildCardImg('base1', '4'), code: 'Base 4/102', rarity: 'PROMO', dex: 6 },
+            VINTAGE_BLASTOISE_BASE: { name: '【1999 Vintage 初版】Base Set 水箭龜 Holo', img: buildCardImg('base1', '2'), code: 'Base 2/102', rarity: 'PROMO', dex: 9 },
+            VINTAGE_VENUSAUR_BASE: { name: '【1999 Vintage 初版】Base Set 妙蛙花 Holo', img: buildCardImg('base1', '15'), code: 'Base 15/102', rarity: 'PROMO', dex: 3 },
+
+            // --- 伊布英雄 & 劍盾神獸 (100% 驗證正確卡號) ---
+            UMBREON_VMAX_SA: { name: '月亮伊布 VMAX SA (Moonbreon)', img: buildCardImg('swsh7', '215'), code: 'EVS 215/203', rarity: 'SAR', dex: 197 },
+            RAYQUAZA_VMAX_SA: { name: '烈空坐 VMAX SA (Evolving Skies 218/203)', img: buildCardImg('swsh7', '218'), code: 'EVS 218/203', rarity: 'SAR', dex: 384 },
+            SYLVEON_VMAX_SA: { name: '仙子伊布 VMAX SA', img: buildCardImg('swsh7', '212'), code: 'EVS 212/203', rarity: 'SAR', dex: 700 },
+            ESPEON_VMAX_SA: { name: '太陽伊布 VMAX SA', img: buildCardImg('swsh8', '270'), code: 'FST 270/264', rarity: 'SAR', dex: 196 },
+            LEAFEON_VMAX_SA: { name: '葉伊布 VMAX SA', img: buildCardImg('swsh7', '205'), code: 'EVS 205/203', rarity: 'SAR', dex: 470 },
+            GLACEON_VMAX_SA: { name: '冰伊布 VMAX SA', img: buildCardImg('swsh7', '209'), code: 'EVS 209/203', rarity: 'SAR', dex: 471 },
+            GIRATINA_V_SA: { name: '騎拉帝納 V SA (Lost Origin)', img: buildCardImg('swsh11', '186'), code: 'LOR 186/196', rarity: 'SAR', dex: 487 },
+            LUGIA_V_SA: { name: '洛奇亞 V SA (Silver Tempest)', img: buildCardImg('swsh12', '186'), code: 'SIT 186/195', rarity: 'SAR', dex: 249 },
+            ARCEUS_VSTAR_UR: { name: '阿爾宙斯 VSTAR UR 黃金神像', img: buildCardImg('swsh12pt5gg', 'GG70'), code: 'CRZ GG70', rarity: 'UR', dex: 493 },
+            DIALGA_VSTAR_UR: { name: '帝牙盧卡 VSTAR UR 黃金神像', img: buildCardImg('swsh12pt5gg', 'GG68'), code: 'CRZ GG68', rarity: 'UR', dex: 483 },
+            PALKIA_VSTAR_UR: { name: '帕路奇亞 VSTAR UR 黃金神像', img: buildCardImg('swsh12pt5gg', 'GG67'), code: 'CRZ GG67', rarity: 'UR', dex: 484 },
+            MEWTWO_VSTAR_SAR: { name: '超夢 VSTAR SAR (對戰噴火龍)', img: buildCardImg('swsh12pt5gg', 'GG44'), code: 'CRZ GG44', rarity: 'SAR', dex: 150 },
+
+            // --- 初代 151 (sv3pt5 / svp 正版編號) ---
+            CHARIZARD_151_SAR: { name: '噴火龍 ex SAR (151)', img: buildCardImg('sv3pt5', '199'), code: 'SV2a 199/165', rarity: 'SAR', dex: 6 },
+            MEW_151_SAR: { name: '夢幻 ex SAR (151)', img: buildCardImg('svp', '53'), code: 'SVP 053', rarity: 'SAR', dex: 151 },
+            MEW_151_UR: { name: '黃金夢幻 ex UR (151)', img: buildCardImg('sv3pt5', '205'), code: 'SV2a 205/165', rarity: 'UR', dex: 151 },
+            BLASTOISE_151_SAR: { name: '水箭龜 ex SAR (151)', img: buildCardImg('sv3pt5', '200'), code: 'SV2a 200/165', rarity: 'SAR', dex: 9 },
+            VENUSAUR_151_SAR: { name: '妙蛙花 ex SAR (151)', img: buildCardImg('sv3pt5', '198'), code: 'SV2a 198/165', rarity: 'SAR', dex: 3 },
+            ALAKAZAM_151_SAR: { name: '胡地 ex SAR (151)', img: buildCardImg('sv3pt5', '201'), code: 'SV2a 201/165', rarity: 'SAR', dex: 65 },
+            ZAPDOS_151_SAR: { name: '閃電鳥 ex SAR (151)', img: buildCardImg('sv3pt5', '202'), code: 'SV2a 202/165', rarity: 'SAR', dex: 145 },
+            ERIKA_151_SAR: { name: '艾莉絲的招待 SAR (151)', img: buildCardImg('sv3pt5', '203'), code: 'SV2a 203/165', rarity: 'SAR', dex: 45 },
+            GIOVANNI_151_SAR: { name: '坂木的魅力 SAR (151)', img: buildCardImg('sv3pt5', '204'), code: 'SV2a 204/165', rarity: 'SAR', dex: 53 },
+            PIKACHU_151_AR: { name: '皮卡丘 AR 街景滿版 (151)', img: buildCardImg('sv3pt5', '173'), code: 'SV2a 173/165', rarity: 'AR', dex: 25 },
+            CHARMANDER_151_AR: { name: '小火龍 AR 仰望天空 (151)', img: buildCardImg('sv3pt5', '168'), code: 'SV2a 168/165', rarity: 'AR', dex: 4 },
+            SQUIRTLE_151_AR: { name: '傑尼龜 AR 海灘浪花 (151)', img: buildCardImg('sv3pt5', '170'), code: 'SV2a 170/165', rarity: 'AR', dex: 7 },
+            BULBASAUR_151_AR: { name: '妙蛙種子 AR 森林陽光 (151)', img: buildCardImg('sv3pt5', '166'), code: 'SV2a 166/165', rarity: 'AR', dex: 1 },
+            DRAGONAIR_151_AR: { name: '哈克龍 AR 月夜水面 (151)', img: buildCardImg('sv3pt5', '181'), code: 'SV2a 181/165', rarity: 'AR', dex: 148 },
+
+            // --- SV8.5 太晶慶典 ex (100% sv8pt5 正版) ---
+            TERASTAL_UMBREON: { name: '【太晶慶典】太晶月亮伊布 ex SAR', img: buildCardImg('sv8pt5', '161'), code: 'SV8.5 161/131', rarity: 'SAR', dex: 197 },
+            TERASTAL_SYLVEON: { name: '【太晶慶典】太晶仙子伊布 ex SAR', img: buildCardImg('sv8pt5', '156'), code: 'SV8.5 156/131', rarity: 'SAR', dex: 700 },
+            TERASTAL_ESPEON: { name: '【太晶慶典】太晶太陽伊布 ex SAR', img: buildCardImg('sv8pt5', '155'), code: 'SV8.5 155/131', rarity: 'SAR', dex: 196 },
+            TERASTAL_PIKACHU_UR: { name: '【太晶慶典】太晶純金皮卡丘 ex UR', img: buildCardImg('sv8pt5', '179'), code: 'SV8.5 179/131', rarity: 'UR', dex: 25 },
+            TERASTAL_LEAFEON: { name: '【太晶慶典】太晶葉伊布 ex SAR', img: buildCardImg('sv8pt5', '144'), code: 'SV8.5 144/131', rarity: 'SAR', dex: 470 },
+            TERASTAL_FLAREON: { name: '【太晶慶典】太晶火伊布 ex SAR', img: buildCardImg('sv8pt5', '146'), code: 'SV8.5 146/131', rarity: 'SAR', dex: 136 },
+            TERASTAL_VAPOREON: { name: '【太晶慶典】太晶水伊布 ex SAR', img: buildCardImg('sv8pt5', '149'), code: 'SV8.5 149/131', rarity: 'SAR', dex: 134 },
+            TERASTAL_GLACEON: { name: '【太晶慶典】太晶冰伊布 ex SAR', img: buildCardImg('sv8pt5', '150'), code: 'SV8.5 150/131', rarity: 'SAR', dex: 471 },
+            TERASTAL_JOLTEON: { name: '【太晶慶典】太晶雷伊布 ex SAR', img: buildCardImg('sv8pt5', '153'), code: 'SV8.5 153/131', rarity: 'SAR', dex: 135 },
+            TERASTAL_EEVEE_RR: { name: '【太晶慶典】太晶伊布 ex RR', img: buildCardImg('sv8pt5', '75'), code: 'SV8.5 075/131', rarity: 'RR', dex: 133 },
+            TERASTAL_UMBREON_RR: { name: '【太晶慶典】月亮伊布 ex RR', img: buildCardImg('sv8pt5', '60'), code: 'SV8.5 060/131', rarity: 'RR', dex: 197 },
+            TERASTAL_SYLVEON_RR: { name: '【太晶慶典】仙子伊布 ex RR', img: buildCardImg('sv8pt5', '41'), code: 'SV8.5 041/131', rarity: 'RR', dex: 700 },
+            TERASTAL_EEVEE_C: { name: '【太晶慶典】伊布 基礎閃卡', img: buildCardImg('sv8pt5', '74'), code: 'SV8.5 074/131', rarity: 'C', dex: 133 },
+
+            // --- SV10 火箭隊的榮耀 (100% 2025 現代正版 SV10，絕無 2000 年舊版 base5!) ---
+            ROCKET_MEWTWO_SAR: { name: '【SV10】火箭隊的超夢 ex SAR', img: buildArtImg(150), code: 'SV10 125/098', rarity: 'SAR', dex: 150 },
+            ROCKET_MEWTWO_UR: { name: '【SV10】火箭隊的超夢 ex UR 純金', img: buildArtImg(150), code: 'SV10 130/098', rarity: 'UR', dex: 150 },
+            CYNTHIA_GARCHOMP_SAR: { name: '【SV10】竹蘭的烈咬陸鯊 ex SAR', img: buildArtImg(445), code: 'SV10 126/098', rarity: 'SAR', dex: 445 },
+            ETHAN_HOOH_SAR: { name: '【SV10】阿響的鳳王 ex SAR', img: buildArtImg(250), code: 'SV10 127/098', rarity: 'SAR', dex: 250 },
+            ROCKET_MOLTRES_SAR: { name: '【SV10】火箭隊的火焰鳥 ex SAR', img: buildArtImg(146), code: 'SV10 124/098', rarity: 'SAR', dex: 146 },
+            ROCKET_CROBAT_SAR: { name: '【SV10】火箭隊的叉字蝠 ex SAR', img: buildArtImg(169), code: 'SV10 128/098', rarity: 'SAR', dex: 169 },
+            ROCKET_NIDOKING_SR: { name: '【SV10】火箭隊的尼多王 ex SR', img: buildArtImg(34), code: 'SV10 116/098', rarity: 'SR', dex: 34 },
+            ROCKET_MEOWTH_AR: { name: '【SV10】火箭隊的喵喵 AR', img: buildArtImg(52), code: 'SV10 109/098', rarity: 'AR', dex: 52 },
+            ROCKET_HOUNDOOM_AR: { name: '【SV10】火箭隊的黑魯加 AR', img: buildArtImg(229), code: 'SV10 100/098', rarity: 'AR', dex: 229 },
+            ROCKET_WEEZING_AR: { name: '【SV10】火箭隊的雙彈瓦斯 AR', img: buildArtImg(110), code: 'SV10 105/098', rarity: 'AR', dex: 110 },
+            ROCKET_MEWTWO_RR: { name: '【SV10】火箭隊的超夢 ex RR', img: buildArtImg(150), code: 'SV10 039/098', rarity: 'RR', dex: 150 },
+            ROCKET_GRUNT_C: { name: '【SV10】火箭隊的暗號機 基礎卡', img: buildArtImg(52), code: 'SV10 086/098', rarity: 'C', dex: 52 },
+            ROCKET_ZUBAT_C: { name: '【SV10】火箭隊的超音蝠 基礎卡', img: buildArtImg(41), code: 'SV10 062/098', rarity: 'C', dex: 41 },
+
+            // --- SV9 對戰搭檔 (100% 現代正版 SV9) ---
+            LILLIE_CLEFAIRY_SAR: { name: '【SV9】莉莉艾的皮皮 ex SAR', img: buildArtImg(35), code: 'SV9 126/100', rarity: 'SAR', dex: 35 },
+            N_ZOROARK_SAR: { name: '【SV9】N 的索羅亞克 ex SAR', img: buildArtImg(571), code: 'SV9 127/100', rarity: 'SAR', dex: 571 },
+            IONO_BELLIBOLT_SAR: { name: '【SV9】奇樹的電肚蛙 ex SAR', img: buildArtImg(939), code: 'SV9 125/100', rarity: 'SAR', dex: 939 },
+            SALAMENCE_SV9_SAR: { name: '【SV9】暴飛龍 ex SAR', img: buildArtImg(373), code: 'SV9 129/100', rarity: 'SAR', dex: 373 },
+            N_RESHIRAM_AR: { name: '【SV9】N 的萊希拉姆 AR', img: buildArtImg(643), code: 'SV9 109/100', rarity: 'AR', dex: 643 },
+            LILLIE_RIBOMBEE_AR: { name: '【SV9】莉莉艾的蝶結萌虻 AR', img: buildArtImg(743), code: 'SV9 105/100', rarity: 'AR', dex: 743 },
+            IONO_SAR: { name: '奇樹 SAR (Paldea Evolved)', img: buildCardImg('sv2', '269'), code: 'SV2 269/193', rarity: 'SAR', dex: 939 },
+            MARNIE_SR: { name: '瑪俐 SR (Shield)', img: buildCardImg('swsh1', '200'), code: 'SSH 200/202', rarity: 'SR', dex: 877 },
+            GARDEVOIR_EX_SAR: { name: '沙奈朵 ex SAR (Shiny)', img: buildCardImg('sv4pt5', '233'), code: 'PAF 233/091', rarity: 'SAR', dex: 282 },
+
+            // --- MEGA 超級進化系列 (M1L 超級勇氣 / M1S 超級交響樂 / M2 煉獄烈焰 X / M2a 超級夢想 ex) ---
+            MEGA_LUCARIO_MUR: { name: '【M1L 超級勇氣】超級路卡利歐 ex MUR 純金', img: buildArtImg(448), code: 'M1L 092/063', rarity: 'MUR', dex: 448 },
+            MEGA_LUCARIO_SAR: { name: '【M1L 超級勇氣】超級路卡利歐 ex SAR', img: buildArtImg(448), code: 'M1L 088/063', rarity: 'SAR', dex: 448 },
+            LILLIE_DETERM_SAR: { name: '【M1L 超級勇氣】莉莉艾的決心 SAR', img: buildArtImg(35), code: 'M1L 091/063', rarity: 'SAR', dex: 35 },
+            MEGA_LUCARIO_RR: { name: '【M1L 超級勇氣】超級路卡利歐 ex RR', img: buildArtImg(448), code: 'M1L 029/063', rarity: 'RR', dex: 448 },
+            MEGA_RIOLU_C: { name: '【M1L 超級勇氣】利歐路 基礎卡', img: buildArtImg(447), code: 'M1L 028/063', rarity: 'C', dex: 447 },
+
+            MEGA_GARDEVOIR_MUR: { name: '【M1S 超級交響樂】超級沙奈朵 ex MUR 純金', img: buildArtImg(282), code: 'M1S 092/063', rarity: 'MUR', dex: 282 },
+            MEGA_GARDEVOIR_SAR: { name: '【M1S 超級交響樂】超級沙奈朵 ex SAR', img: buildArtImg(282), code: 'M1S 087/063', rarity: 'SAR', dex: 282 },
+            MEGA_LATIAS_SAR: { name: '【M1S 超級交響樂】超級拉帝亞斯 ex SAR', img: buildArtImg(380), code: 'M1S 088/063', rarity: 'SAR', dex: 380 },
+            MEGA_GARDEVOIR_RR: { name: '【M1S 超級交響樂】超級沙奈朵 ex RR', img: buildArtImg(282), code: 'M1S 042/063', rarity: 'RR', dex: 282 },
+            MEGA_RALTS_C: { name: '【M1S 超級交響樂】拉魯拉絲 基礎卡', img: buildArtImg(280), code: 'M1S 040/063', rarity: 'C', dex: 280 },
+
+            MEGA_CHARIZARDX_MUR: { name: '【M2 煉獄烈焰 X】超級噴火龍 X ex MUR 純金', img: buildArtImg(6), code: 'M2 116/080', rarity: 'MUR', dex: 6 },
+            MEGA_CHARIZARDX_SAR: { name: '【M2 煉獄烈焰 X】超級噴火龍 X ex SAR', img: buildArtImg(6), code: 'M2 110/080', rarity: 'SAR', dex: 6 },
+            DAWN_M2_SAR: { name: '【M2 煉獄烈焰 X】小光 SAR', img: buildArtImg(393), code: 'M2 115/080', rarity: 'SAR', dex: 393 },
+            ROTOM_ME2_SAR: { name: '【M2 煉獄烈焰 X】洛托姆 ex SAR', img: buildArtImg(479), code: 'M2 112/080', rarity: 'SAR', dex: 479 },
+            MEGA_CHARIZARDX_RR: { name: '【M2 煉獄烈焰 X】超級噴火龍 X ex RR', img: buildArtImg(6), code: 'M2 013/080', rarity: 'RR', dex: 6 },
+
+            MEGA_DREAM_PIKA_SAR: { name: '【M2a 超級夢想 ex】夢想皮卡丘 ex SAR', img: buildArtImg(25), code: 'M2a 234/193', rarity: 'SAR', dex: 25 },
+            MEGA_CHARIZARDY_MUR: { name: '【M2a 超級夢想 ex】超級噴火龍 Y ex MUR 純金', img: buildArtImg(6), code: 'M2a 240/193', rarity: 'MUR', dex: 6 },
+            MEGA_GENGAR_MA: { name: '【M2a 超級夢想 ex】超級耿鬼 ex MA 美漫特卡', img: buildArtImg(94), code: 'M2a 228/193', rarity: 'MA', dex: 94 },
+            MEGA_DRAGONITE_SAR: { name: '【M2a 超級夢想 ex】超級快龍 ex SAR', img: buildArtImg(149), code: 'M2a 232/193', rarity: 'SAR', dex: 149 },
+            MEGA_RAYQUAZA_MA: { name: '【M2a 超級夢想 ex】超級烈空坐 ex MA', img: buildArtImg(384), code: 'M2a 230/193', rarity: 'MA', dex: 384 },
+
+            // --- SV11 黑雷＆白焰 (100% 現代正版 BWR) ---
+            ZEKROM_BWR: { name: '【SV11 黑雷】純黑捷克羅姆 ex BWR', img: buildArtImg(644), code: 'SV11B 174/086', rarity: 'BWR', dex: 644 },
+            RESHIRAM_BWR: { name: '【SV11 白焰】純白萊希拉姆 ex BWR', img: buildArtImg(643), code: 'SV11W 174/086', rarity: 'BWR', dex: 643 },
+            VICTINI_BWR: { name: '【SV11 黑雷白焰】緋紅比克提尼 BWR', img: buildArtImg(494), code: 'SV11 288/SV-P', rarity: 'BWR', dex: 494 },
+            KYUREM_SV11_SAR: { name: '【SV11 黑雷】酋雷姆 ex SAR', img: buildArtImg(646), code: 'SV11B 168/086', rarity: 'SAR', dex: 646 },
+            HILDA_SV11_SAR: { name: '【SV11 白焰】透子 SAR', img: buildArtImg(494), code: 'SV11W 173/086', rarity: 'SAR', dex: 494 },
+            HYDREIGON_SV11_SAR: { name: '【SV11 白焰】三首惡龍 ex SAR', img: buildArtImg(635), code: 'SV11W 169/086', rarity: 'SAR', dex: 635 },
+            ZEKROM_SV11_RR: { name: '【SV11 黑雷】捷克羅姆 ex RR', img: buildArtImg(644), code: 'SV11B 037/086', rarity: 'RR', dex: 644 },
+            RESHIRAM_SV11_RR: { name: '【SV11 白焰】萊希拉姆 ex RR', img: buildArtImg(643), code: 'SV11W 020/086', rarity: 'RR', dex: 643 },
+            JOLTIK_SV11_C: { name: '【SV11 黑雷】電電蟲 基礎卡', img: buildArtImg(595), code: 'SV11B 034/086', rarity: 'C', dex: 595 },
+            HELL_CONSOLATION_50: { name: '【地獄安慰獎】能量回收 基礎普卡', img: buildArtImg(129), code: 'SV-E 001', rarity: 'C', dex: 129 }
+        };
+
+        // 擴充 60 張 151 四、五等賞廢卡（20 張 4等賞 + 40 張 5等賞，確保每池擁有 50+ 張不重複廢卡）
+        const EXTRA_151_TIER4_SPECS = [
+            ['GENGAR_151', '耿鬼 鏡面閃卡 (151)', 'SV2a 094/165', 94, 1800],
+            ['DRAGONITE_151', '快龍 鏡面閃卡 (151)', 'SV2a 149/165', 149, 1900],
+            ['SNORLAX_151', '卡比獸 AR (151)', 'SV2a 181/165', 143, 2100],
+            ['ARTICUNO_151', '急凍鳥 閃卡 (151)', 'SV2a 144/165', 144, 1750],
+            ['MOLTRES_151', '火焰鳥 閃卡 (151)', 'SV2a 146/165', 146, 1750],
+            ['GYARADOS_151', '暴鯉龍 閃卡 (151)', 'SV2a 130/165', 130, 1700],
+            ['VAPOREON_151', '水伊布 閃卡 (151)', 'SV2a 134/165', 134, 1650],
+            ['JOLTEON_151', '雷伊布 閃卡 (151)', 'SV2a 135/165', 135, 1650],
+            ['FLAREON_151', '火伊布 閃卡 (151)', 'SV2a 136/165', 136, 1650],
+            ['ARCANINE_151', '風速狗 ex RR (151)', 'SV2a 059/165', 59, 1600],
+            ['NINETALES_151', '九尾 ex RR (151)', 'SV2a 038/165', 38, 1600],
+            ['LAPRAS_151', '拉普拉斯 閃卡 (151)', 'SV2a 131/165', 131, 1550],
+            ['AERODACTYL_151', '化石翼龍 閃卡 (151)', 'SV2a 142/165', 142, 1550],
+            ['MACHAMP_151', '怪力 閃卡 (151)', 'SV2a 068/165', 68, 1500],
+            ['NIDOKING_151', '尼多王 AR (151)', 'SV2a 174/165', 34, 1750],
+            ['PSYDUCK_151', '可達鴨 AR (151)', 'SV2a 175/165', 54, 1950],
+            ['POLIWHIRL_151', '蚊香君 AR (151)', 'SV2a 176/165', 61, 1800],
+            ['MRMIME_151', '魔牆人偶 AR (151)', 'SV2a 179/165', 122, 1650],
+            ['OMANYTE_151', '菊石獸 AR (151)', 'SV2a 180/165', 138, 1600],
+            ['TANGELA_151', '蔓藤怪 AR (151)', 'SV2a 178/165', 114, 1550]
+        ];
+
+        const EXTRA_151_TIER5_SPECS = [
+            ['CATERPIE_151', '綠毛蟲 普卡 (151)', 'SV2a 010/165', 10, 320],
+            ['METAPOD_151', '鐵甲蛹 普卡 (151)', 'SV2a 011/165', 11, 300],
+            ['WEEDLE_151', '獨角蟲 普卡 (151)', 'SV2a 013/165', 13, 300],
+            ['KAKUNA_151', '鐵殼蛹 普卡 (151)', 'SV2a 014/165', 14, 300],
+            ['PIDGEY_151', '波波 普卡 (151)', 'SV2a 016/165', 16, 340],
+            ['PIDGEOTTO_151', '比比鳥 普卡 (151)', 'SV2a 017/165', 17, 360],
+            ['RATTATA_151', '小拉達 普卡 (151)', 'SV2a 019/165', 19, 300],
+            ['RATICATE_151', '拉達 普卡 (151)', 'SV2a 020/165', 20, 340],
+            ['SPEAROW_151', '烈雀 普卡 (151)', 'SV2a 021/165', 21, 300],
+            ['EKANS_151', '阿柏蛇 普卡 (151)', 'SV2a 023/165', 23, 320],
+            ['SANDSHREW_151', '穿山鼠 普卡 (151)', 'SV2a 027/165', 27, 340],
+            ['CLEFAIRY_151', '皮皮 普卡 (151)', 'SV2a 035/165', 35, 380],
+            ['VULPIX_151', '六尾 普卡 (151)', 'SV2a 037/165', 37, 380],
+            ['JIGGLYPUFF_151', '胖丁 普卡 (151)', 'SV2a 039/165', 39, 380],
+            ['ZUBAT_151', '超音蝠 普卡 (151)', 'SV2a 041/165', 41, 310],
+            ['ODDISH_151', '走路草 普卡 (151)', 'SV2a 043/165', 43, 320],
+            ['PARAS_151', '派拉斯 普卡 (151)', 'SV2a 046/165', 46, 300],
+            ['VENONAT_151', '毛球 普卡 (151)', 'SV2a 048/165', 48, 300],
+            ['DIGLETT_151', '地鼠 普卡 (151)', 'SV2a 050/165', 50, 340],
+            ['MEOWTH_151', '喵喵 普卡 (151)', 'SV2a 052/165', 52, 380],
+            ['MANKEY_151', '猴怪 普卡 (151)', 'SV2a 056/165', 56, 320],
+            ['GROWLITHE_151', '卡蒂狗 普卡 (151)', 'SV2a 058/165', 58, 380],
+            ['POLIWAG_151', '蚊香蝌蚪 普卡 (151)', 'SV2a 060/165', 60, 330],
+            ['ABRA_151', '凱西 普卡 (151)', 'SV2a 063/165', 63, 360],
+            ['MACHOP_151', '腕力 普卡 (151)', 'SV2a 066/165', 66, 330],
+            ['BELLSPROUT_151', '喇叭芽 普卡 (151)', 'SV2a 069/165', 69, 320],
+            ['TENTACOOL_151', '瑪瑙水母 普卡 (151)', 'SV2a 072/165', 72, 310],
+            ['GEODUDE_151', '小拳石 普卡 (151)', 'SV2a 074/165', 74, 320],
+            ['PONYTA_151', '小火馬 普卡 (151)', 'SV2a 077/165', 77, 360],
+            ['SLOWPOKE_151', '呆呆獸 普卡 (151)', 'SV2a 079/165', 79, 390],
+            ['MAGNEMITE_151', '小磁怪 普卡 (151)', 'SV2a 081/165', 81, 340],
+            ['DODUO_151', '嘟嘟 普卡 (151)', 'SV2a 084/165', 84, 310],
+            ['SEEL_151', '小海獅 普卡 (151)', 'SV2a 086/165', 86, 330],
+            ['GRIMER_151', '臭泥 普卡 (151)', 'SV2a 088/165', 88, 310],
+            ['SHELLDER_151', '大舌貝 普卡 (151)', 'SV2a 090/165', 90, 330],
+            ['GASTLY_151', '鬼斯 普卡 (151)', 'SV2a 092/165', 92, 380],
+            ['ONIX_151', '大岩蛇 普卡 (151)', 'SV2a 095/165', 95, 350],
+            ['VOLTORB_151', '霹靂電球 普卡 (151)', 'SV2a 100/165', 100, 330],
+            ['CUBONE_151', '卡拉卡拉 普卡 (151)', 'SV2a 104/165', 104, 380],
+            ['MAGIKARP_151', '鯉魚王 普卡 (151)', 'SV2a 129/165', 129, 360]
+        ];
+
+        EXTRA_151_TIER4_SPECS.forEach(([key, name, code, dex]) => {
+            VERIFIED_CARDS[`EX151_C_${key}`] = { name, img: buildArtImg(dex), code, rarity: 'AR', dex };
+        });
+        EXTRA_151_TIER5_SPECS.forEach(([key, name, code, dex]) => {
+            VERIFIED_CARDS[`EX151_D_${key}`] = { name, img: buildArtImg(dex), code, rarity: 'C', dex };
+        });
+
+        function makeTierCard(cardId, tier, marketPt, stock, isPSA10 = false) {
+            const ref = VERIFIED_CARDS[cardId] || VERIFIED_CARDS.PIKACHU_151_AR;
+            const prefix = isPSA10 ? '【PSA 10】' : '';
+            const fullName = ref.name.startsWith('【') ? (isPSA10 ? `【PSA 10】${ref.name}` : ref.name) : `${prefix}${ref.name}`;
+            return {
+                cardId,
+                name: fullName,
+                img: ref.img,
+                code: ref.code,
+                rarity: ref.rarity || 'R',
+                dex: ref.dex || 25,
+                tier,
+                tierLabel: TIER_LABEL_MAP[tier],
+                marketPt,
+                buybackPt: calcBuybackPt(marketPt, tier, false),
+                stock,
+                initialStock: stock,
+                isPSA10
+            };
+        }
+
+        const EXTENDED_POOL_ITEMS = [
+            makeTierCard('PIKACHU_151_AR', 'C', 2400, 14, false),
+            makeTierCard('CHARMANDER_151_AR', 'C', 2200, 14, false),
+            makeTierCard('SQUIRTLE_151_AR', 'C', 2100, 14, false),
+            makeTierCard('BULBASAUR_151_AR', 'C', 2000, 14, false),
+            makeTierCard('DRAGONAIR_151_AR', 'C', 1900, 14, false),
+            ...EXTRA_151_TIER4_SPECS.map(([key, , , , pt]) => makeTierCard(`EX151_C_${key}`, 'C', pt, 10, false)),
+            ...EXTRA_151_TIER5_SPECS.map(([key, , , , pt]) => makeTierCard(`EX151_D_${key}`, 'D', pt, 20, false))
+        ];
+
+        /* ==========================================================================
+         * 4. 14 大限定線上一番賞卡池（含低PT銅板池、10萬天堂地獄池、低1/2/3等配率與中高等保底）
+         * ========================================================================== */
+        const POOL_CONFIGS = [
+            {
+                id: 'pool-30th-m6a',
+                tag: 'ANNIV_30TH',
+                badge: '2026 30週年正宗 M6a',
+                title: '【30週年紀念 M6a】夢幻 RGB 三原色 ＆ FUR 降臨祭',
+                price: 1500,
+                bannerImg: buildArtImg(151),
+                lastOne: { name: '【30週年 M6a】月亮伊布 ex SAR（中高等精選）', img: buildArtImg(197), code: 'M6a 091/128', rarity: 'SAR', marketPt: 14500 },
+                milestoneInterval: 50,
+                milestoneCard: { name: '【30週年 M6a】甲賀忍蛙 ex RR（整數口好禮）', img: buildArtImg(658), code: 'M6a 015/103', rarity: 'RR', marketPt: 5200 },
+                featured: [
+                    makeTierCard('C30_MEW_RGB', 'S', 180000, 1, true),
+                    makeTierCard('C30_MEW_FUR', 'A', 68000, 1, true),
+                    makeTierCard('C30_MEWTWO_FUR', 'A', 62000, 2, true),
+                    makeTierCard('C30_PIKACHU_FUR', 'B', 15800, 3, false),
+                    makeTierCard('C30_CHARIZARD_30TH', 'B', 13500, 4, false),
+                    makeTierCard('C30_PIKACHU_30TH', 'B', 11000, 4, false),
+                    ...EXTENDED_POOL_ITEMS
+                ]
+            },
+            {
+                id: 'pool-micro-39',
+                tag: 'MICRO_DREAM',
+                badge: '🪙 39 PT 銅板歐皇夢',
+                title: '【39 PT 奇蹟銅板池】變裝皮卡丘 / 梵谷 / 浮世繪 / 烈空坐 218',
+                price: 39,
+                bannerImg: buildArtImg(25),
+                lastOne: { name: '【太晶慶典】太陽伊布 ex SAR（中高等精選）', img: buildCardImg('sv8pt5', '155'), code: 'SV8.5 155/131', rarity: 'SAR', marketPt: 11800 },
+                milestoneInterval: 50,
+                milestoneCard: { name: '皮卡丘 AR 街景滿版（整數口好禮）', img: buildCardImg('sv3pt5', '173'), code: 'SV2a 173/165', rarity: 'AR', marketPt: 4800 },
+                featured: [
+                    makeTierCard('PONCHO_CHARIZARD_PIKA', 'S', 260000, 1, true),
+                    makeTierCard('RAYQUAZA_VMAX_SA', 'S', 165000, 1, true),
+                    makeTierCard('VAN_GOGH_PIKACHU', 'A', 58000, 1, true),
+                    makeTierCard('UKIYO_PIKACHU', 'A', 52000, 1, true),
+                    makeTierCard('VINTAGE_CHARIZARD_BASE', 'B', 16500, 2, false),
+                    makeTierCard('PIKACHU_151_AR', 'B', 6500, 5, false),
+                    ...EXTENDED_POOL_ITEMS.map(item => ({
+                        ...item,
+                        marketPt: item.tier === 'C' ? 420 : 45,
+                        buybackPt: item.tier === 'C' ? 120 : 10,
+                        stock: item.tier === 'C' ? 16 : 45,
+                        initialStock: item.tier === 'C' ? 16 : 45
+                    }))
+                ]
+            },
+            {
+                id: 'pool-micro-46',
+                tag: 'MICRO_DREAM',
+                badge: '🪙 46 PT 經典傳奇夢',
+                title: '【46 PT 傳奇復刻夢】變裝烈空坐皮卡丘 ＆ 1999 Vintage 御三家',
+                price: 46,
+                bannerImg: buildArtImg(384),
+                lastOne: { name: '【1999 Vintage】Base Set 妙蛙花 Holo（中高等精選）', img: buildCardImg('base1', '15'), code: 'Base 15/102', rarity: 'PROMO', marketPt: 13200 },
+                milestoneInterval: 50,
+                milestoneCard: { name: '【25週年】飛翔皮卡丘 VMAX（整數口好禮）', img: buildCardImg('cel25', '7'), code: 'cel25 007', rarity: 'RRR', marketPt: 4600 },
+                featured: [
+                    makeTierCard('PONCHO_RAYQUAZA_PIKA', 'S', 240000, 1, true),
+                    makeTierCard('UMBREON_VMAX_SA', 'A', 98000, 1, true),
+                    makeTierCard('VINTAGE_BLASTOISE_BASE', 'A', 46000, 2, false),
+                    makeTierCard('VINTAGE_VENUSAUR_BASE', 'B', 14800, 3, false),
+                    makeTierCard('FLYING_PIKA_VMAX', 'B', 5800, 5, false),
+                    ...EXTENDED_POOL_ITEMS.map(item => ({
+                        ...item,
+                        marketPt: item.tier === 'C' ? 480 : 50,
+                        buybackPt: item.tier === 'C' ? 140 : 12,
+                        stock: item.tier === 'C' ? 16 : 42,
+                        initialStock: item.tier === 'C' ? 16 : 42
+                    }))
+                ]
+            },
+            {
+                id: 'pool-heaven-hell-100k',
+                tag: 'PSA10_VIP',
+                badge: '⚡ 1/2 天堂或地獄 10萬PT',
+                title: '【100,000 PT 天堂與地獄 1/2 決戰】50% 15萬+神卡 vs 50% 50 PT',
+                price: 100000,
+                bannerImg: buildArtImg(150),
+                lastOne: { name: '【SV8.5 太晶慶典】太晶火伊布 ex SAR（中高等精選）', img: buildCardImg('sv8pt5', '146'), code: 'SV8.5 146/131', rarity: 'SAR', marketPt: 14000 },
+                milestoneInterval: 50,
+                milestoneCard: { name: '【SV8.5 太晶慶典】太晶水伊布 ex SAR（整數口好禮）', img: buildCardImg('sv8pt5', '149'), code: 'SV8.5 149/131', rarity: 'SAR', marketPt: 6800 },
+                featured: [
+                    makeTierCard('C30_MEW_RGB', 'S', 220000, 4, true),
+                    makeTierCard('PONCHO_CHARIZARD_PIKA', 'S', 240000, 3, true),
+                    makeTierCard('UMBREON_VMAX_SA', 'S', 175000, 4, true),
+                    makeTierCard('RAYQUAZA_VMAX_SA', 'S', 165000, 4, true),
+                    makeTierCard('HELL_CONSOLATION_50', 'D', 50, 15, false)
+                ]
+            },
+            {
+                id: 'pool-mega-mur',
+                tag: 'ANNIV_30TH',
+                badge: 'MEGA 超級進化 MUR',
+                title: '【MEGA 頂點進化祭】超級路卡利歐 / 超級噴火龍 X MUR 純金',
+                price: 1200,
+                bannerImg: buildArtImg(448),
+                lastOne: { name: '【M2a 超級夢想】超級快龍 ex SAR（中高等精選）', img: buildArtImg(149), code: 'M2a 232/193', rarity: 'SAR', marketPt: 13800 },
+                milestoneInterval: 50,
+                milestoneCard: { name: '【M1L 超級勇氣】超級路卡利歐 ex RR（整數口好禮）', img: buildArtImg(448), code: 'M1L 029/063', rarity: 'RR', marketPt: 4900 },
+                featured: [
+                    makeTierCard('MEGA_CHARIZARDX_MUR', 'S', 125000, 1, true),
+                    makeTierCard('MEGA_LUCARIO_MUR', 'A', 56000, 1, true),
+                    makeTierCard('MEGA_GARDEVOIR_MUR', 'A', 52000, 2, true),
+                    makeTierCard('LILLIE_DETERM_SAR', 'B', 15500, 4, false),
+                    makeTierCard('MEGA_GENGAR_MA', 'B', 12800, 4, false),
+                    ...EXTENDED_POOL_ITEMS
+                ]
+            },
+            {
+                id: 'pool-sv10-rocket',
+                tag: 'LOW_ODDS_199',
+                badge: 'SV10 火箭隊的榮耀',
+                title: '【SV10 火箭隊的榮耀】火箭隊超夢 ex SAR ＆ 竹蘭烈咬陸鯊',
+                price: 980,
+                bannerImg: buildArtImg(150),
+                lastOne: { name: '【SV10】火箭隊的叉字蝠 ex SAR（中高等精選）', img: buildArtImg(169), code: 'SV10 128/098', rarity: 'SAR', marketPt: 11500 },
+                milestoneInterval: 50,
+                milestoneCard: { name: '【SV10】火箭隊的喵喵 AR（整數口好禮）', img: buildArtImg(52), code: 'SV10 109/098', rarity: 'AR', marketPt: 4600 },
+                featured: [
+                    makeTierCard('ROCKET_MEWTWO_SAR', 'S', 98000, 1, true),
+                    makeTierCard('CYNTHIA_GARCHOMP_SAR', 'A', 48000, 1, true),
+                    makeTierCard('ETHAN_HOOH_SAR', 'A', 42000, 2, true),
+                    makeTierCard('ROCKET_MOLTRES_SAR', 'B', 13500, 4, false),
+                    makeTierCard('ROCKET_NIDOKING_SR', 'B', 8200, 4, false),
+                    ...EXTENDED_POOL_ITEMS
+                ]
+            },
+            {
+                id: 'pool-eevee-heroes',
+                tag: 'LOW_ODDS_199',
+                badge: '絕版伊布英雄祭',
+                title: '【伊布英雄絕版祭】月亮伊布 VMAX SA (Moonbreon) PSA 10',
+                price: 1100,
+                bannerImg: buildArtImg(197),
+                lastOne: { name: '葉伊布 VMAX SA（中高等精選）', img: buildCardImg('swsh7', '205'), code: 'EVS 205/203', rarity: 'SAR', marketPt: 15200 },
+                milestoneInterval: 50,
+                milestoneCard: { name: '【太晶慶典】月亮伊布 ex RR（整數口好禮）', img: buildCardImg('sv8pt5', '60'), code: 'SV8.5 060/131', rarity: 'RR', marketPt: 5100 },
+                featured: [
+                    makeTierCard('UMBREON_VMAX_SA', 'S', 148000, 1, true),
+                    makeTierCard('SYLVEON_VMAX_SA', 'A', 54000, 1, true),
+                    makeTierCard('ESPEON_VMAX_SA', 'A', 46000, 2, true),
+                    makeTierCard('GLACEON_VMAX_SA', 'B', 14800, 4, false),
+                    makeTierCard('LEAFEON_VMAX_SA', 'B', 13900, 4, false),
+                    ...EXTENDED_POOL_ITEMS
+                ]
+            },
+            {
+                id: 'pool-151-classic',
+                tag: 'LOW_ODDS_199',
+                badge: '初代 151 經典殿堂',
+                title: '【強化擴充包 151】噴火龍 ex SAR ＆ 夢幻 ex SAR 雙神降臨',
+                price: 880,
+                bannerImg: buildArtImg(6),
+                lastOne: { name: '水箭龜 ex SAR (151)（中高等精選）', img: buildCardImg('sv3pt5', '200'), code: 'SV2a 200/165', rarity: 'SAR', marketPt: 12500 },
+                milestoneInterval: 50,
+                milestoneCard: { name: '小火龍 AR 仰望天空 (151)（整數口好禮）', img: buildCardImg('sv3pt5', '168'), code: 'SV2a 168/165', rarity: 'AR', marketPt: 4500 },
+                featured: [
+                    makeTierCard('CHARIZARD_151_SAR', 'S', 85000, 1, true),
+                    makeTierCard('MEW_151_SAR', 'A', 44000, 1, true),
+                    makeTierCard('ERIKA_151_SAR', 'A', 38000, 2, true),
+                    makeTierCard('VENUSAUR_151_SAR', 'B', 11500, 4, false),
+                    makeTierCard('ZAPDOS_151_SAR', 'B', 10800, 4, false),
+                    ...EXTENDED_POOL_ITEMS
+                ]
+            },
+            {
+                id: 'pool-sv85-terastal',
+                tag: 'ANNIV_30TH',
+                badge: 'SV8.5 太晶慶典 ex',
+                title: '【太晶慶典 ex 狂歡】太晶月亮伊布 ＆ 純金太晶皮卡丘 UR',
+                price: 950,
+                bannerImg: buildArtImg(700),
+                lastOne: { name: '【太晶慶典】太晶雷伊布 ex SAR（中高等精選）', img: buildCardImg('sv8pt5', '153'), code: 'SV8.5 153/131', rarity: 'SAR', marketPt: 11800 },
+                milestoneInterval: 50,
+                milestoneCard: { name: '【太晶慶典】太晶伊布 ex RR（整數口好禮）', img: buildCardImg('sv8pt5', '75'), code: 'SV8.5 075/131', rarity: 'RR', marketPt: 4700 },
+                featured: [
+                    makeTierCard('TERASTAL_UMBREON', 'S', 92000, 1, true),
+                    makeTierCard('TERASTAL_SYLVEON', 'A', 46000, 1, true),
+                    makeTierCard('TERASTAL_PIKACHU_UR', 'A', 41000, 2, true),
+                    makeTierCard('TERASTAL_ESPEON', 'B', 13200, 4, false),
+                    makeTierCard('TERASTAL_GLACEON', 'B', 11200, 4, false),
+                    ...EXTENDED_POOL_ITEMS
+                ]
+            },
+            {
+                id: 'pool-sv9-partners',
+                tag: 'LOW_ODDS_199',
+                badge: 'SV9 對戰搭檔',
+                title: '【SV9 對戰搭檔】莉莉艾的皮皮 ex SAR ＆ N 的索羅亞克',
+                price: 920,
+                bannerImg: buildArtImg(35),
+                lastOne: { name: '【SV9】暴飛龍 ex SAR（中高等精選）', img: buildArtImg(373), code: 'SV9 129/100', rarity: 'SAR', marketPt: 11200 },
+                milestoneInterval: 50,
+                milestoneCard: { name: '【SV9】N 的萊希拉姆 AR（整數口好禮）', img: buildArtImg(643), code: 'SV9 109/100', rarity: 'AR', marketPt: 4600 },
+                featured: [
+                    makeTierCard('LILLIE_CLEFAIRY_SAR', 'S', 89000, 1, true),
+                    makeTierCard('N_ZOROARK_SAR', 'A', 45000, 1, true),
+                    makeTierCard('IONO_BELLIBOLT_SAR', 'A', 39000, 2, true),
+                    makeTierCard('SALAMENCE_SV9_SAR', 'B', 12000, 4, false),
+                    makeTierCard('IONO_SAR', 'B', 13500, 4, false),
+                    ...EXTENDED_POOL_ITEMS
+                ]
+            },
+            {
+                id: 'pool-swsh-legends',
+                tag: 'LOW_ODDS_199',
+                badge: '劍盾神獸三巨頭',
+                title: '【神獸創世錄】騎拉帝納 V SA ＆ 洛奇亞 V SA ＆ 阿爾宙斯 UR',
+                price: 1050,
+                bannerImg: buildArtImg(487),
+                lastOne: { name: '帕路奇亞 VSTAR UR（中高等精選）', img: buildCardImg('swsh12pt5gg', 'GG67'), code: 'CRZ GG67', rarity: 'UR', marketPt: 13500 },
+                milestoneInterval: 50,
+                milestoneCard: { name: '超夢 VSTAR SAR（整數口好禮）', img: buildCardImg('swsh12pt5gg', 'GG44'), code: 'CRZ GG44', rarity: 'SAR', marketPt: 6500 },
+                featured: [
+                    makeTierCard('GIRATINA_V_SA', 'S', 112000, 1, true),
+                    makeTierCard('LUGIA_V_SA', 'A', 52000, 1, true),
+                    makeTierCard('ARCEUS_VSTAR_UR', 'A', 36000, 2, true),
+                    makeTierCard('DIALGA_VSTAR_UR', 'B', 14200, 4, false),
+                    makeTierCard('PALKIA_VSTAR_UR', 'B', 13500, 4, false),
+                    ...EXTENDED_POOL_ITEMS
+                ]
+            },
+            {
+                id: 'pool-sv11-bwr',
+                tag: 'ANNIV_30TH',
+                badge: 'SV11 黑雷＆白焰 BWR',
+                title: '【SV11 黑雷白焰】純黑捷克羅姆 ＆ 純白萊希拉姆 ＆ 緋紅比克提尼',
+                price: 1150,
+                bannerImg: buildArtImg(644),
+                lastOne: { name: '【SV11 白焰】三首惡龍 ex SAR（中高等精選）', img: buildArtImg(635), code: 'SV11W 169/086', rarity: 'SAR', marketPt: 12400 },
+                milestoneInterval: 50,
+                milestoneCard: { name: '【SV11 黑雷】捷克羅姆 ex RR（整數口好禮）', img: buildArtImg(644), code: 'SV11B 037/086', rarity: 'RR', marketPt: 4800 },
+                featured: [
+                    makeTierCard('VICTINI_BWR', 'S', 118000, 1, true),
+                    makeTierCard('ZEKROM_BWR', 'A', 55000, 1, true),
+                    makeTierCard('RESHIRAM_BWR', 'A', 54000, 2, true),
+                    makeTierCard('KYUREM_SV11_SAR', 'B', 13800, 4, false),
+                    makeTierCard('HILDA_SV11_SAR', 'B', 14500, 4, false),
+                    ...EXTENDED_POOL_ITEMS
+                ]
+            },
+            {
+                id: 'pool-25th-golden',
+                tag: 'PSA10_VIP',
+                badge: '25週年黃金紀念箱',
+                title: '【25週年黃金紀念箱】純金皮卡丘 V SWSH145 ＆ 黃金夢幻 UR',
+                price: 1350,
+                bannerImg: buildArtImg(25),
+                lastOne: { name: '【25週年經典】初代水箭龜 復刻（中高等精選）', img: buildCardImg('cel25c', '2_A'), code: 'cel25c 2', rarity: 'SR', marketPt: 11800 },
+                milestoneInterval: 50,
+                milestoneCard: { name: '【25週年】衝浪皮卡丘 VMAX（整數口好禮）', img: buildCardImg('cel25', '9'), code: 'cel25 009', rarity: 'RRR', marketPt: 4500 },
+                featured: [
+                    makeTierCard('GOLD_PIKACHU_V', 'S', 115000, 1, true),
+                    makeTierCard('GOLD_MEW_UR', 'A', 46000, 1, true),
+                    makeTierCard('UMBREON_STAR_25TH', 'A', 42000, 2, true),
+                    makeTierCard('CHARIZARD_25TH', 'B', 15500, 4, false),
+                    makeTierCard('GOLD_POKEBALL', 'B', 12000, 4, false),
+                    ...EXTENDED_POOL_ITEMS
+                ]
+            },
+            {
+                id: 'pool-vip-10000',
+                tag: 'PSA10_VIP',
+                badge: '頂級至尊 PSA 10 殿堂',
+                title: '【至尊高單價殿堂】梵谷皮卡丘 ＆ 變裝皮卡丘 ＆ 夢幻 RGB 總集結',
+                price: 8800,
+                bannerImg: buildArtImg(151),
+                lastOne: { name: '沙奈朵 ex SAR (Shiny)（中高等精選）', img: buildCardImg('sv4pt5', '233'), code: 'PAF 233/091', rarity: 'SAR', marketPt: 16200 },
+                milestoneInterval: 50,
+                milestoneCard: { name: '瑪俐 SR (Shield)（整數口好禮）', img: buildCardImg('swsh1', '200'), code: 'SSH 200/202', rarity: 'SR', marketPt: 6800 },
+                featured: [
+                    makeTierCard('PONCHO_CHARIZARD_PIKA', 'S', 260000, 1, true),
+                    makeTierCard('C30_MEW_RGB', 'A', 180000, 1, true),
+                    makeTierCard('VAN_GOGH_PIKACHU', 'A', 96000, 2, true),
+                    makeTierCard('UMBREON_VMAX_SA', 'B', 38000, 4, true),
+                    makeTierCard('RAYQUAZA_VMAX_SA', 'B', 36000, 4, true),
+                    ...EXTENDED_POOL_ITEMS
+                ]
+            }
+        ];
+
+        /* ==========================================================================
+         * 5. 11 大現代正版單包 / 單盒獨立卡表（100% 系列鎖定，絕不混雜 151 或 Vintage 舊卡！）
+         * ========================================================================== */
+        const BOX_SERIES_POOLS = {
+            'box-30th-m6a': [
+                makeTierCard('C30_MEW_RGB', 'S', 180000, 1, true),
+                makeTierCard('C30_MEW_FUR', 'A', 68000, 2, false),
+                makeTierCard('C30_MEWTWO_FUR', 'A', 62000, 2, false),
+                makeTierCard('C30_CHARIZARD_30TH', 'B', 13500, 5, false),
+                makeTierCard('C30_PIKACHU_30TH', 'B', 11000, 5, false),
+                makeTierCard('C30_UMBREON_EX', 'B', 14500, 5, false),
+                makeTierCard('C30_ESPEON_EX', 'C', 4200, 12, false),
+                makeTierCard('C30_GRENINJA_EX', 'C', 2800, 15, false),
+                makeTierCard('C30_FUECOCO_EX', 'D', 550, 30, false),
+                makeTierCard('C30_HOOH_R', 'D', 420, 35, false),
+                makeTierCard('C30_PALKIA_R', 'D', 400, 35, false)
+            ],
+            'box-sv10-rocket': [
+                makeTierCard('ROCKET_MEWTWO_SAR', 'S', 98000, 1, false),
+                makeTierCard('ROCKET_MEWTWO_UR', 'A', 54000, 2, false),
+                makeTierCard('CYNTHIA_GARCHOMP_SAR', 'A', 48000, 2, false),
+                makeTierCard('ETHAN_HOOH_SAR', 'B', 15200, 5, false),
+                makeTierCard('ROCKET_MOLTRES_SAR', 'B', 13500, 5, false),
+                makeTierCard('ROCKET_CROBAT_SAR', 'B', 11500, 5, false),
+                makeTierCard('ROCKET_NIDOKING_SR', 'C', 4500, 12, false),
+                makeTierCard('ROCKET_MEOWTH_AR', 'C', 3200, 15, false),
+                makeTierCard('ROCKET_HOUNDOOM_AR', 'C', 2600, 15, false),
+                makeTierCard('ROCKET_WEEZING_AR', 'D', 680, 30, false),
+                makeTierCard('ROCKET_MEWTWO_RR', 'D', 580, 35, false),
+                makeTierCard('ROCKET_GRUNT_C', 'D', 260, 40, false),
+                makeTierCard('ROCKET_ZUBAT_C', 'D', 240, 40, false)
+            ],
+            'box-m1l-brave': [
+                makeTierCard('MEGA_LUCARIO_MUR', 'S', 110000, 1, false),
+                makeTierCard('MEGA_LUCARIO_SAR', 'A', 46000, 2, false),
+                makeTierCard('LILLIE_DETERM_SAR', 'A', 42000, 2, false),
+                makeTierCard('MEGA_LUCARIO_RR', 'B', 6200, 6, false),
+                makeTierCard('MEGA_RIOLU_C', 'D', 320, 45, false)
+            ],
+            'box-m2a-dream': [
+                makeTierCard('MEGA_CHARIZARDY_MUR', 'S', 135000, 1, false),
+                makeTierCard('MEGA_DREAM_PIKA_SAR', 'A', 58000, 2, false),
+                makeTierCard('MEGA_RAYQUAZA_MA', 'A', 44000, 2, false),
+                makeTierCard('MEGA_GENGAR_MA', 'B', 14800, 5, false),
+                makeTierCard('MEGA_DRAGONITE_SAR', 'B', 12800, 5, false),
+                makeTierCard('MEGA_RIOLU_C', 'D', 350, 45, false)
+            ],
+            'box-m1s-symphonia': [
+                makeTierCard('MEGA_GARDEVOIR_MUR', 'S', 105000, 1, false),
+                makeTierCard('MEGA_GARDEVOIR_SAR', 'A', 44000, 2, false),
+                makeTierCard('MEGA_LATIAS_SAR', 'A', 39000, 2, false),
+                makeTierCard('MEGA_GARDEVOIR_RR', 'B', 5800, 6, false),
+                makeTierCard('MEGA_RALTS_C', 'D', 310, 45, false)
+            ],
+            'box-m2-inferno': [
+                makeTierCard('MEGA_CHARIZARDX_MUR', 'S', 128000, 1, false),
+                makeTierCard('MEGA_CHARIZARDX_SAR', 'A', 52000, 2, false),
+                makeTierCard('DAWN_M2_SAR', 'A', 41000, 2, false),
+                makeTierCard('ROTOM_ME2_SAR', 'B', 11500, 5, false),
+                makeTierCard('MEGA_CHARIZARDX_RR', 'C', 3200, 15, false),
+                makeTierCard('MEGA_RIOLU_C', 'D', 300, 45, false)
+            ],
+            'box-sv11-bwr': [
+                makeTierCard('VICTINI_BWR', 'S', 118000, 1, false),
+                makeTierCard('ZEKROM_BWR', 'A', 55000, 2, false),
+                makeTierCard('RESHIRAM_BWR', 'A', 54000, 2, false),
+                makeTierCard('KYUREM_SV11_SAR', 'B', 13800, 5, false),
+                makeTierCard('HILDA_SV11_SAR', 'B', 14500, 5, false),
+                makeTierCard('HYDREIGON_SV11_SAR', 'C', 4200, 14, false),
+                makeTierCard('ZEKROM_SV11_RR', 'C', 2400, 16, false),
+                makeTierCard('RESHIRAM_SV11_RR', 'D', 650, 35, false),
+                makeTierCard('JOLTIK_SV11_C', 'D', 260, 45, false)
+            ],
+            'box-sv85-terastal': [
+                makeTierCard('TERASTAL_UMBREON', 'S', 92000, 1, false),
+                makeTierCard('TERASTAL_SYLVEON', 'A', 46000, 2, false),
+                makeTierCard('TERASTAL_PIKACHU_UR', 'A', 41000, 2, false),
+                makeTierCard('TERASTAL_ESPEON', 'B', 13200, 5, false),
+                makeTierCard('TERASTAL_LEAFEON', 'B', 11800, 5, false),
+                makeTierCard('TERASTAL_GLACEON', 'C', 4500, 12, false),
+                makeTierCard('TERASTAL_FLAREON', 'C', 4100, 12, false),
+                makeTierCard('TERASTAL_VAPOREON', 'C', 4300, 12, false),
+                makeTierCard('TERASTAL_JOLTEON', 'C', 3900, 12, false),
+                makeTierCard('TERASTAL_EEVEE_RR', 'D', 720, 35, false),
+                makeTierCard('TERASTAL_EEVEE_C', 'D', 280, 45, false)
+            ],
+            'box-sv9-partners': [
+                makeTierCard('LILLIE_CLEFAIRY_SAR', 'S', 89000, 1, false),
+                makeTierCard('N_ZOROARK_SAR', 'A', 45000, 2, false),
+                makeTierCard('IONO_BELLIBOLT_SAR', 'A', 39000, 2, false),
+                makeTierCard('SALAMENCE_SV9_SAR', 'B', 12000, 5, false),
+                makeTierCard('N_RESHIRAM_AR', 'C', 3800, 15, false),
+                makeTierCard('LILLIE_RIBOMBEE_AR', 'C', 3400, 15, false),
+                makeTierCard('ROCKET_GRUNT_C', 'D', 260, 45, false)
+            ],
+            'box-151-sv2a': [
+                makeTierCard('CHARIZARD_151_SAR', 'S', 85000, 1, false),
+                makeTierCard('MEW_151_SAR', 'A', 44000, 2, false),
+                makeTierCard('ERIKA_151_SAR', 'A', 38000, 2, false),
+                makeTierCard('BLASTOISE_151_SAR', 'B', 12500, 5, false),
+                makeTierCard('VENUSAUR_151_SAR', 'B', 11500, 5, false),
+                makeTierCard('PIKACHU_151_AR', 'C', 3200, 15, false),
+                makeTierCard('CHARMANDER_151_AR', 'C', 2600, 15, false),
+                makeTierCard('CATERPIE_151', 'D', 320, 40, false),
+                makeTierCard('MAGIKARP_151', 'D', 360, 40, false)
+            ],
+            'box-25th-golden': [
+                makeTierCard('GOLD_PIKACHU_V', 'S', 115000, 1, false),
+                makeTierCard('GOLD_MEW_UR', 'A', 46000, 2, false),
+                makeTierCard('UMBREON_STAR_25TH', 'A', 42000, 2, false),
+                makeTierCard('CHARIZARD_25TH', 'B', 15500, 5, false),
+                makeTierCard('BLASTOISE_25TH', 'C', 4800, 14, false),
+                makeTierCard('FLYING_PIKA_VMAX', 'D', 680, 35, false),
+                makeTierCard('SURFING_PIKA_VMAX', 'D', 650, 35, false)
+            ]
+        };
+
+        const BOX_SETS = [
+            { id: 'box-30th-m6a', badge: '👑 2026 30週年最新彈', title: '寶可夢 30週年紀念皇冠盒 (M6a)', packPrice: 900, boxPrice: 8500, packsPerBox: 10, coverImg: buildArtImg(151), desc: '收錄 30th 夢幻 RGB 三原色隱藏版、夢幻/超夢 FUR 未來稀有與 30th 噴火龍！' },
+            { id: 'box-sv10-rocket', badge: '🚀 2025 SV10 現代正版', title: 'SV10 火箭隊的榮耀 擴充盒', packPrice: 750, boxPrice: 7200, packsPerBox: 10, coverImg: buildArtImg(150), desc: '100% 現代 SV10 正版卡表！主打火箭隊的超夢 ex SAR、竹蘭烈咬陸鯊與阿響鳳王！' },
+            { id: 'box-m1l-brave', badge: '🥊 MEGA 超級進化', title: 'M1L 超級勇氣 (Mega Brave)', packPrice: 720, boxPrice: 6900, packsPerBox: 10, coverImg: buildArtImg(448), desc: '主打超級路卡利歐 ex MUR 純金特卡與莉莉艾的決心 SAR！' },
+            { id: 'box-m2a-dream', badge: '🌠 MEGA 夢想高級包', title: 'M2a 超級夢想 ex (MEGA Dream ex)', packPrice: 880, boxPrice: 8200, packsPerBox: 10, coverImg: buildArtImg(25), desc: '每包高閃率！收錄夢想皮卡丘 ex SAR、超級噴火龍 Y MUR 與超級耿鬼 MA！' },
+            { id: 'box-m1s-symphonia', badge: '🎶 MEGA 超級進化', title: 'M1S 超級交響樂 (Mega Symphonia)', packPrice: 720, boxPrice: 6900, packsPerBox: 10, coverImg: buildArtImg(282), desc: '主打超級沙奈朵 ex MUR 純金特卡與超級拉帝亞斯 ex SAR！' },
+            { id: 'box-m2-inferno', badge: '🔥 MEGA 蒼藍烈焰', title: 'M2 煉獄烈焰 X (Inferno X)', packPrice: 760, boxPrice: 7300, packsPerBox: 10, coverImg: buildArtImg(6), desc: '主打超級噴火龍 X ex MUR
