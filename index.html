@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Orbitron:wght@600;800;900&family=JetBrains+Mono:wght@600;800&display=swap" rel="stylesheet">
-    <script>
+    <script id="pokevault-tailwind-config">
         tailwind.config = {
             darkMode: 'class',
             theme: {
@@ -48,7 +48,7 @@
             }
         }
     </script>
-    <style>
+    <style id="pokevault-main-style">
         body {
             background-color: #07090e;
             color: #f3f4f6;
@@ -440,12 +440,16 @@
                     <span>🌋 卡片熔爐</span>
                     <span class="px-1.5 py-0.2 rounded-full bg-amber-500/25 border border-amber-400/50 text-amber-300 text-[9px] font-black">PSA10/鍍金</span>
                 </button>
+                <button onclick="switchMainTab('auction')" id="nav-tab-auction" class="px-3 py-1.5 rounded-lg text-xs font-bold text-emerald-300 hover:text-white transition-all flex items-center gap-1">
+                    <span>🔨 拍賣競標</span>
+                    <span class="px-1.5 py-0.2 rounded-full bg-emerald-500/25 border border-emerald-400/50 text-emerald-300 text-[9px] font-black" id="badge-auction-count">8</span>
+                </button>
                 <button onclick="switchMainTab('inventory')" id="nav-tab-inventory" class="px-3 py-1.5 rounded-lg text-xs font-bold text-gray-400 hover:text-white transition-all flex items-center gap-1">
                     <span>🎒 保管庫 (<span id="badge-vault-count">0</span>)</span>
                 </button>
             </nav>
 
-            <!-- 右側寶可夢城鎮 BGM 播放器、音效、Email登入與 PT 錢包 -->
+            <!-- 右側寶可夢 Lo-Fi 城鎮 BGM 播放器、音效、Email登入與 PT 錢包 -->
             <div class="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
                 <!-- Email 綁定登入 & Word 存取按鈕 -->
                 <button onclick="EmailWordAuth.openModal()" id="btn-email-auth" class="flex items-center gap-1.5 bg-slatecard hover:bg-slate-800 border border-indigo-400/50 rounded-xl px-2 sm:px-2.5 py-1.5 text-xs font-black text-indigo-300 hover:text-white transition-all" title="Email 綁定登入 & Word (.doc) 檔案存取">
@@ -453,13 +457,13 @@
                     <span id="auth-btn-label" class="hidden sm:inline max-w-[105px] truncate">Email登入</span>
                 </button>
 
-                <!-- 寶可夢城鎮背景音樂控制器 -->
-                <div class="flex items-center bg-slatecard border border-sky-500/35 rounded-xl px-2 py-1 gap-1.5" title="原作寶可夢遊戲城鎮 BGM 隨機播放">
-                    <button onclick="TownBGM.togglePlay()" id="btn-bgm-toggle" class="text-xs font-black text-sky-300 hover:text-white flex items-center gap-1">
-                        <span id="bgm-status-icon">🎵</span>
-                        <span id="bgm-track-label" class="hidden lg:inline text-[11px] max-w-[110px] truncate">城鎮BGM: 待命</span>
+                <!-- 寶可夢 Lo-Fi (Gen 1-3) 背景音樂控制器 -->
+                <div class="flex items-center bg-slatecard border border-fuchsia-500/40 rounded-xl px-2 py-1 gap-1.5" title="Classic Pokémon Lo-Fi (Gen 1-3 Kanto/Johto/Hoenn) 隨機播放">
+                    <button onclick="TownBGM.togglePlay()" id="btn-bgm-toggle" class="text-xs font-black text-fuchsia-300 hover:text-white flex items-center gap-1">
+                        <span id="bgm-status-icon">🎧</span>
+                        <span id="bgm-track-label" class="hidden lg:inline text-[11px] max-w-[125px] truncate">Lo-Fi BGM: 待命</span>
                     </button>
-                    <button onclick="TownBGM.nextRandomTrack()" class="text-[11px] text-gray-400 hover:text-amber-300 px-1" title="隨機切換下一首城鎮音樂">
+                    <button onclick="TownBGM.nextRandomTrack()" class="text-[11px] text-gray-400 hover:text-amber-300 px-1" title="隨機切換下一首 Lo-Fi 寶可夢音樂">
                         ⏭
                     </button>
                 </div>
@@ -478,18 +482,21 @@
                 </div>
             </div>
         </div>
-        <!-- 手機版四分頁列 -->
+        <!-- 手機版五分頁列 -->
         <div class="md:hidden flex border-t border-slateborder bg-[#0b0e17]">
-            <button onclick="switchMainTab('pools')" id="m-tab-pools" class="flex-1 py-2.5 text-[11px] font-black text-amber-400 border-b-2 border-amber-400">
+            <button onclick="switchMainTab('pools')" id="m-tab-pools" class="flex-1 py-2.5 text-[10px] font-black text-amber-400 border-b-2 border-amber-400">
                 🔥 オリパ
             </button>
-            <button onclick="switchMainTab('boxes')" id="m-tab-boxes" class="flex-1 py-2.5 text-[11px] font-bold text-gray-300">
-                📦 單包撕開
+            <button onclick="switchMainTab('boxes')" id="m-tab-boxes" class="flex-1 py-2.5 text-[10px] font-bold text-gray-300">
+                📦 單包
             </button>
-            <button onclick="switchMainTab('furnace')" id="m-tab-furnace" class="flex-1 py-2.5 text-[11px] font-bold text-orange-300">
+            <button onclick="switchMainTab('furnace')" id="m-tab-furnace" class="flex-1 py-2.5 text-[10px] font-bold text-orange-300">
                 🌋 熔爐
             </button>
-            <button onclick="switchMainTab('inventory')" id="m-tab-inventory" class="flex-1 py-2.5 text-[11px] font-bold text-gray-400">
+            <button onclick="switchMainTab('auction')" id="m-tab-auction" class="flex-1 py-2.5 text-[10px] font-bold text-emerald-300">
+                🔨 拍賣(<span id="m-badge-auction">8</span>)
+            </button>
+            <button onclick="switchMainTab('inventory')" id="m-tab-inventory" class="flex-1 py-2.5 text-[10px] font-bold text-gray-400">
                 🎒 庫存(<span id="m-badge-vault">0</span>)
             </button>
         </div>
@@ -514,6 +521,9 @@
                         </p>
                     </div>
                     <div class="flex flex-wrap items-center gap-2.5 flex-shrink-0">
+                        <button onclick="switchMainTab('auction')" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-400 hover:brightness-110 text-black font-black text-xs shadow-lg transition-transform active:scale-95">
+                            🔨 AI 即時拍賣競標會 ➔
+                        </button>
                         <button onclick="switchMainTab('furnace')" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 via-amber-500 to-yellow-400 hover:brightness-110 text-black font-black text-xs shadow-lg transition-transform active:scale-95">
                             🌋 進入 PSA10 / 鍍金熔爐 ➔
                         </button>
@@ -810,6 +820,81 @@
                     <div id="furnace-gold-candidates" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 max-h-[420px] overflow-y-auto pr-1"></div>
                 </div>
             </div>
+        </section>
+
+        <!-- ==================== 視圖五：🔨 即時拍賣競標會 (AI 模擬真人競標・短標2H / 長標12H) ==================== -->
+        <section id="view-auction" class="hidden space-y-6">
+            <!-- 拍賣會頂部主視覺橫幅 -->
+            <div class="relative rounded-2xl overflow-hidden bg-gradient-to-r from-[#061c19] via-[#0c2330] to-[#130f26] border border-emerald-400/45 p-4 sm:p-6 shadow-2xl">
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                    <div class="space-y-1.5 max-w-3xl">
+                        <div class="inline-flex flex-wrap items-center gap-2">
+                            <span class="px-2.5 py-0.5 rounded-full bg-gradient-to-r from-emerald-400 to-teal-500 text-black text-[11px] font-black flex items-center gap-1.5">
+                                <span class="w-2 h-2 rounded-full bg-black animate-ping"></span>
+                                LIVE AI 模擬真人拍賣競標會
+                            </span>
+                            <span class="px-2.5 py-0.5 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 text-[11px] font-bold">⚡ 短標 2 小時 / 🌙 長標 12 小時・反狙擊延長保護</span>
+                            <span class="px-2.5 py-0.5 rounded-full bg-sky-500/20 border border-sky-400/40 text-sky-300 text-[11px] font-bold" id="auction-online-ai-badge">🟢 線上 AI 買家：14 位出價中</span>
+                        </div>
+                        <h2 class="text-xl sm:text-3xl font-black text-white">
+                            🔨 <span class="text-emerald-300">POKÉVAULT 拍賣行</span>！撿漏神卡 & <span class="text-amber-300">上架愛卡讓 AI 買家瘋狂搶標</span>
+                        </h2>
+                        <p class="text-xs sm:text-sm text-gray-300">
+                            支援 <strong>⚡ 短標（2小時快節奏）</strong> 與 <strong>🌙 長標（12小時高價競標）</strong>！出價被超價立即 100% 退還託管 PT；想搶先看尾盤刺激搶標，也可在競標室使用「⏩ 模擬快轉至最後 15 秒」！
+                        </p>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2.5 flex-shrink-0">
+                        <button onclick="AuctionSystem.openListModal()" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-orange-500 to-rose-500 hover:brightness-110 text-black font-black text-xs shadow-lg transition-transform active:scale-95">
+                            ➕ 上架我的保管庫卡片
+                        </button>
+                        <button onclick="AuctionSystem.spawnFreshBatch()" class="px-3.5 py-2.5 rounded-xl bg-slatecard hover:bg-slate-800 border border-emerald-400/50 text-emerald-300 font-black text-xs shadow-lg transition-transform active:scale-95">
+                            🔄 補進新拍品
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 即時 AI 競標動態條 -->
+            <div class="bg-[#0b121c] border border-emerald-500/30 rounded-xl px-3.5 py-2.5 flex items-center justify-between gap-3 text-xs">
+                <div class="flex items-center gap-2 min-w-0">
+                    <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-black text-[10px] flex-shrink-0">LIVE 實況</span>
+                    <span id="auction-live-feed-line" class="text-gray-200 font-bold truncate">🤖 線上 AI 收藏家正在巡覽拍賣會場，隨時可能出手搶標...</span>
+                </div>
+                <span class="text-[11px] font-mono text-amber-300 flex-shrink-0 hidden sm:inline" id="auction-escrow-summary">託管中：0 PT</span>
+            </div>
+
+            <!-- 拍賣分類篩選列 -->
+            <div class="flex flex-wrap items-center justify-between gap-2">
+                <div class="flex flex-wrap items-center gap-1.5">
+                    <button onclick="AuctionSystem.setFilter('ALL')" id="auc-filter-ALL" class="auc-filter-btn px-3.5 py-2 rounded-xl text-xs font-black bg-emerald-400 text-black shadow transition-all">
+                        🔥 全部進行中
+                    </button>
+                    <button onclick="AuctionSystem.setFilter('SHORT_2H')" id="auc-filter-SHORT_2H" class="auc-filter-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-slatecard text-amber-300 border border-amber-500/40 hover:text-white transition-all">
+                        ⚡ 短標 (2小時)
+                    </button>
+                    <button onclick="AuctionSystem.setFilter('LONG_12H')" id="auc-filter-LONG_12H" class="auc-filter-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-slatecard text-sky-300 border border-sky-500/40 hover:text-white transition-all">
+                        🌙 長標 (12小時)
+                    </button>
+                    <button onclick="AuctionSystem.setFilter('MY_BIDS')" id="auc-filter-MY_BIDS" class="auc-filter-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-slatecard text-rose-300 border border-rose-500/40 hover:text-white transition-all">
+                        👑 我出價中
+                    </button>
+                    <button onclick="AuctionSystem.setFilter('MY_LISTINGS')" id="auc-filter-MY_LISTINGS" class="auc-filter-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-slatecard text-fuchsia-300 border border-fuchsia-500/40 hover:text-white transition-all">
+                        🏷️ 我上架的
+                    </button>
+                    <button onclick="AuctionSystem.setFilter('ENDED')" id="auc-filter-ENDED" class="auc-filter-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-slatecard text-gray-300 border border-slateborder hover:text-white transition-all">
+                        ✅ 已結標紀錄
+                    </button>
+                </div>
+                <select id="auction-sort-select" onchange="AuctionSystem.renderGrid()" class="bg-slatecard border border-slateborder rounded-xl px-3 py-1.5 text-xs font-bold text-gray-200 focus:outline-none focus:border-emerald-400">
+                    <option value="ENDING_SOON">依最快結標排序</option>
+                    <option value="BID_DESC">依目前最高價：高 ➔ 低</option>
+                    <option value="BID_ASC">依目前最高價：低 ➔ 高</option>
+                    <option value="HOT">依最熱門搶標排序</option>
+                </select>
+            </div>
+
+            <!-- 拍品列表網格 -->
+            <div id="auction-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
         </section>
 
         <!-- 頁尾：低調內建 GitHub Pages 原始碼下載與複製工具（不自動彈窗干擾遊玩） -->
@@ -1351,15 +1436,170 @@
         </div>
     </div>
 
+    <!-- 8B. 🔨 拍賣競標室詳情彈窗 (即時倒數・出價紀錄・自訂出價・直購・模擬快轉尾盤搶標) -->
+    <div id="auction-detail-modal" class="fixed inset-0 z-[64] hidden bg-black/88 backdrop-blur-md overflow-y-auto p-3 sm:p-5">
+        <div class="min-h-full flex items-center justify-center py-4">
+            <div class="bg-slatecard border border-emerald-400/50 rounded-2xl max-w-3xl w-full overflow-hidden shadow-2xl">
+                <div class="px-4 sm:px-5 py-3.5 bg-[#0b131d] border-b border-white/10 flex items-center justify-between gap-2">
+                    <div class="flex items-center gap-2 min-w-0">
+                        <span id="auc-det-duration-badge" class="px-2 py-0.5 rounded bg-amber-400 text-black text-[10px] font-black flex-shrink-0">⚡ 短標 2H</span>
+                        <h3 id="auc-det-title" class="text-sm sm:text-base font-black text-white truncate">競標室</h3>
+                    </div>
+                    <button onclick="AuctionSystem.closeDetailModal()" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-gray-300 font-bold flex-shrink-0">✕</button>
+                </div>
+
+                <div class="p-4 sm:p-5 grid grid-cols-1 md:grid-cols-12 gap-5">
+                    <!-- 左側：3D 卡片展示 & 剩餘時間 -->
+                    <div class="md:col-span-5 flex flex-col items-center space-y-3">
+                        <div id="auc-det-card-mount" class="w-52 sm:w-56"></div>
+                        <div class="w-full bg-obsidian border border-white/10 rounded-xl p-3 text-center space-y-1">
+                            <div class="text-[10px] text-gray-400 font-bold">距離結標剩餘時間</div>
+                            <div id="auc-det-timer" class="font-mono font-black text-2xl text-emerald-400 tracking-wider">01:59:59</div>
+                            <div class="text-[10px] text-gray-400" id="auc-det-seller-info">賣家：官方精選</div>
+                        </div>
+                        <button id="auc-det-fastforward-btn" onclick="AuctionSystem.fastForwardActiveDetail()" class="w-full py-2 px-3 rounded-xl bg-fuchsia-500/20 hover:bg-fuchsia-500/30 border border-fuchsia-400/50 text-fuchsia-200 font-black text-[11px] transition-all">
+                            ⏩ 模擬快轉至最後 15 秒（體驗 AI 尾盤搶標！）
+                        </button>
+                    </div>
+
+                    <!-- 右側：即時出價操作 & 真人 AI 競標紀錄 -->
+                    <div class="md:col-span-7 flex flex-col justify-between space-y-4">
+                        <div class="space-y-3">
+                            <!-- 目前價格與領先者卡片 -->
+                            <div class="bg-gradient-to-br from-[#0e1b26] to-[#111520] border border-emerald-500/40 rounded-xl p-3.5 space-y-2">
+                                <div class="flex items-center justify-between text-xs">
+                                    <span class="text-gray-400">目前最高出價</span>
+                                    <span id="auc-det-bid-count" class="font-mono font-bold text-sky-300">共 0 次出價</span>
+                                </div>
+                                <div class="flex items-baseline justify-between gap-2">
+                                    <div id="auc-det-current-bid" class="font-display font-black text-2xl sm:text-3xl text-amber-400">0 PT</div>
+                                    <div id="auc-det-market-ref" class="text-[11px] text-gray-400">市場估值：0 PT</div>
+                                </div>
+                                <div class="flex items-center justify-between text-xs pt-1 border-t border-white/10">
+                                    <span class="text-gray-400">目前領先買家</span>
+                                    <span id="auc-det-leader" class="font-black text-emerald-300">尚無人出價</span>
+                                </div>
+                            </div>
+
+                            <!-- 玩家出價動作區 -->
+                            <div id="auc-det-action-box" class="bg-obsidian border border-slateborder rounded-xl p-3.5 space-y-2.5">
+                                <div class="flex items-center gap-2">
+                                    <input id="auc-det-custom-input" type="number" min="100" step="100" class="flex-1 bg-slatecard border border-slateborder rounded-xl px-3 py-2 font-display font-black text-sm text-amber-300 focus:outline-none focus:border-emerald-400">
+                                    <button onclick="AuctionSystem.submitDetailCustomBid()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-500 hover:brightness-110 text-black font-black text-xs shadow-lg active:scale-95 whitespace-nowrap">
+                                        🔨 立即出價
+                                    </button>
+                                </div>
+                                <div class="grid grid-cols-3 gap-1.5">
+                                    <button onclick="AuctionSystem.quickBumpDetailBid(1)" id="auc-quick-step-1" class="py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-white/10 text-amber-300 font-black text-[11px]">+1 單位</button>
+                                    <button onclick="AuctionSystem.quickBumpDetailBid(3)" id="auc-quick-step-3" class="py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-white/10 text-amber-300 font-black text-[11px]">+3 單位</button>
+                                    <button onclick="AuctionSystem.quickBumpDetailBid(5)" id="auc-quick-step-5" class="py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-white/10 text-amber-300 font-black text-[11px]">+5 單位</button>
+                                </div>
+                                <button id="auc-det-buyout-btn" onclick="AuctionSystem.buyoutActiveDetail()" class="hidden w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-orange-500 to-rose-500 hover:brightness-110 text-black font-black text-xs shadow-lg active:scale-95">
+                                    ⚡ 立即直購得標
+                                </button>
+                            </div>
+
+                            <!-- 若為玩家自己上架的拍品顯示專用面板 -->
+                            <div id="auc-det-seller-box" class="hidden bg-indigo-950/40 border border-indigo-400/40 rounded-xl p-3 text-xs space-y-2">
+                                <div class="font-black text-indigo-300">🏷️ 這是你上架的拍品！AI 買家們正在自動競標中...</div>
+                                <div class="flex items-center justify-between gap-2">
+                                    <span class="text-gray-300 text-[11px]">結標後自動扣除 3% 成交手續費並入帳 PT</span>
+                                    <button onclick="AuctionSystem.promoteMyAuction()" class="px-3 py-1.5 rounded-lg bg-amber-400 hover:brightness-110 text-black font-black text-[11px] flex-shrink-0">
+                                        📣 號召 AI 買家加價！
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 即時競標歷史紀錄牆 -->
+                        <div class="space-y-1.5">
+                            <div class="flex items-center justify-between text-[11px] font-black text-gray-400">
+                                <span>📜 即時競標出價紀錄 (AI 買家實況)</span>
+                                <span class="text-emerald-400">● LIVE</span>
+                            </div>
+                            <div id="auc-det-history-list" class="bg-obsidian border border-white/10 rounded-xl p-2.5 max-h-48 overflow-y-auto space-y-1.5 text-xs"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 8C. ➕ 上架我的保管庫卡片拍賣彈窗 (短標 2小時 / 長標 12小時) -->
+    <div id="auction-list-modal" class="fixed inset-0 z-[65] hidden bg-black/88 backdrop-blur-md overflow-y-auto p-3 sm:p-5">
+        <div class="min-h-full flex items-center justify-center py-4">
+            <div class="bg-slatecard border border-amber-400/50 rounded-2xl max-w-2xl w-full p-5 space-y-4 shadow-2xl">
+                <div class="flex items-center justify-between border-b border-white/10 pb-3">
+                    <div>
+                        <span class="px-2 py-0.5 rounded bg-amber-400 text-black text-[10px] font-black">SELLER CONSOLE</span>
+                        <h3 class="text-lg font-black text-white mt-1">🏷️ 上架卡片至 AI 即時拍賣會</h3>
+                    </div>
+                    <button onclick="AuctionSystem.closeListModal()" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-gray-300 font-bold">✕</button>
+                </div>
+
+                <!-- 步驟 1：挑選保管庫卡片 -->
+                <div class="space-y-1.5">
+                    <div class="text-xs font-black text-amber-300">1. 從保管庫挑選 1 張要拍賣的卡片或原盒：</div>
+                    <div id="auc-list-vault-picker" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 max-h-52 overflow-y-auto bg-obsidian border border-slateborder rounded-xl p-2"></div>
+                </div>
+
+                <!-- 步驟 2：選擇短標 2 小時 / 長標 12 小時 -->
+                <div class="space-y-2">
+                    <div class="text-xs font-black text-amber-300">2. 選擇拍賣標期：</div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                        <button type="button" onclick="AuctionSystem.selectListDuration('SHORT_2H')" id="auc-dur-btn-SHORT_2H" class="p-3 rounded-xl border-2 border-amber-400 bg-amber-500/15 text-left transition-all">
+                            <div class="flex items-center justify-between">
+                                <span class="font-black text-sm text-amber-300">⚡ 短標（2 小時）</span>
+                                <span class="text-[10px] px-2 py-0.5 rounded bg-amber-400 text-black font-black">快節奏出清</span>
+                            </div>
+                            <p class="text-[11px] text-gray-300 mt-1">2 小時快速結標，AI 搶標節奏密集，適合快速變現！</p>
+                        </button>
+                        <button type="button" onclick="AuctionSystem.selectListDuration('LONG_12H')" id="auc-dur-btn-LONG_12H" class="p-3 rounded-xl border border-slateborder bg-obsidian text-left hover:border-sky-400/60 transition-all">
+                            <div class="flex items-center justify-between">
+                                <span class="font-black text-sm text-sky-300">🌙 長標（12 小時）</span>
+                                <span class="text-[10px] px-2 py-0.5 rounded bg-sky-500/25 text-sky-300 font-black">高價曝光 +15%</span>
+                            </div>
+                            <p class="text-[11px] text-gray-300 mt-1">12 小時長線曝光，吸引頂級神豪 AI 出價，成交天花板更高！</p>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 步驟 3：起標價與直購價 -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                    <div>
+                        <label class="block text-gray-300 font-bold mb-1">起標價 (PT) *</label>
+                        <input id="auc-list-start-price" type="number" min="100" step="100" value="1000" class="w-full bg-obsidian border border-slateborder rounded-xl px-3 py-2 font-display font-black text-amber-300 focus:outline-none focus:border-amber-400">
+                        <p id="auc-list-price-hint" class="text-[10px] text-gray-400 mt-1">建議設為市價 50%～75% 最能引發 AI 搶標戰！</p>
+                    </div>
+                    <div>
+                        <label class="block text-gray-300 font-bold mb-1">直購價 (PT，選填・留空則不設直購)</label>
+                        <input id="auc-list-buyout-price" type="number" min="0" step="100" placeholder="例如市價的 1.3 倍" class="w-full bg-obsidian border border-slateborder rounded-xl px-3 py-2 font-display font-black text-emerald-300 focus:outline-none focus:border-emerald-400">
+                        <p class="text-[10px] text-gray-400 mt-1">若有神豪 AI 願意直購，將立刻高價結標入帳！</p>
+                    </div>
+                </div>
+
+                <button onclick="AuctionSystem.confirmListItem()" class="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 hover:brightness-110 text-black font-black text-sm shadow-lg active:scale-95">
+                    🔨 確認上架開始 AI 真人競標！！
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- 9. 訊息通知 Toast -->
     <div id="toast-box" class="fixed bottom-5 right-5 z-[80] flex flex-col gap-2 pointer-events-none"></div>
 
-    <script>
+    <script id="pokevault-main-script">
         /* ==========================================================================
-         * 1. 原作寶可夢遊戲經典城鎮 BGM 隨機播放器 (10 首 YouTube 高人氣寶可夢城鎮名曲・雙聲部和聲)
+         * 1. Classic Pokémon Lo-Fi (Gen 1-3: Kanto, Johto & Hoenn Vibes) 背景音樂引擎
+         *    參考風格：溫暖低通濾波 Rhodes 電鋼琴 + 搖擺 Boom-Bap 鼓組 + 細微黑膠底噪 + 空間延遲
          * ========================================================================== */
         const TownBGM = {
             ctx: null,
+            masterGain: null,
+            lofiFilter: null,
+            delayNode: null,
+            vinylNode: null,
+            vinylGain: null,
             isPlaying: false,
             isPausedForCinema: false,
             timerId: null,
@@ -1367,76 +1607,258 @@
             noteStep: 0,
             unlocked: false,
 
-            // 10 首高播放率經典寶可夢城鎮旋律 (含主旋律 notes + 低音伴奏 bass，音色更飽滿動聽)
+            // 10 首 Gen 1-3 (關都 / 城都 / 豐緣) 經典寶可夢 Lo-Fi Chillhop 改編曲目 (約 72~82 BPM 療癒慢拍)
             tracks: [
                 {
-                    name: '真新鎮 (Pallet Town)',
-                    tempo: 245,
-                    notes: [587.33,523.25,493.88,440.00, 587.33,493.88,392.00,440.00, 493.88,0,493.88,523.25, 493.88,440.00,392.00,0, 440.00,392.00,369.99,329.63, 587.33,523.25,493.88,440.00, 392.00,0,440.00,493.88, 392.00,0,0,0],
-                    bass:  [196.00,0,246.94,0, 196.00,0,246.94,0, 220.00,0,261.63,0, 196.00,0,146.83,0, 164.81,0,196.00,0, 146.83,0,220.00,0, 196.00,0,146.83,0, 196.00,0,0,0]
+                    name: '真新鎮 Lo-Fi (Pallet Chill)',
+                    tempo: 390,
+                    notes: [587.33,523.25,493.88,440.00, 587.33,493.88,392.00,0, 493.88,0,493.88,523.25, 493.88,440.00,392.00,0, 440.00,392.00,369.99,329.63, 587.33,523.25,493.88,440.00, 392.00,0,440.00,493.88, 392.00,0,0,0],
+                    chords: [
+                        [196.00,246.94,293.66,369.99], [164.81,196.00,246.94,293.66],
+                        [220.00,261.63,329.63,392.00], [146.83,220.00,261.63,369.99]
+                    ]
                 },
                 {
-                    name: '華藍市 (Cerulean City)',
-                    tempo: 180,
-                    notes: [523.25,659.25,783.99,659.25, 587.33,659.25,698.46,587.33, 523.25,493.88,523.25,587.33, 659.25,0,523.25,0, 523.25,659.25,783.99,880.00, 783.99,698.46,659.25,587.33, 659.25,587.33,493.88,587.33, 523.25,0,0,0],
-                    bass:  [261.63,0,196.00,0, 293.66,0,196.00,0, 261.63,0,246.94,0, 261.63,0,196.00,0, 261.63,0,220.00,0, 174.61,0,196.00,0, 196.00,0,246.94,0, 261.63,0,0,0]
+                    name: '華藍市 Lo-Fi (Cerulean Rain)',
+                    tempo: 365,
+                    notes: [523.25,659.25,783.99,659.25, 587.33,659.25,698.46,0, 523.25,493.88,523.25,587.33, 659.25,0,523.25,0, 523.25,659.25,783.99,880.00, 783.99,698.46,659.25,587.33, 659.25,587.33,493.88,587.33, 523.25,0,0,0],
+                    chords: [
+                        [130.81,196.00,246.94,329.63], [146.83,220.00,261.63,329.63],
+                        [174.61,220.00,261.63,329.63], [196.00,246.94,293.66,349.23]
+                    ]
                 },
                 {
-                    name: '紫苑鎮 (Lavender Town)',
-                    tempo: 260,
-                    notes: [523.25,783.99,987.77,739.99, 523.25,783.99,987.77,739.99, 523.25,783.99,987.77,739.99, 659.25,659.25,587.33,587.33, 523.25,493.88,440.00,493.88, 523.25,0,392.00,0, 523.25,783.99,987.77,739.99, 659.25,0,0,0],
-                    bass:  [130.81,0,0,0, 123.47,0,0,0, 110.00,0,0,0, 164.81,0,146.83,0, 130.81,0,123.47,0, 130.81,0,196.00,0, 130.81,0,123.47,0, 164.81,0,0,0]
+                    name: '紫苑鎮 Lo-Fi (Lavender Tape)',
+                    tempo: 420,
+                    notes: [523.25,783.99,987.77,739.99, 523.25,783.99,987.77,0, 659.25,0,587.33,0, 523.25,493.88,440.00,493.88, 523.25,0,392.00,0, 523.25,783.99,987.77,739.99, 659.25,587.33,523.25,0, 493.88,0,0,0],
+                    chords: [
+                        [130.81,196.00,246.94,293.66], [123.47,185.00,246.94,293.66],
+                        [110.00,164.81,220.00,261.63], [164.81,196.00,246.94,329.63]
+                    ]
                 },
                 {
-                    name: '緣朱市 (Ecruteak City)',
-                    tempo: 260,
+                    name: '緣朱市 Lo-Fi (Ecruteak Tea)',
+                    tempo: 410,
                     notes: [659.25,587.33,493.88,440.00, 392.00,440.00,493.88,0, 587.33,493.88,440.00,392.00, 329.63,0,392.00,440.00, 493.88,587.33,659.25,587.33, 493.88,440.00,392.00,440.00, 493.88,0,440.00,392.00, 329.63,0,0,0],
-                    bass:  [164.81,0,246.94,0, 196.00,0,246.94,0, 146.83,0,220.00,0, 164.81,0,196.00,0, 246.94,0,196.00,0, 220.00,0,196.00,0, 246.94,0,146.83,0, 164.81,0,0,0]
+                    chords: [
+                        [164.81,196.00,246.94,293.66], [196.00,246.94,293.66,369.99],
+                        [146.83,220.00,261.63,329.63], [164.81,196.00,246.94,329.63]
+                    ]
                 },
                 {
-                    name: '滿金市 (Goldenrod City)',
-                    tempo: 175,
+                    name: '滿金市 Lo-Fi (Goldenrod Dusk)',
+                    tempo: 360,
                     notes: [587.33,659.25,739.99,880.00, 739.99,659.25,587.33,0, 659.25,739.99,880.00,987.77, 880.00,739.99,659.25,0, 587.33,659.25,739.99,783.99, 880.00,987.77,880.00,739.99, 659.25,587.33,493.88,587.33, 739.99,0,587.33,0],
-                    bass:  [146.83,0,220.00,0, 146.83,0,220.00,0, 164.81,0,246.94,0, 220.00,0,164.81,0, 196.00,0,246.94,0, 146.83,0,220.00,0, 164.81,0,220.00,0, 146.83,0,146.83,0]
+                    chords: [
+                        [146.83,220.00,277.18,329.63], [196.00,246.94,293.66,369.99],
+                        [164.81,196.00,246.94,293.66], [220.00,277.18,329.63,392.00]
+                    ]
                 },
                 {
-                    name: '未白鎮 (Littleroot Town)',
-                    tempo: 225,
+                    name: '自然公園 Lo-Fi (Johto Park)',
+                    tempo: 415,
+                    notes: [392.00,493.88,587.33,659.25, 587.33,0,493.88,0, 440.00,523.25,659.25,587.33, 493.88,0,392.00,0, 523.25,587.33,659.25,783.99, 659.25,587.33,523.25,493.88, 440.00,493.88,587.33,440.00, 392.00,0,0,0],
+                    chords: [
+                        [196.00,246.94,293.66,369.99], [130.81,196.00,246.94,329.63],
+                        [220.00,261.63,329.63,392.00], [146.83,220.00,261.63,369.99]
+                    ]
+                },
+                {
+                    name: '未白鎮 Lo-Fi (Littleroot Coffee)',
+                    tempo: 395,
                     notes: [392.00,523.25,587.33,659.25, 587.33,523.25,440.00,0, 392.00,440.00,523.25,587.33, 659.25,0,587.33,0, 659.25,783.99,880.00,783.99, 659.25,587.33,523.25,440.00, 493.88,523.25,587.33,493.88, 523.25,0,0,0],
-                    bass:  [261.63,0,196.00,0, 174.61,0,220.00,0, 196.00,0,261.63,0, 293.66,0,196.00,0, 261.63,0,220.00,0, 174.61,0,196.00,0, 196.00,0,246.94,0, 261.63,0,0,0]
+                    chords: [
+                        [130.81,196.00,246.94,329.63], [174.61,220.00,261.63,329.63],
+                        [220.00,261.63,329.63,392.00], [196.00,246.94,293.66,349.23]
+                    ]
                 },
                 {
-                    name: '凱那市 (Slateport City)',
-                    tempo: 195,
+                    name: '凱那市 Lo-Fi (Slateport Wave)',
+                    tempo: 375,
                     notes: [523.25,587.33,659.25,783.99, 659.25,587.33,659.25,0, 698.46,659.25,587.33,523.25, 587.33,0,392.00,0, 523.25,659.25,783.99,880.00, 783.99,659.25,587.33,523.25, 587.33,659.25,523.25,0, 523.25,0,0,0],
-                    bass:  [130.81,196.00,261.63,196.00, 130.81,196.00,261.63,196.00, 174.61,220.00,196.00,246.94, 196.00,0,196.00,0, 130.81,196.00,220.00,261.63, 174.61,220.00,196.00,246.94, 196.00,0,130.81,0, 130.81,0,0,0]
+                    chords: [
+                        [130.81,196.00,246.94,329.63], [146.83,220.00,261.63,349.23],
+                        [174.61,220.00,261.63,329.63], [196.00,246.94,293.66,349.23]
+                    ]
                 },
                 {
-                    name: '雙葉鎮 (Twinleaf Town)',
-                    tempo: 230,
-                    notes: [392.00,493.88,587.33,659.25, 587.33,493.88,440.00,493.88, 523.25,587.33,659.25,783.99, 659.25,0,587.33,0, 493.88,587.33,659.25,587.33, 493.88,440.00,392.00,440.00, 493.88,440.00,392.00,0, 392.00,0,0,0],
-                    bass:  [196.00,0,246.94,0, 220.00,0,196.00,0, 261.63,0,220.00,0, 196.00,0,146.83,0, 196.00,0,246.94,0, 220.00,0,164.81,0, 146.83,0,196.00,0, 196.00,0,0,0]
+                    name: '橙華市 Lo-Fi (Petalburg Beats)',
+                    tempo: 385,
+                    notes: [587.33,659.25,783.99,659.25, 587.33,523.25,493.88,0, 440.00,493.88,523.25,587.33, 493.88,0,392.00,0, 659.25,783.99,880.00,783.99, 659.25,587.33,523.25,493.88, 523.25,493.88,440.00,493.88, 392.00,0,0,0],
+                    chords: [
+                        [196.00,246.94,293.66,369.99], [164.81,196.00,246.94,293.66],
+                        [130.81,196.00,246.94,329.63], [146.83,220.00,261.63,369.99]
+                    ]
                 },
                 {
-                    name: '祝慶市 (Jubilife City)',
-                    tempo: 185,
-                    notes: [659.25,783.99,880.00,783.99, 659.25,587.33,523.25,587.33, 659.25,0,523.25,0, 587.33,659.25,783.99,0, 880.00,783.99,659.25,587.33, 659.25,783.99,659.25,523.25, 587.33,523.25,440.00,493.88, 523.25,0,0,0],
-                    bass:  [261.63,0,220.00,0, 174.61,0,196.00,0, 261.63,0,220.00,0, 196.00,0,246.94,0, 174.61,0,196.00,0, 261.63,0,220.00,0, 174.61,0,196.00,0, 261.63,0,0,0]
-                },
-                {
-                    name: '唐草鎮 (Accumula Town)',
-                    tempo: 170,
-                    notes: [523.25,659.25,587.33,783.99, 659.25,880.00,783.99,0, 659.25,587.33,523.25,587.33, 659.25,523.25,392.00,0, 523.25,659.25,783.99,1046.50, 880.00,783.99,659.25,587.33, 523.25,587.33,659.25,587.33, 523.25,0,0,0],
-                    bass:  [261.63,196.00,261.63,196.00, 220.00,164.81,196.00,246.94, 174.61,220.00,196.00,246.94, 261.63,196.00,261.63,0, 261.63,196.00,220.00,261.63, 174.61,220.00,196.00,246.94, 261.63,196.00,246.94,196.00, 261.63,0,0,0]
+                    name: '琉璃市 Lo-Fi (Sootopolis Mist)',
+                    tempo: 430,
+                    notes: [493.88,587.33,739.99,659.25, 587.33,0,493.88,0, 440.00,587.33,659.25,587.33, 493.88,0,0,0, 587.33,739.99,880.00,739.99, 659.25,587.33,493.88,440.00, 493.88,587.33,440.00,392.00, 493.88,0,0,0],
+                    chords: [
+                        [123.47,185.00,220.00,293.66], [196.00,246.94,293.66,369.99],
+                        [146.83,220.00,277.18,329.63], [164.81,196.00,246.94,293.66]
+                    ]
                 }
             ],
 
             initAudio() {
                 if (!this.ctx) {
                     const AudioCtx = window.AudioContext || window.webkitAudioContext;
-                    if (AudioCtx) this.ctx = new AudioCtx();
+                    if (!AudioCtx) return;
+                    this.ctx = new AudioCtx();
+
+                    // Lo-Fi 溫暖磁帶低通濾波器 + 空間回音總線
+                    this.lofiFilter = this.ctx.createBiquadFilter();
+                    this.lofiFilter.type = 'lowpass';
+                    this.lofiFilter.frequency.value = 1380;
+                    this.lofiFilter.Q.value = 0.85;
+
+                    this.masterGain = this.ctx.createGain();
+                    this.masterGain.gain.value = 0.85;
+
+                    this.delayNode = this.ctx.createDelay();
+                    this.delayNode.delayTime.value = 0.28;
+                    const delayFeedback = this.ctx.createGain();
+                    delayFeedback.gain.value = 0.24;
+                    const delayWet = this.ctx.createGain();
+                    delayWet.gain.value = 0.22;
+
+                    this.lofiFilter.connect(this.masterGain);
+                    this.lofiFilter.connect(this.delayNode);
+                    this.delayNode.connect(delayFeedback);
+                    delayFeedback.connect(this.delayNode);
+                    this.delayNode.connect(delayWet);
+                    delayWet.connect(this.masterGain);
+                    this.masterGain.connect(this.ctx.destination);
                 }
                 if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
+            },
+
+            // 啟動極細微黑膠唱片底噪（溫潤真實 Lo-Fi 氛圍）
+            startVinylCrackle() {
+                if (!this.ctx || this.vinylNode) return;
+                try {
+                    const len = this.ctx.sampleRate * 3;
+                    const buf = this.ctx.createBuffer(1, len, this.ctx.sampleRate);
+                    const ch = buf.getChannelData(0);
+                    for (let i = 0; i < len; i++) {
+                        // 輕柔磁帶氣流 + 偶發細小黑膠炒豆聲
+                        const hiss = (Math.random() * 2 - 1) * 0.014;
+                        const pop = Math.random() < 0.00055 ? (Math.random() * 2 - 1) * 0.26 : 0;
+                        ch[i] = hiss + pop;
+                    }
+                    const src = this.ctx.createBufferSource();
+                    src.buffer = buf;
+                    src.loop = true;
+
+                    const bp = this.ctx.createBiquadFilter();
+                    bp.type = 'bandpass';
+                    bp.frequency.value = 1850;
+
+                    this.vinylGain = this.ctx.createGain();
+                    this.vinylGain.gain.value = 0.055;
+
+                    src.connect(bp);
+                    bp.connect(this.vinylGain);
+                    this.vinylGain.connect(this.ctx.destination);
+                    src.start();
+                    this.vinylNode = src;
+                } catch (e) {}
+            },
+
+            stopVinylCrackle() {
+                if (this.vinylNode) {
+                    try { this.vinylNode.stop(); } catch (e) {}
+                    this.vinylNode = null;
+                }
+            },
+
+            // 溫暖 Lo-Fi 電鋼琴音色 (Rhodes + 微量 Tape Detune)
+            playRhodesTone(freq, now, dur, vol = 0.045) {
+                if (!this.ctx || !freq) return;
+                const osc = this.ctx.createOscillator();
+                const over = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+
+                osc.type = 'sine';
+                over.type = 'triangle';
+                const wobble = 1 + (Math.random() - 0.5) * 0.005; // 經典 Lo-Fi 磁帶微飄音高
+                osc.frequency.setValueAtTime(freq * wobble, now);
+                over.frequency.setValueAtTime(freq * 2 * wobble, now);
+
+                const overGain = this.ctx.createGain();
+                overGain.gain.setValueAtTime(0.18, now);
+                overGain.gain.exponentialRampToValueAtTime(0.01, now + dur * 0.5);
+
+                gain.gain.setValueAtTime(0.0008, now);
+                gain.gain.linearRampToValueAtTime(vol, now + 0.025);
+                gain.gain.exponentialRampToValueAtTime(0.0005, now + dur);
+
+                osc.connect(gain);
+                over.connect(overGain);
+                overGain.connect(gain);
+                gain.connect(this.lofiFilter);
+
+                osc.start(now);
+                over.start(now);
+                osc.stop(now + dur + 0.03);
+                over.stop(now + dur + 0.03);
+            },
+
+            // 輕柔 Lo-Fi Boom-Bap 鼓組 (Muffled Kick / Dusty Snare / Swung Hat)
+            playLofiDrum(step, now) {
+                if (!this.ctx) return;
+                const pos = step % 8;
+                // Kick on 0 & 5 (chill syncopation)
+                if (pos === 0 || pos === 5) {
+                    const osc = this.ctx.createOscillator();
+                    const g = this.ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(108, now);
+                    osc.frequency.exponentialRampToValueAtTime(42, now + 0.14);
+                    g.gain.setValueAtTime(0.10, now);
+                    g.gain.exponentialRampToValueAtTime(0.0008, now + 0.19);
+                    osc.connect(g);
+                    g.connect(this.lofiFilter);
+                    osc.start(now);
+                    osc.stop(now + 0.21);
+                }
+                // Soft dusty snare on 2 & 6
+                if (pos === 2 || pos === 6) {
+                    const len = Math.floor(this.ctx.sampleRate * 0.11);
+                    const buf = this.ctx.createBuffer(1, len, this.ctx.sampleRate);
+                    const d = buf.getChannelData(0);
+                    for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.exp(-i / (len * 0.28));
+                    const src = this.ctx.createBufferSource();
+                    src.buffer = buf;
+                    const lp = this.ctx.createBiquadFilter();
+                    lp.type = 'bandpass';
+                    lp.frequency.value = 1150;
+                    const g = this.ctx.createGain();
+                    g.gain.setValueAtTime(0.055, now);
+                    g.gain.exponentialRampToValueAtTime(0.0008, now + 0.11);
+                    src.connect(lp);
+                    lp.connect(g);
+                    g.connect(this.masterGain);
+                    src.start(now);
+                }
+                // Gentle lo-fi hat every step (odd steps softer)
+                const hatLen = Math.floor(this.ctx.sampleRate * 0.035);
+                const hBuf = this.ctx.createBuffer(1, hatLen, this.ctx.sampleRate);
+                const hd = hBuf.getChannelData(0);
+                for (let i = 0; i < hatLen; i++) hd[i] = (Math.random() * 2 - 1) * Math.exp(-i / (hatLen * 0.25));
+                const hSrc = this.ctx.createBufferSource();
+                hSrc.buffer = hBuf;
+                const hp = this.ctx.createBiquadFilter();
+                hp.type = 'highpass';
+                hp.frequency.value = 4800;
+                const hg = this.ctx.createGain();
+                hg.gain.setValueAtTime(pos % 2 === 0 ? 0.022 : 0.012, now);
+                hg.gain.exponentialRampToValueAtTime(0.0005, now + 0.035);
+                hSrc.connect(hp);
+                hp.connect(hg);
+                hg.connect(this.masterGain);
+                hSrc.start(now);
             },
 
             unlockOnFirstGesture() {
@@ -1452,6 +1874,7 @@
                 if (!this.ctx) return;
                 this.isPlaying = true;
                 this.isPausedForCinema = false;
+                this.startVinylCrackle();
                 this.updateHUD();
                 this.scheduleNextNote();
             },
@@ -1462,6 +1885,7 @@
                     clearTimeout(this.timerId);
                     this.timerId = null;
                 }
+                this.stopVinylCrackle();
                 this.updateHUD();
             },
 
@@ -1469,6 +1893,7 @@
                 if (this.isPlaying) {
                     this.isPausedForCinema = true;
                     if (this.timerId) clearTimeout(this.timerId);
+                    this.stopVinylCrackle();
                 }
             },
 
@@ -1483,10 +1908,10 @@
                 this.unlocked = true;
                 if (this.isPlaying) {
                     this.stop();
-                    showToast('🎵 城鎮背景音樂已暫停');
+                    showToast('🎧 Pokémon Lo-Fi 背景音樂已暫停');
                 } else {
                     this.start();
-                    showToast(`🎵 開始播放：${this.tracks[this.currentTrackIdx].name}`);
+                    showToast(`🎧 Lo-Fi 播放中：${this.tracks[this.currentTrackIdx].name}`);
                 }
             },
 
@@ -1499,11 +1924,13 @@
                 this.currentTrackIdx = nextIdx;
                 this.noteStep = 0;
                 if (this.timerId) clearTimeout(this.timerId);
+                this.initAudio();
                 this.isPlaying = true;
                 this.isPausedForCinema = false;
+                this.startVinylCrackle();
                 this.updateHUD();
                 this.scheduleNextNote();
-                showToast(`🎵 隨機切換城鎮BGM：${this.tracks[this.currentTrackIdx].name}`);
+                showToast(`🎧 切換 Lo-Fi 寶可夢音樂：${this.tracks[this.currentTrackIdx].name}`);
             },
 
             updateHUD() {
@@ -1511,11 +1938,11 @@
                 const icon = document.getElementById('bgm-status-icon');
                 if (!label || !icon) return;
                 if (this.isPlaying && SoundEngine.enabled) {
-                    icon.textContent = '🎶';
+                    icon.textContent = '🎧';
                     label.textContent = this.tracks[this.currentTrackIdx].name;
                 } else {
                     icon.textContent = '🎵';
-                    label.textContent = '城鎮BGM: 已暫停';
+                    label.textContent = 'Lo-Fi BGM: 已暫停';
                 }
             },
 
@@ -1523,48 +1950,38 @@
                 if (!this.isPlaying || this.isPausedForCinema || !SoundEngine.enabled) return;
                 const track = this.tracks[this.currentTrackIdx];
                 const freq = track.notes[this.noteStep];
-                const bassFreq = track.bass ? track.bass[this.noteStep] : 0;
-                const durSec = (track.tempo / 1000) * 0.88;
+                const durSec = (track.tempo / 1000) * 1.45;
 
                 if (this.ctx) {
                     try {
                         const now = this.ctx.currentTime;
+                        // 1. 柔和 Rhodes 主旋律
                         if (freq > 0) {
-                            const osc = this.ctx.createOscillator();
-                            const gain = this.ctx.createGain();
-                            osc.type = 'triangle';
-                            osc.frequency.setValueAtTime(freq, now);
-                            gain.gain.setValueAtTime(0.036, now);
-                            gain.gain.exponentialRampToValueAtTime(0.0005, now + durSec);
-                            osc.connect(gain);
-                            gain.connect(this.ctx.destination);
-                            osc.start(now);
-                            osc.stop(now + durSec);
+                            this.playRhodesTone(freq, now, durSec, 0.044);
                         }
-                        if (bassFreq > 0) {
-                            const bOsc = this.ctx.createOscillator();
-                            const bGain = this.ctx.createGain();
-                            bOsc.type = 'sine';
-                            bOsc.frequency.setValueAtTime(bassFreq, now);
-                            bGain.gain.setValueAtTime(0.028, now);
-                            bGain.gain.exponentialRampToValueAtTime(0.0005, now + durSec * 1.15);
-                            bOsc.connect(bGain);
-                            bGain.connect(this.ctx.destination);
-                            bOsc.start(now);
-                            bOsc.stop(now + durSec * 1.15);
+                        // 2. 每 4 拍鋪陳一次溫暖爵士七和弦 (Lo-Fi Rhodes Pad)
+                        if (this.noteStep % 4 === 0 && track.chords) {
+                            const chordIdx = Math.floor(this.noteStep / 4) % track.chords.length;
+                            const chord = track.chords[chordIdx];
+                            chord.forEach((cf, i) => {
+                                this.playRhodesTone(cf, now + i * 0.025, (track.tempo / 1000) * 3.8, 0.022);
+                            });
                         }
+                        // 3. 輕柔 Lo-Fi 節拍鼓組
+                        this.playLofiDrum(this.noteStep, now);
                     } catch (e) {}
                 }
 
+                // 微微的 Lo-Fi Swing 搖擺拍點
+                const swingDelay = (this.noteStep % 2 === 0) ? track.tempo * 1.07 : track.tempo * 0.93;
                 this.noteStep++;
                 if (this.noteStep >= track.notes.length) {
-                    // 曲目播完自動隨機切換下一首城鎮音樂
                     this.noteStep = 0;
                     this.currentTrackIdx = (this.currentTrackIdx + 1 + Math.floor(Math.random() * (this.tracks.length - 1))) % this.tracks.length;
                     this.updateHUD();
                 }
 
-                this.timerId = setTimeout(() => this.scheduleNextNote(), track.tempo);
+                this.timerId = setTimeout(() => this.scheduleNextNote(), swingDelay);
             }
         };
 
@@ -1792,6 +2209,18 @@
             furnaceFailFizzle() {
                 this.playNoise(0.45, 0.20, 0, 750);
                 this.playTone(340, 'sawtooth', 0.38, 0.18, 0, 95);
+            },
+            // 拍賣會出價提示音 & 落槌成交音效
+            auctionBidTick(isPlayer = true) {
+                this.playTone(isPlayer ? 880 : 620, 'triangle', 0.11, 0.15, 0, isPlayer ? 1174.66 : 740);
+                this.playTone(isPlayer ? 1318.5 : 880, 'sine', 0.15, 0.12, 0.06);
+            },
+            auctionGavel() {
+                this.playTone(150, 'sine', 0.18, 0.32, 0, 52);
+                this.playNoise(0.08, 0.18, 0, 900);
+                this.playTone(160, 'sine', 0.20, 0.34, 0.22, 48);
+                this.playNoise(0.09, 0.20, 0.22, 850);
+                this.playTone(1046.5, 'triangle', 0.38, 0.18, 0.42, 1318.5);
             }
         };
 
@@ -2921,6 +3350,9 @@
             if (!document.getElementById('view-furnace').classList.contains('hidden')) {
                 FurnaceSystem.render();
             }
+            if (typeof AuctionSystem !== 'undefined') {
+                AuctionSystem.updateNavBadges();
+            }
             if (typeof EmailWordAuth !== 'undefined') {
                 EmailWordAuth.syncCurrentAccountProgress();
             }
@@ -2934,7 +3366,7 @@
         }
 
         function switchMainTab(tab) {
-            const tabs = ['pools', 'boxes', 'furnace', 'inventory'];
+            const tabs = ['pools', 'boxes', 'furnace', 'auction', 'inventory'];
             tabs.forEach(t => {
                 const view = document.getElementById(`view-${t}`);
                 if (view) view.classList.toggle('hidden', t !== tab);
@@ -2951,15 +3383,16 @@
                 const mBtn = document.getElementById(`m-tab-${t}`);
                 if (mBtn) {
                     if (t === tab) {
-                        mBtn.className = 'flex-1 py-2.5 text-[11px] font-black text-amber-400 border-b-2 border-amber-400';
+                        mBtn.className = 'flex-1 py-2.5 text-[10px] font-black text-amber-400 border-b-2 border-amber-400';
                     } else {
-                        mBtn.className = 'flex-1 py-2.5 text-[11px] font-bold text-gray-400';
+                        mBtn.className = 'flex-1 py-2.5 text-[10px] font-bold text-gray-400';
                     }
                 }
             });
 
             if (tab === 'inventory') renderVaultGrid();
             if (tab === 'furnace') FurnaceSystem.render();
+            if (tab === 'auction') AuctionSystem.renderGrid();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -4221,11 +4654,12 @@
                         resBox.classList.remove('hidden');
                         resBox.classList.add('flex');
                     }
-
                     renderer.render(scene, camera);
-                    if (!done) this.forgeRafId = requestAnimationFrame(animateForge);
+                    if (!done) {
+                        this.forgeRafId = requestAnimationFrame(animateForge);
+                    }
                 };
-                this.forgeRafId = requestAnimationFrame(animateForge);
+                animateForge();
             },
 
             closeForgeModal() {
@@ -4242,15 +4676,40 @@
             }
         };
 
-        // GitHub Pages 專用：產生乾淨無彈窗殘留的 index.html 原始碼
+        // GitHub Pages 專用：產生乾淨無彈窗與無環境注入殘留的 index.html 原始碼
         function getCleanDocumentHtml() {
             const clone = document.documentElement.cloneNode(true);
-            ['gacha-stage-modal', 'pack-rip-modal', 'furnace-forge-modal', 'pool-odds-modal', 'card-inspect-modal', 'topup-modal', 'shipping-modal', 'email-auth-modal'].forEach(id => {
+
+            // 1. 僅保留遊戲本體的腳本白名單，徹底移除預覽沙盒自動注入的腳本（避免夾帶 apiKey / __app_id 觸發 GitHub 安全警告）
+            const allowedScriptIds = new Set(['pokevault-tailwind-config', 'pokevault-main-script']);
+            const allowedScriptSrcs = ['cdn.tailwindcss.com', 'cdnjs.cloudflare.com/ajax/libs/three.js'];
+            clone.querySelectorAll('script').forEach(sc => {
+                const id = sc.getAttribute('id') || '';
+                const src = sc.getAttribute('src') || '';
+                const isAllowedId = allowedScriptIds.has(id);
+                const isAllowedSrc = allowedScriptSrcs.some(host => src.includes(host));
+                if (!isAllowedId && !isAllowedSrc) {
+                    sc.remove();
+                }
+            });
+
+            // 2. 移除 Tailwind 動態生成的 runtime <style> 與多餘外掛標籤，僅保留主樣式表
+            clone.querySelectorAll('style').forEach(st => {
+                if (st.getAttribute('id') !== 'pokevault-main-style') {
+                    st.remove();
+                }
+            });
+
+            // 3. 隱藏所有彈窗並清空動態渲染節點，讓上傳後的 index.html 輕量且乾淨
+            ['gacha-stage-modal', 'pack-rip-modal', 'furnace-forge-modal', 'pool-odds-modal', 'card-inspect-modal', 'topup-modal', 'shipping-modal', 'email-auth-modal', 'auction-detail-modal', 'auction-list-modal'].forEach(id => {
                 const el = clone.querySelector(`#${id}`);
                 if (el) el.classList.add('hidden');
             });
-            const toast = clone.querySelector('#toast-box');
-            if (toast) toast.innerHTML = '';
+            ['live-ticker-list', 'lobby-quick-packs-bar', 'pools-grid', 'boxes-grid', 'vault-grid', 'auction-grid', 'toast-box', 'threejs-cinema-container', 'threejs-furnace-container'].forEach(id => {
+                const el = clone.querySelector(`#${id}`);
+                if (el) el.innerHTML = '';
+            });
+
             return '<!DOCTYPE html>\n' + clone.outerHTML;
         }
 
@@ -6125,6 +6584,9 @@
                             ✂️ 當場拆盒開箱
                         </button>
                     ` : ''}
+                    <button onclick="AuctionSystem.openListModal('${item.uid}')" class="w-full py-1.5 rounded-lg bg-sky-500/15 hover:bg-sky-500/25 border border-sky-400/45 text-sky-300 font-black text-[11px]">
+                        🔨 拿去拍賣競標
+                    </button>
                     <button onclick="buybackSingleVaultItem('${item.uid}')" class="w-full py-1.5 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/40 text-emerald-300 font-black text-[11px]">
                         ♻️ 回收 (+${item.buybackPt.toLocaleString()} PT)
                     </button>
@@ -6179,8 +6641,15 @@
         }
 
         function openInspectModal(uid, source) {
-            const list = source === 'SESSION' ? (state.activeSession?.cards || []) : state.vault;
-            const card = list.find(c => c.uid === uid);
+            let card = null;
+            if (source === 'SESSION') {
+                card = (state.activeSession?.cards || []).find(c => c.uid === uid);
+            } else if (source === 'AUCTION') {
+                const auc = AuctionSystem.auctions.find(a => a.id === uid);
+                card = auc ? auc.card : null;
+            } else {
+                card = state.vault.find(c => c.uid === uid);
+            }
             if (!card) return;
             document.getElementById('inspect-card-mount').innerHTML = renderPsaSlabCardHTML(card);
             document.getElementById('inspect-card-name').textContent = card.name;
@@ -6565,9 +7034,871 @@
             }
         };
 
+        /* ==========================================================================
+         * 11. 🔨 即時拍賣競標系統（14 位 AI 真人模擬買家・短標 2小時 / 長標 12小時）
+         * ========================================================================== */
+        const AuctionSystem = {
+            STORAGE_KEY: 'pokevault_ai_auctions_v1',
+            SHORT_MS: 2 * 60 * 60 * 1000,   // 短標：2 小時
+            LONG_MS:  12 * 60 * 60 * 1000,  // 長標：12 小時
+            auctions: [],
+            currentFilter: 'ALL',
+            activeDetailId: null,
+            listSelectedUid: null,
+            listDuration: 'SHORT_2H',
+            tickInterval: null,
+            aiLoopInterval: null,
+
+            // 14 位具有不同個性與出價習慣的 AI 模擬真人買家
+            aiPersonas: [
+                { name: '台北神豪・阿凱',   style: 'WHALE',     maxMult: 1.26, fav: ['皮卡丘', '月亮伊布', '烈空坐', '噴火龍'], chat: '這張卡況太頂了，直接拉高！' },
+                { name: '伊布控・小語',     style: 'COLLECTOR', maxMult: 1.24, fav: ['伊布', '仙子', '太陽', '葉伊布', '冰伊布'], chat: '伊布家族必收，絕不讓步！' },
+                { name: '尾盤狙擊手・Ghost', style: 'SNIPER',    maxMult: 1.18, fav: [], chat: '最後幾秒再出手，穩拿！' },
+                { name: 'PSA10 鑑定狂・Kenji', style: 'GRADED', maxMult: 1.22, fav: ['PSA', '純金', 'MUR', 'BWR', 'RGB'], chat: 'PSA 10 鑑定磚收藏價值拉滿！' },
+                { name: '卡店收購商・老張', style: 'TRADER',    maxMult: 0.90, fav: [], chat: '低於市價我就收，穩賺！' },
+                { name: '台中大課長・Mina', style: 'WHALE',     maxMult: 1.20, fav: ['莉莉艾', '奇樹', '瑪俐', '莎莉娜', '沙奈朵'], chat: '女角卡一定要帶回家～' },
+                { name: '高雄歐皇・Leo',    style: 'AGGRESSIVE',maxMult: 1.15, fav: ['夢幻', '超夢', '騎拉帝納', '洛奇亞'], chat: '再加一手試試水溫！' },
+                { name: '板橋牌佬・小傑',   style: 'TRADER',    maxMult: 0.96, fav: ['151', 'AR', 'RR'], chat: '這價格很香，跟一標！' },
+                { name: '秋葉原代購・Sato', style: 'COLLECTOR', maxMult: 1.21, fav: ['30週年', '梵谷', '純金', '黑雷'], chat: '日本市場已經起飛，快搶！' },
+                { name: '神獸收藏家・Rex',  style: 'COLLECTOR', maxMult: 1.19, fav: ['烈空坐', '阿爾宙斯', '帝牙盧卡', '捷克羅姆', '萊希拉姆'], chat: '傳說神獸殿堂必備！' },
+                { name: '火箭隊幹部・坂木粉', style: 'COLLECTOR', maxMult: 1.18, fav: ['火箭隊', '黑暗', '超夢', '火焰鳥'], chat: '為了火箭隊的榮耀出價！' },
+                { name: '超級進化迷・阿豪', style: 'COLLECTOR', maxMult: 1.20, fav: ['超級', '路卡利歐', '噴火龍', '耿鬼'], chat: 'MEGA 超級進化太帥了！' },
+                { name: '撿漏達人・阿哲',   style: 'SNIPER',    maxMult: 0.92, fav: [], chat: '看能不能低價撿個漏～' },
+                { name: '新竹工程師・Ray',  style: 'AGGRESSIVE',maxMult: 1.14, fav: [], chat: '領完年終直接衝一波！' }
+            ],
+
+            // 系統精選拍品種子清單 (確保場內隨時有豐富的高中低價位卡片與短標/長標)
+            seedCatalog: [
+                { key: 'GOLD_PIKACHU_V',     tier: 'S', marketPt: 98000,  dur: 'LONG_12H', seller: '秋葉原特選賣家' },
+                { key: 'UMBREON_VMAX_SA',    tier: 'S', marketPt: 185000, dur: 'LONG_12H', seller: '台北神卡殿堂' },
+                { key: 'MEGA_LUCARIO_MUR',   tier: 'S', marketPt: 112000, dur: 'SHORT_2H', seller: '超級勇氣首發賣家' },
+                { key: 'MEGA_RAYQUAZA_MUR',  tier: 'S', marketPt: 148000, dur: 'LONG_12H', seller: '神獸頂級收藏家' },
+                { key: 'ROCKET_MEWTWO_SAR',  tier: 'S', marketPt: 84000,  dur: 'SHORT_2H', seller: '關都暗影商會' },
+                { key: 'LILLIE_CLEFAIRY_SAR',tier: 'A', marketPt: 48000,  dur: 'SHORT_2H', seller: '女角專賣店・雪莉' },
+                { key: 'ZEKROM_BWR',         tier: 'S', marketPt: 96000,  dur: 'LONG_12H', seller: '合眾傳說賣家' },
+                { key: 'CHARIZARD_151_SAR',  tier: 'S', marketPt: 68000,  dur: 'SHORT_2H', seller: '151 懷舊屋' },
+                { key: 'TERASTAL_UMBREON',   tier: 'S', marketPt: 128000, dur: 'LONG_12H', seller: '伊布專賣所' },
+                { key: 'MEGA_GARDEVOIR_MUR', tier: 'A', marketPt: 58000,  dur: 'SHORT_2H', seller: '交響樂收藏閣' },
+                { key: 'MEW_151_SAR',        tier: 'A', marketPt: 34000,  dur: 'SHORT_2H', seller: '卡店老闆・阿明' },
+                { key: 'IONO_SAR',           tier: 'A', marketPt: 46000,  dur: 'LONG_12H', seller: '帕底亞精選' },
+                { key: 'MEGA_CHARIZARDX_MUR',tier: 'S', marketPt: 132000, dur: 'LONG_12H', seller: '煉獄烈焰專賣' },
+                { key: 'BLASTOISE_151_SAR',  tier: 'B', marketPt: 6200,   dur: 'SHORT_2H', seller: '新手友善撿漏攤' },
+                { key: 'PIKACHU_151_AR',     tier: 'C', marketPt: 2200,   dur: 'SHORT_2H', seller: '平價卡友・小花' }
+            ],
+
+            init() {
+                this.loadStorage();
+                this.checkSettlements(true);
+                const activeCount = this.auctions.filter(a => a.status === 'ACTIVE').length;
+                if (activeCount < 8) {
+                    this.replenishSystemAuctions(8 - activeCount);
+                }
+                this.updateNavBadges();
+
+                if (this.tickInterval) clearInterval(this.tickInterval);
+                this.tickInterval = setInterval(() => this.onSecondTick(), 1000);
+
+                if (this.aiLoopInterval) clearInterval(this.aiLoopInterval);
+                this.aiLoopInterval = setInterval(() => this.runAiBiddingHeartbeat(), 3200);
+            },
+
+            loadStorage() {
+                try {
+                    const raw = localStorage.getItem(this.STORAGE_KEY);
+                    if (raw) {
+                        const parsed = JSON.parse(raw);
+                        if (Array.isArray(parsed)) this.auctions = parsed;
+                    }
+                } catch (e) { this.auctions = []; }
+            },
+
+            saveStorage() {
+                try {
+                    // 保留進行中 + 最近 20 筆已結標紀錄
+                    const active = this.auctions.filter(a => a.status === 'ACTIVE');
+                    const ended = this.auctions.filter(a => a.status === 'ENDED').slice(0, 20);
+                    this.auctions = [...active, ...ended];
+                    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.auctions));
+                } catch (e) {}
+            },
+
+            getMinIncrement(currentBid) {
+                if (currentBid >= 100000) return 2000;
+                if (currentBid >= 40000) return 1000;
+                if (currentBid >= 10000) return 500;
+                if (currentBid >= 3000) return 200;
+                return 100;
+            },
+
+            formatTimeLeft(ms) {
+                if (ms <= 0) return '00:00:00';
+                const totalSec = Math.ceil(ms / 1000);
+                const h = Math.floor(totalSec / 3600);
+                const m = Math.floor((totalSec % 3600) / 60);
+                const s = totalSec % 60;
+                return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+            },
+
+            createSystemAuction(seed, staggerOffsetMs = 0) {
+                const base = VERIFIED_CARDS[seed.key] || VERIFIED_CARDS.GOLD_PIKACHU_V;
+                const isLong = seed.dur === 'LONG_12H';
+                const durationMs = isLong ? this.LONG_MS : this.SHORT_MS;
+                const now = Date.now();
+                const startPrice = Math.max(200, Math.round((seed.marketPt * (0.45 + Math.random() * 0.18)) / 100) * 100);
+                const buyoutPrice = Math.round((seed.marketPt * (1.28 + Math.random() * 0.15)) / 100) * 100;
+
+                // 先預置 1~2 筆開盤 AI 出價，讓會場看起來熱絡真實
+                const firstAi = this.aiPersonas[Math.floor(Math.random() * this.aiPersonas.length)];
+                const initialBid = startPrice;
+                const cardObj = {
+                    uid: 'AUC-CARD-' + now + '-' + Math.random().toString(36).slice(2, 6),
+                    cardKey: seed.key,
+                    tier: seed.tier,
+                    label: TIER_LABEL_MAP[seed.tier] || '2等賞',
+                    name: base.name,
+                    img: base.img,
+                    psa: seed.tier === 'S' || seed.tier === 'A',
+                    code: base.code,
+                    rarity: base.rarity || 'SAR',
+                    marketPt: seed.marketPt,
+                    buybackPt: calcBuybackPt(seed.marketPt, seed.tier, false)
+                };
+
+                return {
+                    id: 'AUC-' + now + '-' + Math.random().toString(36).slice(2, 6),
+                    card: cardObj,
+                    durationType: seed.dur, // 'SHORT_2H' | 'LONG_12H'
+                    durationLabel: isLong ? '🌙 長標 12H' : '⚡ 短標 2H',
+                    sellerName: seed.seller,
+                    isPlayerSeller: false,
+                    startPrice,
+                    buyoutPrice,
+                    currentBid: initialBid,
+                    highestBidder: firstAi.name,
+                    highestIsPlayer: false,
+                    playerEscrow: 0,
+                    bidCount: 1,
+                    aiCeiling: Math.round(seed.marketPt * (isLong ? (0.98 + Math.random() * 0.24) : (0.86 + Math.random() * 0.22))),
+                    createdAt: now,
+                    endTime: now + durationMs - staggerOffsetMs,
+                    status: 'ACTIVE',
+                    history: [
+                        { bidder: firstAi.name, isPlayer: false, amount: initialBid, time: new Date(now).toLocaleTimeString('zh-TW'), note: firstAi.chat }
+                    ]
+                };
+            },
+
+            replenishSystemAuctions(count = 4) {
+                const activeKeys = new Set(this.auctions.filter(a => a.status === 'ACTIVE').map(a => a.card.cardKey));
+                const pool = [...this.seedCatalog].sort(() => Math.random() - 0.5);
+                let added = 0;
+                for (const seed of pool) {
+                    if (added >= count) break;
+                    if (activeKeys.has(seed.key) && pool.length > count) continue;
+                    // 稍微錯開剩餘時間，讓短標落在 1h15m~2h00m、長標落在 9h~12h
+                    const stagger = seed.dur === 'LONG_12H'
+                        ? Math.floor(Math.random() * 2.5 * 3600 * 1000)
+                        : Math.floor(Math.random() * 40 * 60 * 1000);
+                    this.auctions.unshift(this.createSystemAuction(seed, stagger));
+                    activeKeys.add(seed.key);
+                    added++;
+                }
+                this.saveStorage();
+            },
+
+            spawnFreshBatch() {
+                this.replenishSystemAuctions(3);
+                this.renderGrid();
+                this.updateNavBadges();
+                showToast('🔄 已為拍賣行補進 3 件全新熱門拍品（含短標 2H / 長標 12H）！');
+            },
+
+            // 挑選最適合該拍品的 AI 買家（根據卡片名稱喜好與性格）
+            pickInterestedAi(auc) {
+                const cardName = auc.card.name || '';
+                const weighted = this.aiPersonas.filter(p => p.name !== auc.highestBidder);
+                const fans = weighted.filter(p => p.fav.some(kw => cardName.includes(kw)));
+                if (fans.length > 0 && Math.random() < 0.65) {
+                    return fans[Math.floor(Math.random() * fans.length)];
+                }
+                return weighted[Math.floor(Math.random() * weighted.length)] || this.aiPersonas[0];
+            },
+
+            // AI 真人模擬競標心跳（每 3.2 秒檢查全場拍品並自然加價 / 尾盤搶標）
+            runAiBiddingHeartbeat() {
+                const now = Date.now();
+                const active = this.auctions.filter(a => a.status === 'ACTIVE' && a.endTime > now);
+                if (active.length === 0) return;
+
+                // 每次心跳隨機挑 1~2 件進行 AI 評估，另強制評估所有剩餘 <= 30 秒的尾盤拍品！
+                const urgent = active.filter(a => (a.endTime - now) <= 30000);
+                const randomPick = active[Math.floor(Math.random() * active.length)];
+                const targets = [...new Set([...urgent, randomPick])];
+
+                let anyUpdated = false;
+                targets.forEach(auc => {
+                    const remainMs = auc.endTime - now;
+                    const inc = this.getMinIncrement(auc.currentBid);
+                    const nextBid = auc.bidCount === 0 ? auc.startPrice : (auc.currentBid + inc);
+
+                    const ai = this.pickInterestedAi(auc);
+                    const personalMax = Math.round(auc.aiCeiling * (0.88 + (ai.maxMult - 0.9) * 0.6));
+
+                    // 若超過這位 AI 的上限則放棄
+                    if (nextBid > personalMax) return;
+
+                    // 決定出手機率：尾盤最後 20 秒極高機率觸發狙擊搶標！玩家上架的拍品也會有高人氣 AI 搶標
+                    let bidProb = auc.isPlayerSeller ? 0.58 : 0.34;
+                    if (remainMs <= 20000) bidProb = ai.style === 'SNIPER' ? 0.88 : 0.72;
+                    else if (auc.highestIsPlayer) bidProb = 0.48;
+
+                    if (Math.random() > bidProb) return;
+
+                    // 若神豪 AI 碰到玩家設的合理直購價，偶爾會直接直購秒殺！
+                    if (auc.isPlayerSeller && auc.buyoutPrice && auc.buyoutPrice <= personalMax * 1.06 && Math.random() < 0.25) {
+                        this.executeAiBid(auc, ai, auc.buyoutPrice, '🔥 這價格我直接秒殺直購了！');
+                        this.settleSingleAuction(auc, true);
+                        anyUpdated = true;
+                        return;
+                    }
+
+                    // 神豪性格有機會一次跳 2 單位震懾對手
+                    const jumpSteps = (ai.style === 'WHALE' && Math.random() < 0.3 && (nextBid + inc) <= personalMax) ? 2 : 1;
+                    const finalAmount = auc.bidCount === 0 ? auc.startPrice : (auc.currentBid + inc * jumpSteps);
+                    const note = remainMs <= 20000 ? '⚡ 尾盤最後幾秒偷襲搶標！！' : ai.chat;
+                    this.executeAiBid(auc, ai, finalAmount, note);
+                    anyUpdated = true;
+                });
+
+                if (anyUpdated) {
+                    this.saveStorage();
+                    this.renderGrid();
+                    if (this.activeDetailId) this.renderDetailModal();
+                }
+            },
+
+            executeAiBid(auc, ai, amount, note) {
+                const wasPlayerLeading = auc.highestIsPlayer;
+                if (wasPlayerLeading && auc.playerEscrow > 0) {
+                    // 玩家被 AI 超價：立刻全額退還託管 PT！
+                    state.points += auc.playerEscrow;
+                    const refunded = auc.playerEscrow;
+                    auc.playerEscrow = 0;
+                    updateWalletUI();
+                    showToast(`⚠️ 你的出價被【${ai.name}】以 ${amount.toLocaleString()} PT 超過！已退還 ${refunded.toLocaleString()} PT`);
+                    SoundEngine.auctionBidTick(false);
+                }
+
+                auc.currentBid = amount;
+                auc.highestBidder = ai.name;
+                auc.highestIsPlayer = false;
+                auc.bidCount++;
+
+                // 反狙擊延長規則：最後 10 秒有人出價自動延長至 15 秒
+                const now = Date.now();
+                if (auc.endTime - now < 10000 && auc.endTime - now > 0) {
+                    auc.endTime = now + 15000;
+                }
+
+                auc.history.unshift({
+                    bidder: ai.name,
+                    isPlayer: false,
+                    amount,
+                    time: new Date(now).toLocaleTimeString('zh-TW'),
+                    note: note || ai.chat
+                });
+                if (auc.history.length > 30) auc.history.pop();
+
+                const liveEl = document.getElementById('auction-live-feed-line');
+                if (liveEl) {
+                    liveEl.textContent = `🔨 【${ai.name}】對《${auc.card.name}》出價 ${amount.toLocaleString()} PT：「${note || ai.chat}」`;
+                }
+            },
+
+            // 玩家出價核心邏輯
+            placePlayerBid(auctionId, bidAmount) {
+                const auc = this.auctions.find(a => a.id === auctionId);
+                if (!auc || auc.status !== 'ACTIVE') {
+                    showToast('⚠️ 該拍品已結標！');
+                    return;
+                }
+                if (auc.isPlayerSeller) {
+                    showToast('⚠️ 不能對自己上架的拍品出價！');
+                    return;
+                }
+                const inc = this.getMinIncrement(auc.currentBid);
+                const minRequired = auc.bidCount === 0 ? auc.startPrice : (auc.currentBid + inc);
+                const amount = Math.round(Number(bidAmount) || minRequired);
+
+                if (amount < minRequired) {
+                    showToast(`⚠️ 最低出價需為 ${minRequired.toLocaleString()} PT（每次加價單位 ${inc.toLocaleString()} PT）`);
+                    return;
+                }
+
+                // 若玩家原本就領先，只需補差額；否則需扣全額託管
+                const needPay = amount - (auc.playerEscrow || 0);
+                if (state.points < needPay) {
+                    showToast(`⚠️ 點數不足（需再託管 ${needPay.toLocaleString()} PT），請先免費補充點數！`);
+                    openTopupModal();
+                    return;
+                }
+
+                state.points -= needPay;
+                auc.playerEscrow = amount;
+                auc.currentBid = amount;
+                auc.highestBidder = EmailWordAuth.currentEmail
+                    ? (EmailWordAuth.accounts[EmailWordAuth.currentEmail]?.nickname || '我 (玩家)')
+                    : '我 (訓練家)';
+                auc.highestIsPlayer = true;
+                auc.bidCount++;
+
+                // 反狙擊保護
+                const now = Date.now();
+                if (auc.endTime - now < 10000 && auc.endTime - now > 0) {
+                    auc.endTime = now + 15000;
+                }
+
+                auc.history.unshift({
+                    bidder: auc.highestBidder,
+                    isPlayer: true,
+                    amount,
+                    time: new Date(now).toLocaleTimeString('zh-TW'),
+                    note: '🔥 玩家出手競標！'
+                });
+
+                SoundEngine.auctionBidTick(true);
+                this.saveStorage();
+                updateWalletUI();
+                this.renderGrid();
+                if (this.activeDetailId === auc.id) this.renderDetailModal();
+                showToast(`🔨 出價成功！你目前以 ${amount.toLocaleString()} PT 領先《${auc.card.name}》！`);
+
+                // 若達直購價直接成交
+                if (auc.buyoutPrice && amount >= auc.buyoutPrice) {
+                    this.settleSingleAuction(auc, true);
+                }
+            },
+
+            // 立即直購得標
+            buyoutAuction(auctionId) {
+                const auc = this.auctions.find(a => a.id === auctionId);
+                if (!auc || auc.status !== 'ACTIVE' || !auc.buyoutPrice || auc.isPlayerSeller) return;
+                const needPay = auc.buyoutPrice - (auc.playerEscrow || 0);
+                if (state.points < needPay) {
+                    showToast(`⚠️ 點數不足（直購需再付 ${needPay.toLocaleString()} PT）！`);
+                    openTopupModal();
+                    return;
+                }
+                state.points -= needPay;
+                auc.playerEscrow = auc.buyoutPrice;
+                auc.currentBid = auc.buyoutPrice;
+                auc.highestBidder = EmailWordAuth.currentEmail
+                    ? (EmailWordAuth.accounts[EmailWordAuth.currentEmail]?.nickname || '我 (玩家)')
+                    : '我 (訓練家)';
+                auc.highestIsPlayer = true;
+                auc.bidCount++;
+                auc.history.unshift({
+                    bidder: auc.highestBidder,
+                    isPlayer: true,
+                    amount: auc.buyoutPrice,
+                    time: new Date().toLocaleTimeString('zh-TW'),
+                    note: '⚡ 以直購價秒殺得標！'
+                });
+                this.settleSingleAuction(auc, true);
+            },
+
+            // 結算單筆拍賣
+            settleSingleAuction(auc, isImmediate = false) {
+                if (!auc || auc.status === 'ENDED') return;
+                auc.status = 'ENDED';
+                auc.endedAt = Date.now();
+                auc.endTime = Math.min(auc.endTime, Date.now());
+
+                if (auc.isPlayerSeller) {
+                    if (auc.bidCount > 0 && auc.highestBidder) {
+                        const fee = Math.round(auc.currentBid * 0.03);
+                        const netIncome = Math.max(10, auc.currentBid - fee);
+                        state.points += netIncome;
+                        SoundEngine.auctionGavel();
+                        spawnConfetti();
+                        showToast(`🎉 你的拍品《${auc.card.name}》以 ${auc.currentBid.toLocaleString()} PT 成交！實收 +${netIncome.toLocaleString()} PT（賣給 ${auc.highestBidder}）`);
+                    } else {
+                        state.vault.unshift(auc.card);
+                        showToast(`📦 拍品《${auc.card.name}》流標，已安全退回你的保管庫`);
+                    }
+                } else if (auc.highestIsPlayer) {
+                    auc.playerEscrow = 0;
+                    state.vault.unshift(auc.card);
+                    SoundEngine.auctionGavel();
+                    spawnConfetti();
+                    showToast(`🏆 恭喜得標！！你以 ${auc.currentBid.toLocaleString()} PT 標下《${auc.card.name}》，已送入保管庫！`);
+                } else if (auc.playerEscrow > 0) {
+                    state.points += auc.playerEscrow;
+                    auc.playerEscrow = 0;
+                }
+
+                this.saveStorage();
+                updateWalletUI();
+                this.updateNavBadges();
+                if (!document.getElementById('view-auction').classList.contains('hidden')) {
+                    this.renderGrid();
+                }
+                if (this.activeDetailId === auc.id) {
+                    this.renderDetailModal();
+                }
+
+                // 若場內進行中拍品太少，自動補貨 1 件
+                const activeCount = this.auctions.filter(a => a.status === 'ACTIVE').length;
+                if (activeCount < 6 && !isImmediate) {
+                    this.replenishSystemAuctions(2);
+                }
+            },
+
+            checkSettlements(silent = false) {
+                const now = Date.now();
+                let changed = false;
+                this.auctions.forEach(auc => {
+                    if (auc.status === 'ACTIVE' && now >= auc.endTime) {
+                        this.settleSingleAuction(auc, silent);
+                        changed = true;
+                    }
+                });
+                return changed;
+            },
+
+            // 每秒更新倒數計時器與自動結標檢查
+            onSecondTick() {
+                const settled = this.checkSettlements(false);
+                const now = Date.now();
+
+                // 更新大廳卡片上的每秒倒數 DOM（避免整頁重繪造成點擊跳動）
+                if (!document.getElementById('view-auction').classList.contains('hidden')) {
+                    this.auctions.forEach(auc => {
+                        const tEl = document.getElementById(`auc-timer-${auc.id}`);
+                        if (tEl && auc.status === 'ACTIVE') {
+                            const rem = auc.endTime - now;
+                            tEl.textContent = this.formatTimeLeft(rem);
+                            if (rem <= 60000) tEl.className = 'font-mono font-black text-xs text-rose-400 animate-pulse';
+                        }
+                    });
+                    if (settled) this.renderGrid();
+                }
+
+                // 更新競標室詳情倒數
+                if (this.activeDetailId) {
+                    const auc = this.auctions.find(a => a.id === this.activeDetailId);
+                    const detTimer = document.getElementById('auc-det-timer');
+                    if (auc && detTimer) {
+                        if (auc.status === 'ACTIVE') {
+                            const rem = auc.endTime - now;
+                            detTimer.textContent = this.formatTimeLeft(rem);
+                            detTimer.className = rem <= 30000
+                                ? 'font-mono font-black text-2xl text-rose-400 tracking-wider animate-pulse'
+                                : 'font-mono font-black text-2xl text-emerald-400 tracking-wider';
+                        } else {
+                            detTimer.textContent = '已結標 ENDED';
+                            detTimer.className = 'font-mono font-black text-xl text-amber-400 tracking-wider';
+                        }
+                    }
+                }
+            },
+
+            updateNavBadges() {
+                const activeCount = this.auctions.filter(a => a.status === 'ACTIVE').length;
+                const d = document.getElementById('badge-auction-count');
+                const m = document.getElementById('m-badge-auction');
+                if (d) d.textContent = activeCount;
+                if (m) m.textContent = activeCount;
+
+                const escrowTotal = this.auctions
+                    .filter(a => a.status === 'ACTIVE')
+                    .reduce((s, a) => s + (a.playerEscrow || 0), 0);
+                const escEl = document.getElementById('auction-escrow-summary');
+                if (escEl) escEl.textContent = `出價託管中：${escrowTotal.toLocaleString()} PT`;
+            },
+
+            setFilter(f) {
+                this.currentFilter = f;
+                document.querySelectorAll('.auc-filter-btn').forEach(btn => {
+                    const active = btn.id === `auc-filter-${f}`;
+                    btn.className = active
+                        ? 'auc-filter-btn px-3.5 py-2 rounded-xl text-xs font-black bg-emerald-400 text-black shadow transition-all'
+                        : 'auc-filter-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-slatecard text-gray-300 border border-slateborder hover:text-white transition-all';
+                });
+                this.renderGrid();
+            },
+
+            renderGrid() {
+                const grid = document.getElementById('auction-grid');
+                if (!grid) return;
+                this.updateNavBadges();
+
+                let list = [...this.auctions];
+                if (this.currentFilter === 'ENDED') {
+                    list = list.filter(a => a.status === 'ENDED');
+                } else {
+                    list = list.filter(a => a.status === 'ACTIVE');
+                    if (this.currentFilter === 'SHORT_2H') list = list.filter(a => a.durationType === 'SHORT_2H');
+                    else if (this.currentFilter === 'LONG_12H') list = list.filter(a => a.durationType === 'LONG_12H');
+                    else if (this.currentFilter === 'MY_BIDS') list = list.filter(a => a.highestIsPlayer || a.history.some(h => h.isPlayer));
+                    else if (this.currentFilter === 'MY_LISTINGS') list = list.filter(a => a.isPlayerSeller);
+                }
+
+                const sortVal = document.getElementById('auction-sort-select')?.value || 'ENDING_SOON';
+                if (sortVal === 'ENDING_SOON') list.sort((a, b) => a.endTime - b.endTime);
+                else if (sortVal === 'BID_DESC') list.sort((a, b) => b.currentBid - a.currentBid);
+                else if (sortVal === 'BID_ASC') list.sort((a, b) => a.currentBid - b.currentBid);
+                else if (sortVal === 'HOT') list.sort((a, b) => b.bidCount - a.bidCount);
+
+                if (list.length === 0) {
+                    grid.innerHTML = `<div class="col-span-full bg-slatecard/60 border border-dashed border-slateborder rounded-2xl py-14 text-center space-y-2">
+                        <div class="text-4xl">🔨</div>
+                        <p class="text-sm font-black text-gray-300">此分類目前沒有拍品</p>
+                        <p class="text-xs text-gray-500">可點擊上方「➕ 上架我的保管庫卡片」或「🔄 補進新拍品」！</p>
+                    </div>`;
+                    return;
+                }
+
+                const now = Date.now();
+                grid.innerHTML = list.map(auc => {
+                    const isEnded = auc.status === 'ENDED';
+                    const remMs = Math.max(0, auc.endTime - now);
+                    const inc = this.getMinIncrement(auc.currentBid);
+                    const nextBid = auc.bidCount === 0 ? auc.startPrice : (auc.currentBid + inc);
+                    const isShort = auc.durationType === 'SHORT_2H';
+                    const durBadgeCls = isShort
+                        ? 'bg-amber-400 text-black'
+                        : 'bg-sky-500 text-black';
+                    const leadBadge = auc.isPlayerSeller
+                        ? '<span class="px-2 py-0.5 rounded bg-fuchsia-500/25 border border-fuchsia-400/50 text-fuchsia-300 text-[10px] font-black">🏷️ 我上架的</span>'
+                        : (auc.highestIsPlayer
+                            ? '<span class="px-2 py-0.5 rounded bg-emerald-500/25 border border-emerald-400 text-emerald-300 text-[10px] font-black">👑 你目前領先</span>'
+                            : `<span class="px-2 py-0.5 rounded bg-white/10 text-gray-300 text-[10px] font-bold truncate max-w-[120px]">🤖 ${auc.highestBidder || '待出價'}</span>`);
+
+                    return `
+                    <article class="bg-slatecard border ${auc.highestIsPlayer ? 'border-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.2)]' : (auc.isPlayerSeller ? 'border-fuchsia-400/60' : 'border-slateborder hover:border-emerald-400/50')} rounded-2xl overflow-hidden flex flex-col justify-between shadow-xl transition-all">
+                        <!-- 頂部標期與倒數 -->
+                        <div class="px-3.5 py-2 bg-[#0b101b] border-b border-white/10 flex items-center justify-between gap-2">
+                            <span class="px-2 py-0.5 rounded text-[10px] font-black ${durBadgeCls}">${auc.durationLabel}</span>
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-[10px] text-gray-400">${isEnded ? '結標狀態' : '剩餘'}</span>
+                                <span id="auc-timer-${auc.id}" class="font-mono font-black text-xs ${isEnded ? 'text-amber-400' : (remMs <= 60000 ? 'text-rose-400 animate-pulse' : 'text-emerald-400')}">
+                                    ${isEnded ? '已結標' : this.formatTimeLeft(remMs)}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- 卡片資訊與出價狀態 -->
+                        <div class="p-3.5 flex gap-3 items-start">
+                            <div onclick="openInspectModal('${auc.id}', 'AUCTION')" class="w-24 sm:w-28 flex-shrink-0 cursor-pointer hover:scale-105 transition-transform">
+                                ${renderPsaSlabCardHTML(auc.card)}
+                            </div>
+                            <div class="flex-1 min-w-0 space-y-2">
+                                <div class="text-xs sm:text-sm font-black text-white leading-snug line-clamp-2">${auc.card.name}</div>
+                                <div class="flex flex-wrap items-center gap-1.5">
+                                    ${leadBadge}
+                                    <span class="text-[10px] font-mono text-sky-300 bg-sky-500/15 px-1.5 py-0.5 rounded">${auc.bidCount} 次出價</span>
+                                </div>
+                                <div class="bg-obsidian rounded-xl p-2 border border-white/10 space-y-0.5">
+                                    <div class="text-[10px] text-gray-400">${isEnded ? '最終成交價' : (auc.bidCount > 0 ? '目前最高出價' : '起標價')}</div>
+                                    <div class="font-display font-black text-lg text-amber-400 leading-tight">${auc.currentBid.toLocaleString()} PT</div>
+                                    <div class="text-[10px] text-gray-400 flex items-center justify-between">
+                                        <span>市價 ${auc.card.marketPt.toLocaleString()}</span>
+                                        ${auc.buyoutPrice ? `<span class="text-emerald-300">直購 ${auc.buyoutPrice.toLocaleString()}</span>` : ''}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 底部操作列 -->
+                        <div class="px-3.5 pb-3.5 pt-1 flex items-center gap-2">
+                            ${isEnded ? `
+                                <button onclick="AuctionSystem.openDetailModal('${auc.id}')" class="w-full py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-gray-200 font-black text-xs">
+                                    📜 查看結標紀錄（得標：${auc.highestBidder || '流標'}）
+                                </button>
+                            ` : (auc.isPlayerSeller ? `
+                                <button onclick="AuctionSystem.openDetailModal('${auc.id}')" class="flex-1 py-2 rounded-xl bg-gradient-to-r from-fuchsia-600 to-indigo-600 hover:brightness-110 text-white font-black text-xs shadow">
+                                    🔍 進入競標室觀戰 / 加速結標
+                                </button>
+                            ` : `
+                                <button onclick="AuctionSystem.placePlayerBid('${auc.id}', ${nextBid})" class="flex-1 py-2 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-500 hover:brightness-110 text-black font-black text-xs shadow active:scale-95">
+                                    🔨 出價 ${nextBid.toLocaleString()} PT
+                                </button>
+                                <button onclick="AuctionSystem.openDetailModal('${auc.id}')" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slateborder text-amber-300 font-black text-xs">
+                                    競標室
+                                </button>
+                            `)}
+                        </div>
+                    </article>`;
+                }).join('');
+            },
+
+            // ---------- 競標室詳情彈窗 ----------
+            openDetailModal(auctionId) {
+                this.activeDetailId = auctionId;
+                document.getElementById('auction-detail-modal').classList.remove('hidden');
+                this.renderDetailModal();
+            },
+
+            closeDetailModal() {
+                this.activeDetailId = null;
+                document.getElementById('auction-detail-modal').classList.add('hidden');
+            },
+
+            renderDetailModal() {
+                const auc = this.auctions.find(a => a.id === this.activeDetailId);
+                if (!auc) return;
+
+                const isEnded = auc.status === 'ENDED';
+                const inc = this.getMinIncrement(auc.currentBid);
+                const nextBid = auc.bidCount === 0 ? auc.startPrice : (auc.currentBid + inc);
+
+                const durBadge = document.getElementById('auc-det-duration-badge');
+                durBadge.textContent = auc.durationLabel;
+                durBadge.className = auc.durationType === 'SHORT_2H'
+                    ? 'px-2 py-0.5 rounded bg-amber-400 text-black text-[10px] font-black flex-shrink-0'
+                    : 'px-2 py-0.5 rounded bg-sky-400 text-black text-[10px] font-black flex-shrink-0';
+
+                document.getElementById('auc-det-title').textContent = auc.card.name;
+                document.getElementById('auc-det-card-mount').innerHTML = renderPsaSlabCardHTML(auc.card);
+                document.getElementById('auc-det-seller-info').textContent = auc.isPlayerSeller ? '賣家：👑 你本人上架' : `賣家：${auc.sellerName}`;
+                document.getElementById('auc-det-timer').textContent = isEnded ? '已結標 ENDED' : this.formatTimeLeft(auc.endTime - Date.now());
+                document.getElementById('auc-det-bid-count').textContent = `共 ${auc.bidCount} 次出價`;
+                document.getElementById('auc-det-current-bid').textContent = `${auc.currentBid.toLocaleString()} PT`;
+                document.getElementById('auc-det-market-ref').textContent = `市場估值：${auc.card.marketPt.toLocaleString()} PT`;
+                document.getElementById('auc-det-leader').textContent = auc.highestBidder
+                    ? (auc.highestIsPlayer ? `👑 ${auc.highestBidder} (你目前領先！)` : `🤖 ${auc.highestBidder}`)
+                    : '尚無人出價';
+
+                const ffBtn = document.getElementById('auc-det-fastforward-btn');
+                ffBtn.classList.toggle('hidden', isEnded);
+
+                const actionBox = document.getElementById('auc-det-action-box');
+                const sellerBox = document.getElementById('auc-det-seller-box');
+
+                if (isEnded) {
+                    actionBox.classList.add('hidden');
+                    sellerBox.classList.add('hidden');
+                } else if (auc.isPlayerSeller) {
+                    actionBox.classList.add('hidden');
+                    sellerBox.classList.remove('hidden');
+                } else {
+                    actionBox.classList.remove('hidden');
+                    sellerBox.classList.add('hidden');
+                    const inputEl = document.getElementById('auc-det-custom-input');
+                    if (document.activeElement !== inputEl || Number(inputEl.value) < nextBid) {
+                        inputEl.value = nextBid;
+                        inputEl.min = nextBid;
+                        inputEl.step = inc;
+                    }
+                    document.getElementById('auc-quick-step-1').textContent = `+${inc.toLocaleString()}`;
+                    document.getElementById('auc-quick-step-3').textContent = `+${(inc * 3).toLocaleString()}`;
+                    document.getElementById('auc-quick-step-5').textContent = `+${(inc * 5).toLocaleString()}`;
+
+                    const buyoutBtn = document.getElementById('auc-det-buyout-btn');
+                    if (auc.buyoutPrice && auc.currentBid < auc.buyoutPrice) {
+                        buyoutBtn.classList.remove('hidden');
+                        buyoutBtn.textContent = `⚡ 立即直購得標 (${auc.buyoutPrice.toLocaleString()} PT)`;
+                    } else {
+                        buyoutBtn.classList.add('hidden');
+                    }
+                }
+
+                const histEl = document.getElementById('auc-det-history-list');
+                if (auc.history.length === 0) {
+                    histEl.innerHTML = '<div class="text-center text-gray-500 py-4">尚無出價紀錄，搶先出第一標吧！</div>';
+                } else {
+                    histEl.innerHTML = auc.history.map((h, i) => `
+                        <div class="p-2 rounded-lg border ${i === 0 ? 'bg-emerald-500/15 border-emerald-400/40' : 'bg-slatecard/70 border-white/5'} flex items-start justify-between gap-2">
+                            <div class="min-w-0">
+                                <div class="font-black ${h.isPlayer ? 'text-amber-300' : 'text-sky-300'} truncate">
+                                    ${i === 0 ? '👑 ' : ''}${h.bidder}
+                                    <span class="text-[10px] font-mono text-gray-500 ml-1">${h.time}</span>
+                                </div>
+                                ${h.note ? `<div class="text-[11px] text-gray-300 mt-0.5">${h.note}</div>` : ''}
+                            </div>
+                            <span class="font-display font-black text-amber-400 flex-shrink-0">${h.amount.toLocaleString()} PT</span>
+                        </div>
+                    `).join('');
+                }
+            },
+
+            quickBumpDetailBid(mult) {
+                const auc = this.auctions.find(a => a.id === this.activeDetailId);
+                if (!auc || auc.status !== 'ACTIVE') return;
+                const inc = this.getMinIncrement(auc.currentBid);
+                const target = auc.bidCount === 0 ? auc.startPrice : (auc.currentBid + inc * mult);
+                this.placePlayerBid(auc.id, target);
+            },
+
+            submitDetailCustomBid() {
+                const auc = this.auctions.find(a => a.id === this.activeDetailId);
+                if (!auc) return;
+                const val = Number(document.getElementById('auc-det-custom-input').value);
+                this.placePlayerBid(auc.id, val);
+            },
+
+            buyoutActiveDetail() {
+                if (this.activeDetailId) this.buyoutAuction(this.activeDetailId);
+            },
+
+            // 模擬快轉至最後 15 秒，讓玩家不必乾等 2H / 12H 也能體驗尾盤搶標刺激感！
+            fastForwardActiveDetail() {
+                const auc = this.auctions.find(a => a.id === this.activeDetailId);
+                if (!auc || auc.status !== 'ACTIVE') return;
+                auc.endTime = Date.now() + 15000;
+                this.saveStorage();
+                this.renderDetailModal();
+                this.renderGrid();
+                showToast('⏩ 已模擬快轉至結標前最後 15 秒！注意 AI 尾盤狙擊手隨時出手！！');
+                setTimeout(() => this.runAiBiddingHeartbeat(), 1500);
+            },
+
+            // 玩家上架後主動號召 AI 買家競標
+            promoteMyAuction() {
+                const auc = this.auctions.find(a => a.id === this.activeDetailId);
+                if (!auc || auc.status !== 'ACTIVE' || !auc.isPlayerSeller) return;
+                const inc = this.getMinIncrement(auc.currentBid);
+                const nextBid = auc.bidCount === 0 ? auc.startPrice : (auc.currentBid + inc);
+                const ai = this.pickInterestedAi(auc);
+                if (nextBid <= auc.aiCeiling * 1.12) {
+                    this.executeAiBid(auc, ai, nextBid, '📣 看到宣傳過來看看，這張我要了！');
+                    SoundEngine.auctionBidTick(false);
+                    this.saveStorage();
+                    this.renderDetailModal();
+                    this.renderGrid();
+                } else {
+                    showToast('🤖 目前出價已逼近 AI 買家們的最高預算上限！');
+                }
+            },
+
+            // ---------- 上架我的保管庫卡片彈窗 ----------
+            openListModal(preselectUid = null) {
+                if (state.vault.length === 0) {
+                    showToast('⚠️ 你的保管庫目前是空的，請先抽卡並保留卡片入庫！');
+                    return;
+                }
+                this.listSelectedUid = preselectUid || state.vault[0].uid;
+                this.selectListDuration('SHORT_2H');
+                this.renderListVaultPicker();
+                document.getElementById('auction-list-modal').classList.remove('hidden');
+            },
+
+            closeListModal() {
+                document.getElementById('auction-list-modal').classList.add('hidden');
+            },
+
+            selectListDuration(dur) {
+                this.listDuration = dur;
+                const isShort = dur === 'SHORT_2H';
+                document.getElementById('auc-dur-btn-SHORT_2H').className = isShort
+                    ? 'p-3 rounded-xl border-2 border-amber-400 bg-amber-500/15 text-left transition-all'
+                    : 'p-3 rounded-xl border border-slateborder bg-obsidian text-left hover:border-amber-400/50 transition-all';
+                document.getElementById('auc-dur-btn-LONG_12H').className = !isShort
+                    ? 'p-3 rounded-xl border-2 border-sky-400 bg-sky-500/15 text-left transition-all'
+                    : 'p-3 rounded-xl border border-slateborder bg-obsidian text-left hover:border-sky-400/50 transition-all';
+            },
+
+            renderListVaultPicker() {
+                const mount = document.getElementById('auc-list-vault-picker');
+                if (!mount) return;
+                mount.innerHTML = state.vault.map(c => {
+                    const picked = c.uid === this.listSelectedUid;
+                    return `
+                    <div onclick="AuctionSystem.pickVaultCardForList('${c.uid}')" class="cursor-pointer rounded-xl p-1.5 border transition-all ${picked ? 'border-amber-400 bg-amber-500/20 ring-2 ring-amber-400' : 'border-white/10 bg-slatecard hover:border-white/30'}">
+                        <div class="aspect-[3/4] rounded-lg overflow-hidden bg-slate-900">
+                            <img src="${c.img}" loading="lazy" data-card-name="${c.name}" onerror="handleCardImgError(this)" referrerpolicy="no-referrer" class="w-full h-full object-cover">
+                        </div>
+                        <div class="text-[10px] font-bold text-white truncate mt-1">${c.name}</div>
+                        <div class="text-[9px] font-display text-amber-300">${c.marketPt.toLocaleString()} PT</div>
+                    </div>`;
+                }).join('');
+
+                const sel = state.vault.find(v => v.uid === this.listSelectedUid);
+                if (sel) {
+                    const recStart = Math.max(100, Math.round((sel.marketPt * 0.6) / 100) * 100);
+                    const recBuyout = Math.round((sel.marketPt * 1.3) / 100) * 100;
+                    document.getElementById('auc-list-start-price').value = recStart;
+                    document.getElementById('auc-list-buyout-price').value = recBuyout;
+                    document.getElementById('auc-list-price-hint').textContent = `此卡市價 ${sel.marketPt.toLocaleString()} PT（建議起標 ${recStart.toLocaleString()} PT）`;
+                }
+            },
+
+            pickVaultCardForList(uid) {
+                this.listSelectedUid = uid;
+                this.renderListVaultPicker();
+            },
+
+            confirmListItem() {
+                const idx = state.vault.findIndex(v => v.uid === this.listSelectedUid);
+                if (idx === -1) {
+                    showToast('⚠️ 請選擇 1 張保管庫卡片！');
+                    return;
+                }
+                const startPrice = Math.max(100, Math.round(Number(document.getElementById('auc-list-start-price').value) || 500));
+                const buyoutRaw = Number(document.getElementById('auc-list-buyout-price').value);
+                const buyoutPrice = (buyoutRaw && buyoutRaw > startPrice) ? Math.round(buyoutRaw) : null;
+
+                const card = state.vault.splice(idx, 1)[0];
+                const isLong = this.listDuration === 'LONG_12H';
+                const now = Date.now();
+                const durationMs = isLong ? this.LONG_MS : this.SHORT_MS;
+
+                // 長標 12 小時曝光更高，AI 願意出到的預算天花板比短標多 +15%！
+                const aiCeiling = Math.round(card.marketPt * (isLong ? (1.08 + Math.random() * 0.24) : (0.94 + Math.random() * 0.20)));
+                const sellerName = EmailWordAuth.currentEmail
+                    ? (EmailWordAuth.accounts[EmailWordAuth.currentEmail]?.nickname || '玩家賣家')
+                    : '你 (玩家賣家)';
+
+                const newAuc = {
+                    id: 'AUC-MY-' + now + '-' + Math.random().toString(36).slice(2, 5),
+                    card,
+                    durationType: this.listDuration,
+                    durationLabel: isLong ? '🌙 長標 12H' : '⚡ 短標 2H',
+                    sellerName,
+                    isPlayerSeller: true,
+                    startPrice,
+                    buyoutPrice,
+                    currentBid: startPrice,
+                    highestBidder: null,
+                    highestIsPlayer: false,
+                    playerEscrow: 0,
+                    bidCount: 0,
+                    aiCeiling,
+                    createdAt: now,
+                    endTime: now + durationMs,
+                    status: 'ACTIVE',
+                    history: []
+                };
+
+                this.auctions.unshift(newAuc);
+                this.saveStorage();
+                updateWalletUI();
+                renderVaultGrid();
+                this.closeListModal();
+                switchMainTab('auction');
+                this.setFilter('MY_LISTINGS');
+                SoundEngine.auctionGavel();
+                showToast(`🔨 上架成功！《${card.name}》已開啟 ${newAuc.durationLabel} 拍賣，AI 買家們即將進場出價！`);
+
+                // 2.5 秒後馬上觸發第一位 AI 買家進場首標
+                setTimeout(() => {
+                    if (newAuc.status === 'ACTIVE' && newAuc.bidCount === 0 && startPrice <= aiCeiling * 1.1) {
+                        const firstAi = this.pickInterestedAi(newAuc);
+                        this.executeAiBid(newAuc, firstAi, startPrice, '👀 剛上架就被我看到！先搶頭香起標！');
+                        SoundEngine.auctionBidTick(false);
+                        this.saveStorage();
+                        this.renderGrid();
+                        if (this.activeDetailId === newAuc.id) this.renderDetailModal();
+                    }
+                }, 2500);
+            }
+        };
+
         window.onload = function () {
             initPoolsData();
             EmailWordAuth.init();
+            AuctionSystem.init();
             renderTicker();
             renderLobbyQuickPacksBar();
             renderPoolsGrid();
