@@ -326,11 +326,6 @@
                 </button>
             </nav>
 
-            <!-- 右側寶可夢城鎮 BGM 播放器、網頁版連結發佈、音效與 PT 錢包 -->
-            <div class="flex items-center gap-1.5 sm:gap-2">
-                <!-- 寶可夢城鎮背景音樂控制器 -->
-                <div class="flex items-center bg-slatecard border border-sky-500/35 rounded-xl px-2 py-1 gap-1.5" title="原作寶可夢遊戲城鎮 BGM 隨機播放">
-                    <button onclick="TownBGM.togglePlay()" id="btn-bgm-toggle" class="text-xs font-black text-sky-300 hover:text-white flex items-center gap-1">
             <!-- 右側寶可夢城鎮 BGM 播放器、音效與 PT 錢包 -->
             <div class="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
                 <!-- 寶可夢城鎮背景音樂控制器 -->
@@ -833,46 +828,6 @@
                     <span class="font-bold text-sm text-rose-300">神豪包池包</span>
                     <span class="font-display font-black text-amber-300">+250,000 PT</span>
                 </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 7. 免下載獨立網頁連結 & GitHub Pages 網站發佈彈窗 -->
-    <div id="web-publish-modal" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
-        <div class="bg-slatecard border border-emerald-400/50 rounded-2xl max-w-xl w-full p-6 space-y-5 shadow-2xl">
-            <div class="flex items-center justify-between border-b border-slateborder pb-3">
-                <div>
-                    <span class="text-[10px] font-black px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300">INSTANT WEB PLAY & GITHUB PAGES</span>
-                    <h3 class="text-lg font-black text-white mt-1">🌐 免下載立即網頁遊玩 & GitHub 免費架站中心</h3>
-                </div>
-                <button onclick="closeWebPublishModal()" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-gray-300">✕</button>
-            </div>
-
-            <div class="bg-gradient-to-r from-emerald-950/70 to-teal-950/60 border border-emerald-500/40 rounded-xl p-4 space-y-2.5">
-                <div class="text-sm font-black text-emerald-300">⚡ 方式一：無須下載！一鍵開啟獨立全螢幕網頁版立即遊玩</div>
-                <p class="text-xs text-gray-300 leading-relaxed">
-                    系統會自動將完整遊戲打包成獨立網頁網址（Blob URL），直接在新分頁全螢幕開啟，不需安裝任何軟體即可流暢體驗 3D 抽卡！
-                </p>
-                <button onclick="launchStandaloneWebTab()" class="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-500 hover:brightness-110 text-black font-black text-xs sm:text-sm shadow-lg transition-transform active:scale-95">
-                    🚀 立即開啟獨立網頁版遊玩（新分頁全螢幕）
-                </button>
-            </div>
-
-            <div class="bg-[#0b0f19] border border-slateborder rounded-xl p-4 space-y-3">
-                <div class="text-sm font-black text-amber-300">🐙 方式二：免費上傳到 GitHub Pages 生成公開網址分享給朋友</div>
-                <ol class="text-xs text-gray-300 space-y-1.5 list-decimal list-inside">
-                    <li>點擊下方按鈕下載已命名好的 <code class="px-1.5 py-0.5 rounded bg-slate-800 text-amber-300 font-mono">index.html</code> 單一網頁檔。</li>
-                    <li>前往 <strong>GitHub</strong> 建立一個新的公開儲存庫（Public Repository），將 <code class="text-amber-300">index.html</code> 上傳進去。</li>
-                    <li>進入儲存庫的 <strong>Settings ➔ Pages ➔ Branch 選擇 main</strong> 並儲存，約 1 分鐘後即可獲得永久免費的 <code class="text-emerald-300">https://你的帳號.github.io/專案名/</code> 公開網站連結！</li>
-                </ol>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
-                    <button onclick="downloadGitHubIndexHtml()" class="py-2.5 px-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-black text-xs shadow transition-all">
-                        ⬇️ 下載 index.html (GitHub 專用)
-                    </button>
-                    <button onclick="copyFullHtmlSource()" class="py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slateborder text-gray-200 font-black text-xs transition-all">
-                        📋 複製完整 HTML 原始碼
-                    </button>
-                </div>
             </div>
         </div>
     </div>
@@ -1556,611 +1511,6 @@
             makeTierCard('D', 'UMBREON_VMAX_RRR', 15, 1350, false),
             makeTierCard('D', 'SYLVEON_VMAX_RRR', 15, 1150, false),
             makeTierCard('D', 'RAYQUAZA_VMAX_RRR', 15, 1100, false),
-            makeTierCard('D', 'LUGIA_VSTAR_RRR', 15, 1050, false),
-            makeTierCard('D', 'GIRATINA_VSTAR_RRR', 15, 1050, false),
-            makeTierCard('D', 'MIRAIDON_EX_RR', 15, 900, false),
-        ];
-
-        const POOL_CONFIGS = [
-            {
-                id: 'pool_30th_crown',
-                tags: ['ANNIV_30TH', 'LOW_ODDS_199', 'PSA10_VIP'],
-                title: '【30週年紀念皇冠】1/199 純金皮卡丘 V & 歷代神獸 PSA 10 祭典',
-                subtitle: '1等賞 0.25% 夢幻純金皮卡丘 V！2等賞封入黃金色違夢幻 & 梵谷皮卡丘',
-                price: 2500,
-                bannerGrad: 'from-[#291d05] via-[#4a3208] to-[#0f172a]',
-                badgeText: '👑 30週年限定・1/199 激熱',
-                badgeColor: 'bg-amber-400 text-black',
-                tiers: [
-                    makeTierCard('S', 'GOLD_PIKACHU_V', 1, 120000, true),
-                    makeTierCard('A', 'GOLD_MEW_UR', 2, 58000, true),
-                    makeTierCard('A', 'GOLD_POKEBALL', 2, 48000, true),
-                    makeTierCard('A', 'VAN_GOGH_PIKACHU', 1, 62000, true),
-                    makeTierCard('B', 'CHARIZARD_25TH', 12, 16500, false),
-                    makeTierCard('C', 'UMBREON_STAR_25TH', 40, 4500, false),
-                    makeTierCard('D', 'FLYING_PIKA_VMAX', 90, 1200, false),
-                ]
-            },
-            {
-                id: 'pool_eevee_heroes',
-                tags: ['PSA10_VIP', 'LOW_ODDS_199'],
-                title: '【伊布英雄絕版祭】月亮伊布 VMAX SA 1/200 狙擊オリパ',
-                subtitle: '夢幻神卡「初版月亮伊布 VMAX SA PSA10」降臨！伊布家族全圖集結',
-                price: 3800,
-                bannerGrad: 'from-[#1a0f2e] via-[#2e1647] to-[#0f172a]',
-                badgeText: '🌙 絕版神池・PSA 10 確定',
-                badgeColor: 'bg-fuchsia-500 text-white',
-                tiers: [
-                    makeTierCard('S', 'UMBREON_VMAX_SA', 1, 185000, true),
-                    makeTierCard('A', 'SYLVEON_VMAX_SA', 2, 68000, true),
-                    makeTierCard('A', 'ESPEON_VMAX_SA', 2, 56000, true),
-                    makeTierCard('B', 'LEAFEON_VMAX_SA', 14, 19000, false),
-                    makeTierCard('C', 'GLACEON_VMAX_SA', 45, 5800, false),
-                    makeTierCard('D', 'UMBREON_VMAX_RRR', 90, 1600, false),
-                ]
-            },
-            {
-                id: 'pool_151_master',
-                tags: ['LOW_ODDS_199', 'ANNIV_30TH'],
-                title: '【寶可夢卡牌 151】初代御三家 SAR & 大師球閃光祭典',
-                subtitle: '1等賞 151 噴火龍 ex SAR PSA10！御三家全進化鏈 AR 完整收錄',
-                price: 1500,
-                bannerGrad: 'from-[#290d11] via-[#451319] to-[#0f172a]',
-                badgeText: '🔥 151 人氣王・全圖收錄',
-                badgeColor: 'bg-rose-600 text-white',
-                tiers: [
-                    makeTierCard('S', 'CHARIZARD_151_SAR', 1, 78000, true),
-                    makeTierCard('A', 'MEW_151_SAR', 3, 34000, true),
-                    makeTierCard('A', 'ERIKA_151_SAR', 2, 32000, true),
-                    makeTierCard('B', 'BLASTOISE_151_SAR', 16, 9800, false),
-                    makeTierCard('C', 'PIKACHU_151_AR', 50, 3600, false),
-                    makeTierCard('D', 'CHARIZARD_151_RR', 90, 950, false),
-                ]
-            },
-            {
-                id: 'pool_nibuichi_99',
-                tags: ['NIBUICHI_99', 'PSA10_VIP'],
-                title: '【1/99 超甘デジ・50%高還元】奇樹 & 莉莉艾女角大賞池',
-                subtitle: '超高預期值！1等賞奇樹 SAR PSA 10 與瑪俐 SR PSA 10 強勢鎮守',
-                price: 4500,
-                bannerGrad: 'from-[#0d2238] via-[#153659] to-[#0f172a]',
-                badgeText: '⚡ 50%超還元・女角專場',
-                badgeColor: 'bg-sky-400 text-black',
-                tiers: [
-                    makeTierCard('S', 'IONO_SAR', 1, 135000, true),
-                    makeTierCard('A', 'MARNIE_SR', 3, 65000, true),
-                    makeTierCard('B', 'SERENA_SR', 16, 22000, false),
-                    makeTierCard('C', 'GARDEVOIR_EX_SAR', 45, 6800, false),
-                    makeTierCard('D', 'RALTS_AR', 85, 2200, false),
-                ]
-            },
-            {
-                id: 'pool_vip_dragon',
-                tags: ['PSA10_VIP'],
-                title: '【至尊殿堂 VIP】烈空坐 & 騎拉帝納 V SA 頂級神獸大賞',
-                subtitle: '重磅級玩家專區！1等賞烈空坐 VMAX SA 市場估值高達 220,000 PT',
-                price: 10000,
-                bannerGrad: 'from-[#1a1405] via-[#362708] to-[#090d16]',
-                badgeText: '🏆 VIP 至尊池・單抽萬點',
-                badgeColor: 'bg-gradient-to-r from-amber-300 to-yellow-500 text-black',
-                tiers: [
-                    makeTierCard('S', 'RAYQUAZA_VMAX_SA', 1, 220000, true),
-                    makeTierCard('A', 'GIRATINA_V_SA', 3, 95000, true),
-                    makeTierCard('A', 'LUGIA_V_SA', 3, 88000, true),
-                    makeTierCard('B', 'ARCEUS_VSTAR_UR', 18, 38000, false),
-                    makeTierCard('C', 'DIALGA_VSTAR_UR', 45, 13000, false),
-                    makeTierCard('D', 'MEWTWO_VSTAR_SAR', 80, 4800, false),
-                ]
-            },
-            {
-                id: 'pool_terastal_fest',
-                tags: ['ANNIV_30TH', 'NIBUICHI_99'],
-                title: '【太晶慶典 ex 特化】梵谷戴帽皮卡丘 & 151 噴火龍祭典',
-                subtitle: '入門首選 800 PT！低門檻體驗 15 秒 3D 電影級開箱演出',
-                price: 800,
-                bannerGrad: 'from-[#0b2421] via-[#113b35] to-[#0f172a]',
-                badgeText: '💎 入門首選・800 PT',
-                badgeColor: 'bg-emerald-400 text-black',
-                tiers: [
-                    makeTierCard('S', 'VAN_GOGH_PIKACHU', 1, 68000, true),
-                    makeTierCard('A', 'CHARIZARD_151_SAR', 3, 36000, true),
-                    makeTierCard('B', 'RAICHU_AR', 16, 5200, false),
-                    makeTierCard('C', 'CHARMANDER_151_AR', 50, 2200, false),
-                    makeTierCard('D', 'MIRAIDON_EX_RR', 90, 650, false),
-                ]
-            },
-            {
-                id: 'pool_rocket_mewtwo',
-                tags: ['LOW_ODDS_199'],
-                title: '【火箭隊的榮耀】騎拉帝納 & 坂木暗黑支配 1/199 狙擊池',
-                subtitle: '暗黑反派主題！騎拉帝納 V SA & 坂木的カリスマ SAR 強勢登場',
-                price: 2000,
-                bannerGrad: 'from-[#1f0b24] via-[#36113d] to-[#0f172a]',
-                badgeText: '🚀 火箭隊主題・暗黑逆轉',
-                badgeColor: 'bg-purple-500 text-white',
-                tiers: [
-                    makeTierCard('S', 'GIRATINA_V_SA', 1, 98000, true),
-                    makeTierCard('A', 'GIOVANNI_151_SAR', 3, 38000, true),
-                    makeTierCard('B', 'MEWTWO_VSTAR_SAR', 15, 11500, false),
-                    makeTierCard('C', 'TYRANITAR_AR', 45, 3400, false),
-                    makeTierCard('D', 'MEWTWO_V_RR', 90, 1100, false),
-                ]
-            },
-            {
-                id: 'pool_golden_arceus',
-                tags: ['ANNIV_30TH', 'PSA10_VIP'],
-                title: '【創世四神金卡殿堂】阿爾宙斯 & 帝牙盧卡 UR 黃金聖域',
-                subtitle: 'VSTAR 宇宙四張黃金 UR 齊聚！1等賞全套黃金創世神',
-                price: 3200,
-                bannerGrad: 'from-[#241e09] via-[#40340c] to-[#0f172a]',
-                badgeText: '✨ 黃金 UR 專場',
-                badgeColor: 'bg-yellow-400 text-black',
-                tiers: [
-                    makeTierCard('S', 'ARCEUS_VSTAR_UR', 1, 115000, true),
-                    makeTierCard('A', 'DIALGA_VSTAR_UR', 3, 48000, true),
-                    makeTierCard('B', 'PALKIA_VSTAR_UR', 16, 15000, false),
-                    makeTierCard('C', 'MEW_151_UR', 45, 4600, false),
-                    makeTierCard('D', 'LUGIA_VSTAR_RRR', 85, 1500, false),
-                ]
-            },
-            {
-                id: 'pool_pikachu_world',
-                tags: ['ANNIV_30TH', 'LOW_ODDS_199'],
-                title: '【皮卡丘全明星巡禮】純金皮卡丘 & 梵谷戴帽皮卡丘池',
-                subtitle: '皮卡丘收藏家必抽！收錄各世代限定皮卡丘名卡',
-                price: 2200,
-                bannerGrad: 'from-[#2b2205] via-[#4a3a08] to-[#0f172a]',
-                badgeText: '⚡ 皮卡丘全系列',
-                badgeColor: 'bg-amber-400 text-black',
-                tiers: [
-                    makeTierCard('S', 'GOLD_PIKACHU_V', 1, 118000, true),
-                    makeTierCard('A', 'VAN_GOGH_PIKACHU', 3, 58000, true),
-                    makeTierCard('B', 'PIKACHU_151_AR', 16, 9500, false),
-                    makeTierCard('C', 'RAICHU_AR', 45, 3600, false),
-                    makeTierCard('D', 'PIKACHU_VMAX_RRR', 85, 1250, false),
-                ]
-            },
-            {
-                id: 'pool_kanto_legend',
-                tags: ['ANNIV_30TH'],
-                title: '【關都初代傳說回歸】噴火龍・水箭龜・妙蛙花三巨頭池',
-                subtitle: '致敬 1996 初代御三家！三巨頭 SAR 齊發',
-                price: 1800,
-                bannerGrad: 'from-[#0d261a] via-[#16422c] to-[#0f172a]',
-                badgeText: '🌿 初代御三家・懷舊祭',
-                badgeColor: 'bg-emerald-500 text-black',
-                tiers: [
-                    makeTierCard('S', 'CHARIZARD_151_SAR', 1, 82000, true),
-                    makeTierCard('A', 'CHARIZARD_25TH', 3, 42000, true),
-                    makeTierCard('B', 'BLASTOISE_151_SAR', 16, 10500, false),
-                    makeTierCard('C', 'SQUIRTLE_151_AR', 45, 3200, false),
-                    makeTierCard('D', 'VENUSAUR_151_RR', 85, 1000, false),
-                ]
-            },
-            {
-                id: 'pool_lugia_paradigm',
-                tags: ['NIBUICHI_99'],
-                title: '【銀翼風暴・洛奇亞祭】洛奇亞 V SA & 莎莉娜 1/199 池',
-                subtitle: '銀色風暴雙璧！洛奇亞 V SA 與 莎莉娜 SR 同步狙擊',
-                price: 2600,
-                bannerGrad: 'from-[#0e192b] via-[#1a2f4f] to-[#0f172a]',
-                badgeText: '🌊 銀翼風暴・雙大獎',
-                badgeColor: 'bg-cyan-400 text-black',
-                tiers: [
-                    makeTierCard('S', 'LUGIA_V_SA', 1, 105000, true),
-                    makeTierCard('A', 'SERENA_SR', 3, 46000, true),
-                    makeTierCard('B', 'ZAPDOS_151_SAR', 16, 12000, false),
-                    makeTierCard('C', 'DRAGONAIR_151_AR', 45, 3500, false),
-                    makeTierCard('D', 'LUGIA_VSTAR_RRR', 85, 1300, false),
-                ]
-            }
-        ];
-
-        const BOX_SETS = [
-            {
-                id: 'box_30th_crown',
-                tag: '👑 30週年紀念最新作',
-                name: '寶可夢 30週年紀念皇冠卡盒 (30th Anniversary Crown Box)',
-                jpName: 'ポケモンカードゲーム 30周年記念ゴールデンBOX',
-                packPrice: 900,
-                boxPrice: 12000,
-                coverImg: VERIFIED_CARDS.GOLD_PIKACHU_V.img,
-                subImg: VERIFIED_CARDS.GOLD_MEW_UR.img,
-                guaranteeText: '1BOX 保底必出 30週年黃金 UR / SAR 1〜2 張 + 紀念 AR/SR 4 張！',
-                hitPool: [
-                    makeTierCard('S', 'GOLD_PIKACHU_V', 1, 65000, false),
-                    makeTierCard('A', 'GOLD_MEW_UR', 1, 28000, false),
-                    makeTierCard('A', 'GOLD_POKEBALL', 1, 22000, false),
-                    makeTierCard('B', 'CHARIZARD_25TH', 1, 14000, false),
-                    makeTierCard('C', 'UMBREON_STAR_25TH', 1, 4200, false),
-                    makeTierCard('D', 'FLYING_PIKA_VMAX', 1, 1100, false),
-                ]
-            },
-            {
-                id: 'box_sv10_rocket',
-                tag: '🚀 SV10 最新話題作',
-                name: 'SV10 火箭隊的榮耀 (ロケット団の栄光)',
-                jpName: '拡張パック ロケット団の栄光 1BOX (30パック入)',
-                packPrice: 650,
-                boxPrice: 8800,
-                coverImg: VERIFIED_CARDS.GIOVANNI_151_SAR.img,
-                subImg: VERIFIED_CARDS.MEWTWO_VSTAR_SAR.img,
-                guaranteeText: '1BOX 保底 SR/SAR 以上 1 張 + AR 3 張！超夢 & 坂木 SAR 高機率封入',
-                hitPool: [
-                    makeTierCard('S', 'GIRATINA_V_SA', 1, 48000, false),
-                    makeTierCard('A', 'GIOVANNI_151_SAR', 1, 18500, false),
-                    makeTierCard('B', 'MEWTWO_VSTAR_SAR', 1, 9800, false),
-                    makeTierCard('C', 'TYRANITAR_AR', 1, 2900, false),
-                    makeTierCard('D', 'MEWTWO_V_RR', 1, 850, false),
-                ]
-            },
-            {
-                id: 'box_sv8a_terastal',
-                tag: '💎 ハイクラス 豪華高級包',
-                name: 'SV8a 太晶慶典 ex (テラスタルフェスex)',
-                jpName: 'ハイクラスパック テラスタルフェスex 1BOX',
-                packPrice: 850,
-                boxPrice: 11500,
-                coverImg: VERIFIED_CARDS.UMBREON_VMAX_SA.img,
-                subImg: VERIFIED_CARDS.SYLVEON_VMAX_SA.img,
-                guaranteeText: '1BOX 保底 SAR 1 張確定！有機率開出伊布家族全圖神包 (GOD PACK)！',
-                hitPool: [
-                    makeTierCard('S', 'UMBREON_VMAX_SA', 1, 58000, false),
-                    makeTierCard('A', 'SYLVEON_VMAX_SA', 1, 26000, false),
-                    makeTierCard('B', 'LEAFEON_VMAX_SA', 1, 14500, false),
-                    makeTierCard('C', 'PIKACHU_151_AR', 1, 3500, false),
-                    makeTierCard('D', 'UMBREON_VMAX_RRR', 1, 1050, false),
-                ]
-            },
-            {
-                id: 'box_sv2a_151',
-                tag: '🔥 經典殿堂強化包',
-                name: 'SV2a 寶可夢卡牌 151 (ポケモンカード151)',
-                jpName: '強化拡張パック ポケモンカード151 1BOX',
-                packPrice: 750,
-                boxPrice: 10500,
-                coverImg: VERIFIED_CARDS.CHARIZARD_151_SAR.img,
-                subImg: VERIFIED_CARDS.MEW_151_SAR.img,
-                guaranteeText: '1BOX 保底 SAR/SR 1 張 + AR 3 張！收錄初代御三家六連進化神包',
-                hitPool: [
-                    makeTierCard('S', 'CHARIZARD_151_SAR', 1, 45000, false),
-                    makeTierCard('A', 'MEW_151_SAR', 1, 21000, false),
-                    makeTierCard('B', 'BLASTOISE_151_SAR', 1, 9800, false),
-                    makeTierCard('C', 'CHARMANDER_151_AR', 1, 2900, false),
-                    makeTierCard('D', 'CHARIZARD_151_RR', 1, 950, false),
-                ]
-            },
-            {
-                id: 'box_sv9_partners',
-                tag: '🤝 SV9 訓練家搭檔',
-                name: 'SV9 對戰搭檔 (バトルパートナーズ)',
-                jpName: '拡張パック バトルパートナーズ 1BOX',
-                packPrice: 600,
-                boxPrice: 8200,
-                coverImg: VERIFIED_CARDS.IONO_SAR.img,
-                subImg: VERIFIED_CARDS.SERENA_SR.img,
-                guaranteeText: '1BOX 保底訓練家搭檔 SAR / SR 1 張 + AR 3 張！',
-                hitPool: [
-                    makeTierCard('S', 'IONO_SAR', 1, 42000, false),
-                    makeTierCard('A', 'SERENA_SR', 1, 18000, false),
-                    makeTierCard('B', 'GARDEVOIR_EX_SAR', 1, 8800, false),
-                    makeTierCard('C', 'RALTS_AR', 1, 2600, false),
-                    makeTierCard('D', 'MIRAIDON_EX_RR', 1, 800, false),
-                ]
-            },
-            {
-                id: 'box_s6a_eevee',
-                tag: '🌙 絕版夢幻原封盒',
-                name: 'S6a 伊布英雄 (イーブイヒーローズ 絕版BOX)',
-                jpName: '強化拡張パック イーブイヒーローズ 1BOX',
-                packPrice: 1200,
-                boxPrice: 16800,
-                coverImg: VERIFIED_CARDS.UMBREON_VMAX_SA.img,
-                subImg: VERIFIED_CARDS.LEAFEON_VMAX_SA.img,
-                guaranteeText: '夢幻絕版卡盒！有機會直擊月亮伊布 VMAX SA 初版神卡',
-                hitPool: [
-                    makeTierCard('S', 'UMBREON_VMAX_SA', 1, 88000, false),
-                    makeTierCard('A', 'SYLVEON_VMAX_SA', 1, 35000, false),
-                    makeTierCard('B', 'LEAFEON_VMAX_SA', 1, 16800, false),
-                    makeTierCard('C', 'GLACEON_VMAX_SA', 1, 6500, false),
-                    makeTierCard('D', 'SYLVEON_VMAX_RRR', 1, 1400, false),
-                ]
-            }
-        ];
-
-        const state = {
-            points: 50000,
-            pools: [],
-            vault: [],
-            shippingOrders: [],
-            currentPoolFilter: 'ALL',
-            currentVaultFilter: 'ALL',
-            animStyle: 'RANDOM_CINEMA',
-            activeSession: null,
-            timers: []
-        };
-
-        function initPoolsData() {
-            state.pools = POOL_CONFIGS.map(cfg => {
-                const baseCards = cfg.tiers.map(t => ({ ...t }));
-                const existingNames = new Set(baseCards.map(c => c.name));
-                const extraCards = EXTENDED_POOL_ITEMS
-                    .filter(ec => !existingNames.has(ec.name))
-                    .map(ec => ({ ...ec }));
-                const mergedCards = [...baseCards, ...extraCards];
-                const total = mergedCards.reduce((acc, c) => acc + c.count, 0);
-                return {
-                    ...cfg,
-                    cards: mergedCards,
-                    totalCount: total,
-                    remainingCount: total
-                };
-            });
-        }
-
-        /* ==========================================================================
-         * 5. 導覽與大廳渲染
-         * ========================================================================== */
-        function renderTicker() {
-            const samples = [
-                '🔥 玩家 **8821 在【30週年紀念皇冠】抽中 🌈 1等賞 純金皮卡丘 V PSA 10 (120,000 PT)！',
-                '⚡ 玩家 **3109 在【伊布英雄絕版祭】觸發彩虹大師球進化，神引き 月亮伊布 VMAX SA PSA 10！',
-                '💎 玩家 **5590 開啟【SV8a 太晶慶典 ex 1BOX】開出月亮伊布 SAR 確定枠！',
-                '👑 玩家 **1047 在【至尊殿堂 VIP】寫實武士刀斬碎石碑，斬獲 烈空坐 VMAX SA PSA 10 (220,000 PT)！',
-                '🚀 玩家 **7743 在【火箭隊的榮耀】大號3D鋼珠台落入🌈1等圈，抱走 騎拉帝納 V SA PSA 10！'
-            ];
-            const html = [...samples, ...samples].map(s => `<span class="inline-flex items-center gap-1.5 font-bold">${s}</span>`).join('');
-            document.getElementById('live-ticker-list').innerHTML = html;
-        }
-
-        function updateWalletUI() {
-            document.getElementById('wallet-pt-display').textContent = state.points.toLocaleString();
-            document.getElementById('badge-vault-count').textContent = state.vault.length;
-            document.getElementById('m-badge-vault').textContent = state.vault.length;
-        }
-
-        function addFreePoints(amount) {
-            SoundEngine.coin();
-            state.points += amount;
-            updateWalletUI();
-            showToast(`🎁 已免費儲值 +${amount.toLocaleString()} PT！`);
-        }
-
-        function switchMainTab(tab) {
-            ['pools', 'boxes', 'inventory'].forEach(t => {
-                document.getElementById(`view-${t}`).classList.toggle('hidden', t !== tab);
-                const navBtn = document.getElementById(`nav-tab-${t}`);
-                const mBtn = document.getElementById(`m-tab-${t}`);
-                if (navBtn) {
-                    navBtn.className = t === tab
-                        ? 'px-3.5 py-1.5 rounded-lg text-xs font-black bg-amber-500 text-black shadow transition-all'
-                        : 'px-3.5 py-1.5 rounded-lg text-xs font-bold text-gray-300 hover:text-white transition-all flex items-center gap-1.5';
-                }
-                if (mBtn) {
-                    mBtn.className = t === tab
-                        ? 'flex-1 py-2.5 text-[11px] font-black text-amber-400 border-b-2 border-amber-400'
-                        : 'flex-1 py-2.5 text-[11px] font-bold text-gray-400';
-                }
-            });
-            if (tab === 'inventory') renderVaultGrid();
-        }
-
-        function filterPoolsByTag(tag) {
-            state.currentPoolFilter = tag;
-            document.querySelectorAll('.pool-tag-btn').forEach(btn => {
-                const active = btn.id === `pool-filter-${tag}`;
-                btn.className = active
-                    ? 'pool-tag-btn px-3.5 py-2 rounded-xl text-xs font-black bg-amber-500 text-black shadow transition-all'
-                    : 'pool-tag-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-slatecard text-gray-300 hover:text-white border border-slateborder transition-all';
-            });
-            renderPoolsGrid();
-        }
-
-        function changeAnimStyle(val) {
-            state.animStyle = val;
-            showToast('🎬 3D 劇場演藝劇本設定已更新！');
-        }
-
-        function renderLobbyQuickPacksBar() {
-            const bar = document.getElementById('lobby-quick-packs-bar');
-            bar.innerHTML = BOX_SETS.map(box => `
-                <div class="flex-shrink-0 w-64 bg-[#0c101b] border border-amber-500/30 hover:border-amber-400 rounded-xl p-2.5 flex items-center gap-3 transition-all group">
-                    <img src="${box.coverImg}" referrerpolicy="no-referrer" class="w-11 h-15 object-cover rounded-lg border border-white/20 shadow group-hover:scale-105 transition-transform">
-                    <div class="flex-1 min-w-0">
-                        <div class="text-[10px] font-black text-amber-400 truncate">${box.tag}</div>
-                        <div class="text-xs font-black text-white truncate">${box.name.split(' (')[0]}</div>
-                        <div class="flex items-center gap-1.5 mt-1.5">
-                            <button onclick="openBoxOrPack('${box.id}', 'PACK_1')" class="px-2.5 py-1 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 hover:brightness-110 text-black font-black text-[10px] shadow">
-                                單開1包 (${box.packPrice} PT)
-                            </button>
-                            <button onclick="openBoxOrPack('${box.id}', 'BOX_1')" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-300 font-bold text-[10px] border border-amber-500/30">
-                                1BOX
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function renderPoolsGrid() {
-            const grid = document.getElementById('pools-grid');
-            const filtered = state.currentPoolFilter === 'ALL'
-                ? state.pools
-                : state.pools.filter(p => p.tags.includes(state.currentPoolFilter));
-
-            grid.innerHTML = filtered.map(pool => {
-                const topCards = pool.cards.filter(c => c.tier === 'S' || c.tier === 'A').slice(0, 3);
-                const pct = Math.max(0, Math.round((pool.remainingCount / pool.totalCount) * 100));
-                const sRemaining = pool.cards.filter(c => c.tier === 'S').reduce((a, b) => a + b.count, 0);
-
-                return `
-                <article class="bg-slatecard border border-slateborder hover:border-amber-500/50 rounded-2xl overflow-hidden flex flex-col shadow-xl transition-all group">
-                    <div class="relative h-52 bg-gradient-to-br ${pool.bannerGrad} p-4 flex flex-col justify-between overflow-hidden">
-                        <div class="relative z-10 flex items-center justify-between gap-2">
-                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black ${pool.badgeColor} shadow">${pool.badgeText}</span>
-                            <span class="px-2 py-0.5 rounded-full bg-black/70 border border-white/15 text-[10px] font-mono font-bold text-amber-300">
-                                1等賞殘 ${sRemaining} 口 / 全 ${pool.cards.length} 種卡面
-                            </span>
-                        </div>
-
-                        <div class="relative z-10 flex items-center justify-center gap-2 my-1">
-                            ${topCards.map((c, idx) => {
-                                const rot = idx === 0 ? '-rotate-6 scale-95' : (idx === 1 ? 'scale-105 z-20 -translate-y-1' : 'rotate-6 scale-95');
-                                return `
-                                <div class="w-20 sm:w-24 rounded-lg p-1 bg-white/15 backdrop-blur-sm border border-white/40 shadow-2xl transform ${rot} group-hover:scale-105 transition-transform">
-                                    <div class="bg-white text-black text-[7px] font-black px-1 rounded-t flex justify-between border-b border-red-600">
-                                        <span>${c.label}</span>
-                                        <span class="text-red-600">PSA 10</span>
-                                    </div>
-                                    <img src="${c.img}" referrerpolicy="no-referrer" class="w-full aspect-[3/4] object-cover rounded-b">
-                                </div>`;
-                            }).join('')}
-                        </div>
-
-                        <div class="relative z-10 flex items-center justify-between text-[11px] font-black bg-black/65 backdrop-blur-sm px-2.5 py-1 rounded-lg border border-white/10">
-                            <span class="text-gray-300">1回 <strong class="text-amber-400 font-display text-sm">${pool.price.toLocaleString()} PT</strong></span>
-                            <span class="text-emerald-300">殘 ${pool.remainingCount} / ${pool.totalCount} 口</span>
-                        </div>
-                    </div>
-
-                    <div class="p-4 flex-1 flex flex-col justify-between space-y-4">
-                        <div class="space-y-1.5">
-                            <h3 class="font-black text-sm sm:text-base text-white line-clamp-1">${pool.title}</h3>
-                            <p class="text-xs text-gray-400 line-clamp-2">${pool.subtitle}</p>
-                            <div class="pt-1">
-                                <div class="w-full h-2 bg-obsidian rounded-full overflow-hidden border border-white/10">
-                                    <div class="h-full bg-gradient-to-r from-amber-500 to-rose-500 transition-all" style="width:${pct}%"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="space-y-2">
-                            <div class="grid grid-cols-2 gap-2">
-                                <button onclick="startPoolPull('${pool.id}', 1)" class="py-2.5 px-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:brightness-110 text-black font-black text-xs shadow-lg transition-transform active:scale-95">
-                                    🔥 單抽 (${pool.price.toLocaleString()} PT)
-                                </button>
-                                <button onclick="startPoolPull('${pool.id}', 10)" class="py-2.5 px-3 rounded-xl bg-gradient-to-r from-rose-600 to-fuchsia-600 hover:brightness-110 text-white font-black text-xs shadow-lg transition-transform active:scale-95">
-                                    ⚡ 十連抽 (${(pool.price * 10).toLocaleString()} PT)
-                                </button>
-                            </div>
-
-                            <div class="flex items-center justify-between gap-1.5 pt-1 border-t border-white/5">
-                                <button onclick="openPoolOddsModal('${pool.id}')" class="text-[11px] font-bold text-gray-300 hover:text-amber-300 py-1">
-                                    📋 1〜5等機率表 (${pool.cards.length}種)
-                                </button>
-                                <div class="flex items-center gap-1">
-                                    <button onclick="startForcedTierDemo('${pool.id}', 'S')" class="px-2 py-1 rounded-lg bg-rose-500/20 hover:bg-rose-500/35 border border-rose-500/40 text-rose-300 text-[10px] font-black">
-                                        🌈 1等劇場體驗
-                                    </button>
-                                    <button onclick="startForcedTierDemo('${pool.id}', 'A')" class="px-2 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/35 border border-amber-500/40 text-amber-300 text-[10px] font-black">
-                                        🔥 2等劇場體驗
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </article>`;
-            }).join('');
-        }
-
-        function renderBoxesGrid() {
-            const grid = document.getElementById('boxes-grid');
-            grid.innerHTML = BOX_SETS.map(box => `
-                <article class="bg-slatecard border border-amber-500/35 hover:border-amber-400 rounded-2xl overflow-hidden flex flex-col shadow-xl">
-                    <div class="relative h-48 bg-gradient-to-br from-[#241907] via-[#171d2e] to-[#0a0d16] p-4 flex items-center justify-between gap-3">
-                        <div class="space-y-1.5 z-10 flex-1">
-                            <span class="px-2.5 py-0.5 rounded-full bg-amber-400 text-black text-[10px] font-black">${box.tag}</span>
-                            <h3 class="text-base font-black text-white leading-snug">${box.name}</h3>
-                            <p class="text-[10px] text-amber-300/80">${box.jpName}</p>
-                        </div>
-                        <div class="relative flex-shrink-0 flex items-center">
-                            <img src="${box.subImg}" referrerpolicy="no-referrer" class="w-16 h-22 object-cover rounded-lg border border-white/30 -rotate-6 shadow-lg">
-                            <img src="${box.coverImg}" referrerpolicy="no-referrer" class="w-20 h-28 object-cover rounded-lg border-2 border-amber-300 rotate-3 -ml-4 shadow-2xl">
-                        </div>
-                    </div>
-
-                    <div class="p-4 flex-1 flex flex-col justify-between space-y-4">
-                        <div class="bg-obsidian/80 border border-amber-500/25 rounded-xl p-2.5 text-xs text-amber-200 font-bold">
-                            ✨ ${box.guaranteeText}
-                        </div>
-
-                        <div class="space-y-2">
-                            <div class="grid grid-cols-2 gap-2">
-                                <button onclick="openBoxOrPack('${box.id}', 'PACK_1')" class="py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-amber-500/40 text-amber-300 font-black text-xs">
-                                    🎴 單開 1 包 (${box.packPrice} PT)
-                                </button>
-                                <button onclick="openBoxOrPack('${box.id}', 'PACK_5')" class="py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-rose-500/40 text-rose-300 font-black text-xs">
-                                    🔥 5 包連開 (${(box.packPrice * 5).toLocaleString()} PT)
-                                </button>
-                            </div>
-                            <button onclick="openBoxOrPack('${box.id}', 'BOX_1')" class="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-rose-600 hover:brightness-110 text-white font-black text-xs shadow-lg">
-                                📦 原封 1 BOX 全拆開箱 (${box.boxPrice.toLocaleString()} PT・保底確定枠)
-                            </button>
-                            <button onclick="buySealedBoxToVault('${box.id}')" class="w-full py-2 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/40 text-emerald-300 font-black text-xs">
-                                🛒 購買未拆封原盒存入保管庫收藏 (${box.boxPrice.toLocaleString()} PT)
-                            </button>
-                        </div>
-                    </div>
-                </article>
-            `).join('');
-        }
-
-        /* ==========================================================================
-         * 6. 抽卡邏輯
-         * ========================================================================== */
-        function clearAllTimers() {
-            state.timers.forEach(id => clearTimeout(id));
-            state.timers = [];
-            ThreeCinema.stop();
-        }
-
-        function startPoolPull(poolId, count) {
-            const pool = state.pools.find(p => p.id === poolId);
-            if (!pool) return;
-            if (pool.remainingCount < count) {
-                showToast(`⚠️ 本池剩餘口數不足 ${count} 口！`);
-                return;
-            }
-            const totalCost = pool.price * count;
-            if (state.points < totalCost) {
-                showToast('⚠️ 點數不足！請先免費領取 PT');
-                openTopupModal();
-                return;
-            }
-            SoundEngine.init();
-            state.points -= totalCost;
-            updateWalletUI();
-
-            const weightedBucket = [];
-            pool.cards.forEach((c, idx) => {
-                for (let i = 0; i < c.count; i++) weightedBucket.push(idx);
-            });
-
-            const drawn = [];
-            for (let n = 0; n < count; n++) {
-                if (weightedBucket.length === 0) break;
-                const rIdx = Math.floor(Math.random() * weightedBucket.length);
-                const cardIdx = weightedBucket[rIdx];
-                weightedBucket.splice(rIdx, 1);
-
-                const template = pool.cards[cardIdx];
-                template.count = Math.max(0, template.count - 1);
-                pool.remainingCount = Math.max(0, pool.remainingCount - 1);
-
-                drawn.push({
-                    uid: 'CARD-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7),
-                    poolTitle: pool.title,
-                    tier: template.tier,
-                    label: template.label,
-                    name: template.name,
-                    img: template.img,
-                    psa: template.psa,
-                    code: template.code,
-                    marketPt: template.marketPt,
-                    buybackPt: calcBuybackPt(template.marketPt, template.tier, false),
-                    selectedForBuyback: TIER_WEIGHT[template.tier] <= 3
-                });
-            }
             makeTierCard('D', 'LUGIA_VSTAR_RRR', 8, 1050, false),
             makeTierCard('D', 'GIRATINA_VSTAR_RRR', 8, 1050, false),
             makeTierCard('D', 'MIRAIDON_EX_RR', 8, 900, false),
@@ -2168,7 +1518,275 @@
             ...EXTRA_151_TIER5_SPECS.map(([num, , pt]) => makeTierCard('D', `EX151_D_${num}`, 7, pt, false)),
         ];
 
+        // 11 大高規格限定卡池配置 (全卡池 100% 採用已驗證官方卡圖 + 每池合併 105+ 種真實卡牌)
         const POOL_CONFIGS = [
+            {
+                id: 'pool-30th-crown',
+                title: '【30週年紀念皇冠】1/199 純金皮卡丘 V & 黃金夢幻殿堂',
+                subtitle: '1等賞純金皮卡丘 V PSA10 降臨！全池收錄百種以上真實官方卡牌',
+                badge: '👑 30週年限定・1/199 激熱',
+                tag: 'ANNIV_30TH',
+                price: 2500,
+                topCards: [
+                    makeTierCard('S', 'GOLD_PIKACHU_V', 1, 188000, true),
+                    makeTierCard('A', 'GOLD_MEW_UR', 2, 72000, true),
+                    makeTierCard('A', 'GOLD_POKEBALL', 2, 68000, true),
+                    makeTierCard('B', 'CHARIZARD_25TH', 4, 24000, true),
+                    makeTierCard('B', 'UMBREON_STAR_25TH', 4, 21000, false),
+                    makeTierCard('B', 'FLYING_PIKA_VMAX', 5, 11500, false)
+                ]
+            },
+            {
+                id: 'pool-eevee-heroes',
+                title: '【伊布英雄絕版祭】月亮伊布 VMAX SA PSA10 頂點池',
+                subtitle: '人氣天價月亮伊布領軍，全伊布家族 VMAX SA 齊聚！',
+                badge: '🌙 絕版神池・PSA10 確定枠',
+                tag: 'PSA10_VIP',
+                price: 3800,
+                topCards: [
+                    makeTierCard('S', 'UMBREON_VMAX_SA', 1, 268000, true),
+                    makeTierCard('A', 'SYLVEON_VMAX_SA', 2, 95000, true),
+                    makeTierCard('A', 'ESPEON_VMAX_SA', 2, 78000, true),
+                    makeTierCard('B', 'LEAFEON_VMAX_SA', 4, 22000, false),
+                    makeTierCard('B', 'GLACEON_VMAX_SA', 4, 21500, false)
+                ]
+            },
+            {
+                id: 'pool-151-master',
+                title: '【寶可夢 151 經典全明星】噴火龍 & 夢幻 ex SAR 祭典',
+                subtitle: '初代御三家 SAR 與艾莉絲全收錄，經典 151 收藏首選',
+                badge: '🎯 1/199・二等賞大量投入',
+                tag: 'LOW_ODDS_199',
+                price: 1500,
+                topCards: [
+                    makeTierCard('S', 'CHARIZARD_151_SAR', 1, 128000, true),
+                    makeTierCard('A', 'MEW_151_SAR', 2, 64000, true),
+                    makeTierCard('A', 'ERIKA_151_SAR', 2, 58000, true),
+                    makeTierCard('B', 'BLASTOISE_151_SAR', 5, 16500, false),
+                    makeTierCard('B', 'VENUSAUR_151_SAR', 5, 15500, false),
+                    makeTierCard('B', 'ZAPDOS_151_SAR', 5, 14800, false)
+                ]
+            },
+            {
+                id: 'pool-vangogh-pika',
+                title: '【世界特典皮卡丘】梵谷戴帽皮卡丘 PSA10 藝術殿堂',
+                subtitle: '全球搶破頭阿姆斯特丹博物館限定特典卡降臨！',
+                badge: '🎨 藝術限定・30週年連動',
+                tag: 'ANNIV_30TH',
+                price: 2200,
+                topCards: [
+                    makeTierCard('S', 'VAN_GOGH_PIKACHU', 1, 156000, true),
+                    makeTierCard('A', 'GOLD_PIKACHU_V', 2, 98000, true),
+                    makeTierCard('A', 'CHARIZARD_25TH', 2, 56000, true),
+                    makeTierCard('B', 'PIKACHU_151_AR', 6, 12800, false),
+                    makeTierCard('B', 'FLYING_PIKA_VMAX', 6, 11800, false)
+                ]
+            },
+            {
+                id: 'pool-waifu-sar',
+                title: '【人氣女主角殿堂】奇樹 SAR・瑪俐 SR・莎莉娜 SR 夢幻池',
+                subtitle: '支援者女神 PSA 10 全員到齊，50% 超高體感還元！',
+                badge: '⚡ 1/99・50%超還元池',
+                tag: 'NIBUICHI_99',
+                price: 2800,
+                topCards: [
+                    makeTierCard('S', 'IONO_SAR', 1, 142000, true),
+                    makeTierCard('A', 'MARNIE_SR', 2, 68000, true),
+                    makeTierCard('A', 'SERENA_SR', 2, 54000, true),
+                    makeTierCard('A', 'ERIKA_151_SAR', 2, 52000, true),
+                    makeTierCard('B', 'GARDEVOIR_EX_SAR', 5, 16000, false)
+                ]
+            },
+            {
+                id: 'pool-dragon-gods',
+                title: '【傳說神獸降臨】烈空坐 VMAX SA & 騎拉帝納 V SA 雙神池',
+                subtitle: '蒼空裂縫雙神獸 PSA 10 震撼登場，大獎爆擊直衝天際',
+                badge: '🐉 頂級至尊 PSA10 殿堂',
+                tag: 'PSA10_VIP',
+                price: 5000,
+                topCards: [
+                    makeTierCard('S', 'RAYQUAZA_VMAX_SA', 1, 245000, true),
+                    makeTierCard('S', 'GIRATINA_V_SA', 1, 185000, true),
+                    makeTierCard('A', 'LUGIA_V_SA', 3, 76000, true),
+                    makeTierCard('B', 'ARCEUS_VSTAR_UR', 5, 22000, true)
+                ]
+            },
+            {
+                id: 'pool-vstar-universe',
+                title: '【創世四神 UR】阿爾宙斯・帝牙盧卡・帕路奇亞黃金宇宙',
+                subtitle: '純金 VSTAR 創世神齊聚一堂，高階 UR 命中率激增！',
+                badge: '🎯 1/199・二等賞大量投入',
+                tag: 'LOW_ODDS_199',
+                price: 1800,
+                topCards: [
+                    makeTierCard('S', 'ARCEUS_VSTAR_UR', 1, 118000, true),
+                    makeTierCard('A', 'DIALGA_VSTAR_UR', 2, 56000, true),
+                    makeTierCard('A', 'PALKIA_VSTAR_UR', 2, 54000, true),
+                    makeTierCard('A', 'MEWTWO_VSTAR_SAR', 2, 48000, true)
+                ]
+            },
+            {
+                id: 'pool-rocket-boss',
+                title: '【火箭隊的野望】坂木 SAR・超夢 VSTAR・夢幻 UR 暗黑池',
+                subtitle: '致敬火箭隊榮耀！坂木與超夢、夢幻夢幻對決',
+                badge: '⚡ 1/99・50%超還元池',
+                tag: 'NIBUICHI_99',
+                price: 1200,
+                topCards: [
+                    makeTierCard('S', 'MEW_151_SAR', 1, 108000, true),
+                    makeTierCard('A', 'GIOVANNI_151_SAR', 2, 46000, true),
+                    makeTierCard('A', 'MEWTWO_VSTAR_SAR', 2, 49000, true),
+                    makeTierCard('B', 'MEW_151_UR', 5, 14500, false)
+                ]
+            },
+            {
+                id: 'pool-starter-800',
+                title: '【新手必抽 800 PT】輕量入門・小博大奇蹟逆轉池',
+                subtitle: '全站最低門檻 800 PT！一樣有機會直出 PSA 10 一等賞神卡',
+                badge: '🎯 1/199・輕量以小博大',
+                tag: 'LOW_ODDS_199',
+                price: 800,
+                topCards: [
+                    makeTierCard('S', 'LUGIA_V_SA', 1, 112000, true),
+                    makeTierCard('A', 'CHARIZARD_151_SAR', 2, 62000, true),
+                    makeTierCard('A', 'SERENA_SR', 2, 44000, true),
+                    makeTierCard('B', 'ALAKAZAM_151_SAR', 5, 11500, false)
+                ]
+            },
+            {
+                id: 'pool-anniv-golden-box',
+                title: '【紀念黃金雙璧】純金精靈球 & 25th 復刻噴火龍 PSA10',
+                subtitle: '黃金紀念箱夢幻逸品全套出擊，30週年收藏必備',
+                badge: '👑 30週年特化・黃金特典',
+                tag: 'ANNIV_30TH',
+                price: 3200,
+                topCards: [
+                    makeTierCard('S', 'GOLD_POKEBALL', 1, 148000, true),
+                    makeTierCard('A', 'CHARIZARD_25TH', 2, 74000, true),
+                    makeTierCard('A', 'GOLD_MEW_UR', 2, 69000, true),
+                    makeTierCard('B', 'UMBREON_STAR_25TH', 4, 24000, false)
+                ]
+            },
+            {
+                id: 'pool-vip-10k',
+                title: '【極致神豪 10,000 PT】至尊 PSA 10 全明星皇家殿堂',
+                subtitle: '頂級高規格神豪池！月亮伊布、烈空坐、純金皮卡丘三大頭獎同池！',
+                badge: '🏆 頂級至尊 PSA10 殿堂',
+                tag: 'PSA10_VIP',
+                price: 10000,
+                topCards: [
+                    makeTierCard('S', 'UMBREON_VMAX_SA', 1, 298000, true),
+                    makeTierCard('S', 'RAYQUAZA_VMAX_SA', 1, 268000, true),
+                    makeTierCard('A', 'GOLD_PIKACHU_V', 3, 145000, true),
+                    makeTierCard('A', 'GIRATINA_V_SA', 3, 128000, true),
+                    makeTierCard('A', 'VAN_GOGH_PIKACHU', 3, 118000, true)
+                ]
+            }
+        ];
+
+        // 單包 / 原封盒開封專區 (100% 使用已驗證 PTCG 官方卡面作為封面與卡表)
+        const BOX_SETS = [
+            {
+                id: 'box-30th-crown',
+                name: '寶可夢 30週年紀念皇冠卡盒',
+                badge: '👑 30週年紀念最新作',
+                subtitle: '必中紀念黃金閃卡！整盒保底 SAR / UR 確定枠',
+                packPrice: 900,
+                boxPrice: 12000,
+                coverImg: VERIFIED_CARDS.GOLD_PIKACHU_V.img,
+                hitPool: [
+                    makeTierCard('S', 'GOLD_PIKACHU_V', 1, 158000, false),
+                    makeTierCard('A', 'GOLD_MEW_UR', 1, 62000, false),
+                    makeTierCard('A', 'GOLD_POKEBALL', 1, 58000, false),
+                    makeTierCard('B', 'CHARIZARD_25TH', 1, 22000, false),
+                    makeTierCard('B', 'UMBREON_STAR_25TH', 1, 19500, false),
+                    makeTierCard('C', 'FLYING_PIKA_VMAX', 1, 6800, false)
+                ]
+            },
+            {
+                id: 'box-sv10-rocket',
+                name: 'SV10 火箭隊的榮耀 (ロケット団の栄光)',
+                badge: '🔥 最新熱門系列',
+                subtitle: '坂木與超夢、夢幻暗黑強襲！單包即可拼頭獎 SAR',
+                packPrice: 650,
+                boxPrice: 8800,
+                coverImg: VERIFIED_CARDS.GIOVANNI_151_SAR.img,
+                hitPool: [
+                    makeTierCard('S', 'MEW_151_SAR', 1, 96000, false),
+                    makeTierCard('A', 'GIOVANNI_151_SAR', 1, 42000, false),
+                    makeTierCard('A', 'MEWTWO_VSTAR_SAR', 1, 38000, false),
+                    makeTierCard('B', 'MEW_151_UR', 1, 14000, false),
+                    makeTierCard('C', 'ZAPDOS_151_SAR', 1, 9200, false)
+                ]
+            },
+            {
+                id: 'box-sv9-partners',
+                name: 'SV9 對戰搭檔 (バトルパートナーズ)',
+                badge: '✨ 人氣支援者特化',
+                subtitle: '收錄奇樹、瑪俐、莎莉娜等超人氣訓練家閃卡！',
+                packPrice: 650,
+                boxPrice: 8500,
+                coverImg: VERIFIED_CARDS.IONO_SAR.img,
+                hitPool: [
+                    makeTierCard('S', 'IONO_SAR', 1, 118000, false),
+                    makeTierCard('A', 'MARNIE_SR', 1, 52000, false),
+                    makeTierCard('A', 'SERENA_SR', 1, 45000, false),
+                    makeTierCard('B', 'ERIKA_151_SAR', 1, 18000, false),
+                    makeTierCard('C', 'GARDEVOIR_EX_SAR', 1, 8800, false)
+                ]
+            },
+            {
+                id: 'box-terastal-eevee',
+                name: '太晶慶典 ex / 伊布英雄精選盒',
+                badge: '🌙 伊布家族全員收錄',
+                subtitle: '月亮伊布、仙子伊布、太陽伊布 VMAX SA 高機率出沒',
+                packPrice: 1100,
+                boxPrice: 14800,
+                coverImg: VERIFIED_CARDS.UMBREON_VMAX_SA.img,
+                hitPool: [
+                    makeTierCard('S', 'UMBREON_VMAX_SA', 1, 198000, false),
+                    makeTierCard('A', 'SYLVEON_VMAX_SA', 1, 78000, false),
+                    makeTierCard('A', 'ESPEON_VMAX_SA', 1, 64000, false),
+                    makeTierCard('B', 'LEAFEON_VMAX_SA', 1, 19000, false),
+                    makeTierCard('B', 'GLACEON_VMAX_SA', 1, 18500, false)
+                ]
+            },
+            {
+                id: 'box-sv2a-151',
+                name: '強化擴充包 寶可夢卡牌 151 (SV2a)',
+                badge: '🔴 經典不敗神盒',
+                subtitle: '收錄初代 151 隻寶可夢！噴火龍 SAR 與皮卡丘 AR 夢幻池',
+                packPrice: 800,
+                boxPrice: 10800,
+                coverImg: VERIFIED_CARDS.CHARIZARD_151_SAR.img,
+                hitPool: [
+                    makeTierCard('S', 'CHARIZARD_151_SAR', 1, 108000, false),
+                    makeTierCard('A', 'MEW_151_SAR', 1, 58000, false),
+                    makeTierCard('A', 'ERIKA_151_SAR', 1, 48000, false),
+                    makeTierCard('B', 'BLASTOISE_151_SAR', 1, 15500, false),
+                    makeTierCard('B', 'VENUSAUR_151_SAR', 1, 14800, false),
+                    makeTierCard('C', 'PIKACHU_151_AR', 1, 5200, false)
+                ]
+            },
+            {
+                id: 'box-vstar-gods',
+                name: '高級擴充包 VSTAR 宇宙 (S12a)',
+                badge: '🌌 神獸 UR 金卡雲集',
+                subtitle: '阿爾宙斯、騎拉帝納、烈空坐、洛奇亞傳說卡大集合',
+                packPrice: 850,
+                boxPrice: 11200,
+                coverImg: VERIFIED_CARDS.RAYQUAZA_VMAX_SA.img,
+                hitPool: [
+                    makeTierCard('S', 'RAYQUAZA_VMAX_SA', 1, 178000, false),
+                    makeTierCard('A', 'GIRATINA_V_SA', 1, 96000, false),
+                    makeTierCard('A', 'LUGIA_V_SA', 1, 68000, false),
+                    makeTierCard('B', 'ARCEUS_VSTAR_UR', 1, 22000, false),
+                    makeTierCard('B', 'DIALGA_VSTAR_UR', 1, 18000, false),
+                    makeTierCard('B', 'PALKIA_VSTAR_UR', 1, 17500, false)
+                ]
+            }
+        ];
+
         const state = {
             points: 50000,
             pools: [],
@@ -2180,7 +1798,117 @@
             activeSession: null,
             timers: []
         };
-// ... existing code ... -->
+
+        /* ==========================================================================
+         * 5. 卡池初始化、導覽切換與大廳渲染系統
+         * ========================================================================== */
+        function clearAllTimers() {
+            ThreeCinema.stop();
+            state.timers.forEach(id => clearTimeout(id));
+            state.timers = [];
+            const crt = document.getElementById('crt-shutoff-overlay');
+            const cd = document.getElementById('cinema-countdown-overlay');
+            const cutin = document.getElementById('cinema-cutin-overlay');
+            if (crt) crt.classList.add('hidden');
+            if (cd) cd.classList.add('hidden');
+            if (cutin) cutin.classList.add('hidden');
+        }
+
+        function initPoolsData() {
+            state.pools = POOL_CONFIGS.map(cfg => {
+                // 合併專屬頭獎卡與共用 105+ 張擴充卡表，避免同名卡重複
+                const topNames = new Set(cfg.topCards.map(c => c.name));
+                const mergedCards = [
+                    ...cfg.topCards.map(c => ({ ...c })),
+                    ...EXTENDED_POOL_ITEMS
+                        .filter(c => !topNames.has(c.name))
+                        .map(c => ({ ...c }))
+                ];
+                const totalCount = mergedCards.reduce((sum, c) => sum + c.count, 0);
+                return {
+                    ...cfg,
+                    cards: mergedCards,
+                    totalCount,
+                    remainingCount: totalCount
+                };
+            });
+        }
+
+        function updateWalletUI() {
+            const ptEl = document.getElementById('wallet-pt-display');
+            if (ptEl) ptEl.textContent = state.points.toLocaleString();
+            const vBadge = document.getElementById('badge-vault-count');
+            if (vBadge) vBadge.textContent = state.vault.length;
+            const mBadge = document.getElementById('m-badge-vault');
+            if (mBadge) mBadge.textContent = state.vault.length;
+        }
+
+        function addFreePoints(amount) {
+            SoundEngine.coin();
+            state.points += amount;
+            updateWalletUI();
+            showToast(`💎 已領取 +${amount.toLocaleString()} PT 測試點數！`);
+        }
+
+        function switchMainTab(tab) {
+            ['pools', 'boxes', 'inventory'].forEach(t => {
+                const sec = document.getElementById(`view-${t}`);
+                if (sec) sec.classList.toggle('hidden', t !== tab);
+
+                const deskBtn = document.getElementById(`nav-tab-${t}`);
+                if (deskBtn) {
+                    deskBtn.className = t === tab
+                        ? 'px-3.5 py-1.5 rounded-lg text-xs font-black bg-amber-500 text-black shadow transition-all flex items-center gap-1.5'
+                        : 'px-3.5 py-1.5 rounded-lg text-xs font-bold text-gray-300 hover:text-white transition-all flex items-center gap-1.5';
+                }
+                const mobBtn = document.getElementById(`m-tab-${t}`);
+                if (mobBtn) {
+                    mobBtn.className = t === tab
+                        ? 'flex-1 py-2.5 text-[11px] font-black text-amber-400 border-b-2 border-amber-400'
+                        : 'flex-1 py-2.5 text-[11px] font-bold text-gray-400';
+                }
+            });
+            if (tab === 'inventory') renderVaultGrid();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function renderTicker() {
+            const tickerEl = document.getElementById('live-ticker-list');
+            if (!tickerEl) return;
+            const logs = [
+                '🔥 玩家 [Kaito***] 剛抽中【1等賞】月亮伊布 VMAX SA PSA10 (268,000 PT)！',
+                '🌈 玩家 [Sora***] 觸發彩虹大師球逆轉，獲得【1等賞】純金皮卡丘 V PSA10！',
+                '⚡ 玩家 [Mika***] 在《寶可夢 151》池抽中【1等賞】151 噴火龍 ex SAR PSA10！',
+                '🎆 玩家 [Ren***] 觸發百花繚亂花火連發，獲得【1等賞】烈空坐 VMAX SA PSA10！',
+                '👑 玩家 [Yuki***] 在單包專區一發入魂開出【30週年紀念】黃金色違夢幻 UR！',
+                '🗡️ 玩家 [Taku***] 一刀兩斷遠古石碑，獲得【2等賞】奇樹 SAR PSA10！'
+            ];
+            const html = [...logs, ...logs].map(txt => `<span class="inline-flex items-center gap-1.5 font-bold">${txt}</span>`).join('');
+            tickerEl.innerHTML = html;
+        }
+
+        function renderLobbyQuickPacksBar() {
+            const bar = document.getElementById('lobby-quick-packs-bar');
+            if (!bar) return;
+            bar.innerHTML = BOX_SETS.map(box => `
+                <div class="flex-shrink-0 w-72 bg-slatecard/90 border border-slateborder hover:border-amber-400/60 rounded-xl p-2.5 flex items-center gap-3 transition-all">
+                    <img src="${box.coverImg}" referrerpolicy="no-referrer" alt="${box.name}" class="w-12 h-16 rounded-lg object-cover border border-white/15 flex-shrink-0 shadow">
+                    <div class="min-w-0 flex-1 space-y-1">
+                        <div class="text-[10px] font-black text-amber-300 truncate">${box.badge}</div>
+                        <div class="text-xs font-black text-white truncate">${box.name}</div>
+                        <div class="flex items-center gap-1.5 pt-0.5">
+                            <button onclick="openBoxOrPack('${box.id}', 'PACK_1')" class="px-2.5 py-1 rounded-lg bg-gradient-to-r from-amber-400 to-orange-500 text-black font-black text-[10px] hover:brightness-110 transition-all">
+                                單開1包 (${box.packPrice.toLocaleString()} PT)
+                            </button>
+                            <button onclick="openBoxOrPack('${box.id}', 'BOX_1')" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slateborder text-gray-200 font-black text-[10px]">
+                                1BOX
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
         function filterPoolsByTag(tag) {
             state.currentPoolFilter = tag;
             document.querySelectorAll('.pool-tag-btn').forEach(btn => {
@@ -2192,7 +1920,184 @@
             renderPoolsGrid();
         }
 
-        function renderLobbyQuickPacksBar() {
+        function renderPoolsGrid() {
+            const grid = document.getElementById('pools-grid');
+            if (!grid) return;
+            const list = state.currentPoolFilter === 'ALL'
+                ? state.pools
+                : state.pools.filter(p => p.tag === state.currentPoolFilter);
+
+            grid.innerHTML = list.map(pool => {
+                const sRemain = pool.cards.filter(c => c.tier === 'S').reduce((s, c) => s + c.count, 0);
+                const pct = pool.totalCount > 0 ? Math.max(0, Math.round((pool.remainingCount / pool.totalCount) * 100)) : 0;
+                const preview = pool.topCards.slice(0, 3);
+                const cost10 = pool.price * 10;
+
+                return `
+                <article class="bg-slatecard border border-slateborder hover:border-amber-500/50 rounded-2xl overflow-hidden flex flex-col shadow-xl transition-all group">
+                    <!-- 卡池上方 3 張主打神卡展示台 -->
+                    <div class="relative bg-gradient-to-b from-[#1a1428] via-[#121626] to-slatecard p-4 pt-3 border-b border-white/5">
+                        <div class="flex items-center justify-between gap-2 mb-3">
+                            <span class="px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 text-black text-[10px] font-black shadow">
+                                ${pool.badge}
+                            </span>
+                            <span class="px-2 py-0.5 rounded-full bg-black/60 border border-white/15 text-[10px] font-mono font-bold text-amber-300">
+                                1等賞殘 ${sRemain} 口 / 全 ${pool.cards.length} 種卡面
+                            </span>
+                        </div>
+                        <div class="flex items-end justify-center gap-2 sm:gap-3 pt-1">
+                            ${preview.map((card, i) => `
+                                <div class="relative ${i === 1 ? 'w-24 sm:w-28 -translate-y-2 z-10' : 'w-20 sm:w-24 opacity-95'} transition-transform group-hover:scale-105">
+                                    <div class="rounded-xl p-1 ${card.psa ? 'psa-slab-case' : 'raw-toploader-case'} ${i === 0 ? 'slab-glow-S' : 'slab-glow-A'}">
+                                        <div class="flex items-center justify-between px-1 pb-0.5 text-[8px] font-black">
+                                            <span class="${card.tier === 'S' ? 'text-rose-400' : 'text-amber-300'}">${card.label}</span>
+                                            ${card.psa ? '<span class="text-red-400">PSA 10</span>' : ''}
+                                        </div>
+                                        <img src="${card.img}" referrerpolicy="no-referrer" alt="${card.name}" class="w-full aspect-[3/4] object-cover rounded-lg bg-slate-900">
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <!-- 卡池資訊與操作區 -->
+                    <div class="p-4 flex-1 flex flex-col justify-between gap-3">
+                        <div class="space-y-1.5">
+                            <h3 class="text-sm sm:text-base font-black text-white leading-snug line-clamp-2">${pool.title}</h3>
+                            <p class="text-[11px] text-gray-400 line-clamp-2">${pool.subtitle}</p>
+                        </div>
+
+                        <!-- 剩餘口數進度條 -->
+                        <div class="space-y-1">
+                            <div class="flex items-center justify-between text-[11px] font-bold">
+                                <span class="text-gray-400">剩餘口數</span>
+                                <span class="font-mono text-amber-300">${pool.remainingCount} / ${pool.totalCount} 口 (${pct}%)</span>
+                            </div>
+                            <div class="w-full h-2 bg-obsidian rounded-full overflow-hidden border border-white/10">
+                                <div class="h-full bg-gradient-to-r from-rose-500 via-amber-400 to-emerald-400 transition-all duration-300" style="width:${pct}%"></div>
+                            </div>
+                        </div>
+
+                        <!-- 抽卡按鈕列 -->
+                        <div class="grid grid-cols-2 gap-2">
+                            <button onclick="startPoolPull('${pool.id}', 1)" class="py-2.5 px-3 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 hover:brightness-110 text-black font-black text-xs shadow-lg transition-transform active:scale-95">
+                                1回抽<div class="font-display text-[10px]">${pool.price.toLocaleString()} PT</div>
+                            </button>
+                            <button onclick="startPoolPull('${pool.id}', 10)" class="py-2.5 px-3 rounded-xl bg-gradient-to-r from-rose-600 via-pink-600 to-amber-500 hover:brightness-110 text-white font-black text-xs shadow-lg transition-transform active:scale-95">
+                                10連爆抽<div class="font-display text-[10px]">${cost10.toLocaleString()} PT</div>
+                            </button>
+                        </div>
+
+                        <!-- 機率表與免費 1等/2等 劇場體驗按鈕 -->
+                        <div class="flex items-center justify-between gap-1.5 pt-1 border-t border-white/10">
+                            <button onclick="openPoolOddsModal('${pool.id}')" class="text-[11px] font-bold text-sky-300 hover:text-sky-200">
+                                📋 1〜5等機率表
+                            </button>
+                            <div class="flex items-center gap-1.5">
+                                <button onclick="startForcedTierDemo('${pool.id}', 'S')" class="px-2 py-1 rounded-lg bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/40 text-rose-300 font-black text-[10px]">
+                                    🌈 1等體驗
+                                </button>
+                                <button onclick="startForcedTierDemo('${pool.id}', 'A')" class="px-2 py-1 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 text-amber-300 font-black text-[10px]">
+                                    🔥 2等體驗
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </article>`;
+            }).join('');
+        }
+
+        function renderBoxesGrid() {
+            const grid = document.getElementById('boxes-grid');
+            if (!grid) return;
+            grid.innerHTML = BOX_SETS.map(box => `
+                <article class="bg-slatecard border border-amber-500/30 hover:border-amber-400 rounded-2xl overflow-hidden flex flex-col shadow-xl transition-all">
+                    <div class="relative bg-gradient-to-br from-[#231908] via-[#131826] to-slatecard p-5 flex items-center gap-4 border-b border-white/10">
+                        <img src="${box.coverImg}" referrerpolicy="no-referrer" alt="${box.name}" class="w-24 h-32 object-cover rounded-xl shadow-2xl border border-amber-400/40 flex-shrink-0">
+                        <div class="space-y-1.5 min-w-0">
+                            <span class="inline-block px-2 py-0.5 rounded-full bg-amber-400 text-black text-[10px] font-black">${box.badge}</span>
+                            <h3 class="text-sm sm:text-base font-black text-white leading-snug">${box.name}</h3>
+                            <p class="text-[11px] text-gray-300 leading-relaxed">${box.subtitle}</p>
+                        </div>
+                    </div>
+                    <div class="p-4 flex-1 flex flex-col justify-between gap-3">
+                        <div class="grid grid-cols-2 gap-2">
+                            <button onclick="openBoxOrPack('${box.id}', 'PACK_1')" class="py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-amber-500/40 text-amber-300 font-black text-xs transition-all">
+                                🎴 單開 1 包<div class="font-display text-[10px]">${box.packPrice.toLocaleString()} PT</div>
+                            </button>
+                            <button onclick="openBoxOrPack('${box.id}', 'PACK_5')" class="py-2.5 px-3 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 hover:brightness-110 text-black font-black text-xs shadow transition-all">
+                                🔥 5 包連開<div class="font-display text-[10px]">${(box.packPrice * 5).toLocaleString()} PT</div>
+                            </button>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button onclick="openBoxOrPack('${box.id}', 'BOX_1')" class="py-2.5 px-3 rounded-xl bg-gradient-to-r from-rose-600 to-purple-600 hover:brightness-110 text-white font-black text-xs shadow transition-all">
+                                📦 原封 1 BOX 全開<div class="font-display text-[10px]">${box.boxPrice.toLocaleString()} PT</div>
+                            </button>
+                            <button onclick="buySealedBoxToVault('${box.id}')" class="py-2.5 px-3 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/40 text-emerald-300 font-black text-xs transition-all">
+                                🎒 買原封盒入庫<div class="font-display text-[10px]">${box.boxPrice.toLocaleString()} PT</div>
+                            </button>
+                        </div>
+                    </div>
+                </article>
+            `).join('');
+        }
+
+        function startPoolPull(poolId, pullCount) {
+            const pool = state.pools.find(p => p.id === poolId);
+            if (!pool) return;
+
+            // 若卡池口數不足，自動補貨重置以便無縫繼續遊玩
+            if (pool.remainingCount < pullCount) {
+                const cfg = POOL_CONFIGS.find(c => c.id === poolId);
+                if (cfg) {
+                    const topNames = new Set(cfg.topCards.map(c => c.name));
+                    pool.cards = [
+                        ...cfg.topCards.map(c => ({ ...c })),
+                        ...EXTENDED_POOL_ITEMS.filter(c => !topNames.has(c.name)).map(c => ({ ...c }))
+                    ];
+                    pool.totalCount = pool.cards.reduce((s, c) => s + c.count, 0);
+                    pool.remainingCount = pool.totalCount;
+                    showToast('🔄 卡池已售罄，系統已自動補充全新完整口數！');
+                }
+            }
+
+            const totalCost = pool.price * pullCount;
+            if (state.points < totalCost) {
+                showToast('⚠️ 點數不足！請先免費補充 PT');
+                openTopupModal();
+                return;
+            }
+
+            SoundEngine.init();
+            state.points -= totalCost;
+            updateWalletUI();
+
+            const drawn = [];
+            for (let i = 0; i < pullCount; i++) {
+                const available = pool.cards.filter(c => c.count > 0);
+                if (!available.length) break;
+                const totalWeight = available.reduce((s, c) => s + c.count, 0);
+                let roll = Math.random() * totalWeight;
+                let template = available[available.length - 1];
+                for (const item of available) {
+                    roll -= item.count;
+                    if (roll <= 0) {
+                        template = item;
+                        break;
+                    }
+                }
+                template.count--;
+                pool.remainingCount--;
+
+                drawn.push({
+                    uid: 'CARD-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7),
+                    poolTitle: pool.title,
+                    tier: template.tier,
+                    label: template.label,
+                    name: template.name,
+                    img: template.img,
+                    psa: template.psa,
+                    code: template.code,
                     marketPt: template.marketPt,
                     buybackPt: calcBuybackPt(template.marketPt, template.tier, false),
                     selectedForBuyback: TIER_WEIGHT[template.tier] <= 3
