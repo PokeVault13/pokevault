@@ -391,6 +391,35 @@
                 transparent 4px
             );
         }
+
+        /* 🎮 玉虹 PT 遊藝場：老虎機滾輪 / 精靈球倍率輪盤 / 反應小遊戲樣式 */
+        @keyframes slotBlurSpin {
+            0%   { transform: translateY(-10px) scaleY(1.15); filter: blur(1.8px); }
+            50%  { transform: translateY(10px) scaleY(0.92); filter: blur(2.2px); }
+            100% { transform: translateY(-10px) scaleY(1.15); filter: blur(1.8px); }
+        }
+        .slot-reel-spinning {
+            animation: slotBlurSpin 0.11s linear infinite;
+        }
+        @keyframes slotWinPulse {
+            0%, 100% { box-shadow: 0 0 18px rgba(250, 204, 21, 0.7), inset 0 0 12px rgba(250, 204, 21, 0.45); transform: scale(1); }
+            50%      { box-shadow: 0 0 36px rgba(244, 63, 94, 0.95), inset 0 0 20px rgba(250, 204, 21, 0.8); transform: scale(1.04); }
+        }
+        .slot-win-glow {
+            animation: slotWinPulse 0.65s ease-in-out infinite;
+        }
+        .roulette-track-strip {
+            transition: transform 3.8s cubic-bezier(0.08, 0.82, 0.14, 1);
+            will-change: transform;
+        }
+        @keyframes reflexPopUp {
+            0%   { transform: scale(0.35) translateY(22px); opacity: 0; }
+            70%  { transform: scale(1.08) translateY(-4px); opacity: 1; }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
+        .reflex-target-pop {
+            animation: reflexPopUp 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
     </style>
 </head>
 <body onclick="TownBGM.unlockOnFirstGesture()" class="min-h-screen flex flex-col bg-obsidian text-gray-100 antialiased selection:bg-amber-500 selection:text-black">
@@ -429,75 +458,88 @@
 
             <!-- 桌面版分頁切換器 -->
             <nav class="hidden md:flex items-center bg-slatecard p-1 rounded-xl border border-slateborder gap-1">
-                <button onclick="switchMainTab('pools')" id="nav-tab-pools" class="px-3 py-1.5 rounded-lg text-xs font-black bg-amber-500 text-black shadow transition-all">
-                    🔥 線上オリパ
+                <button onclick="switchMainTab('pools')" id="nav-tab-pools" class="px-2.5 lg:px-3 py-1.5 rounded-lg text-xs font-black bg-amber-500 text-black shadow transition-all">
+                    <span data-i18n="nav_pools">🔥 線上オリパ</span>
                 </button>
-                <button onclick="switchMainTab('boxes')" id="nav-tab-boxes" class="px-3 py-1.5 rounded-lg text-xs font-bold text-gray-300 hover:text-white transition-all flex items-center gap-1">
-                    <span>📦 單包/單盒</span>
-                    <span class="px-1.5 py-0.2 rounded-full bg-rose-600 text-white text-[9px] font-black animate-pulse">撕包偷看</span>
+                <button onclick="switchMainTab('boxes')" id="nav-tab-boxes" class="px-2.5 lg:px-3 py-1.5 rounded-lg text-xs font-bold text-gray-300 hover:text-white transition-all flex items-center gap-1">
+                    <span data-i18n="nav_boxes">📦 單包/單盒</span>
+                    <span class="hidden xl:inline px-1.5 py-0.2 rounded-full bg-rose-600 text-white text-[9px] font-black animate-pulse" data-i18n="nav_boxes_badge">撕包偷看</span>
                 </button>
-                <button onclick="switchMainTab('furnace')" id="nav-tab-furnace" class="px-3 py-1.5 rounded-lg text-xs font-bold text-orange-300 hover:text-white transition-all flex items-center gap-1">
-                    <span>🌋 卡片熔爐</span>
-                    <span class="px-1.5 py-0.2 rounded-full bg-amber-500/25 border border-amber-400/50 text-amber-300 text-[9px] font-black">PSA10/鍍金</span>
+                <button onclick="switchMainTab('furnace')" id="nav-tab-furnace" class="px-2.5 lg:px-3 py-1.5 rounded-lg text-xs font-bold text-orange-300 hover:text-white transition-all flex items-center gap-1">
+                    <span data-i18n="nav_furnace">🌋 卡片熔爐</span>
                 </button>
-                <button onclick="switchMainTab('auction')" id="nav-tab-auction" class="px-3 py-1.5 rounded-lg text-xs font-bold text-emerald-300 hover:text-white transition-all flex items-center gap-1">
-                    <span>🔨 拍賣競標</span>
+                <button onclick="switchMainTab('auction')" id="nav-tab-auction" class="px-2.5 lg:px-3 py-1.5 rounded-lg text-xs font-bold text-emerald-300 hover:text-white transition-all flex items-center gap-1">
+                    <span data-i18n="nav_auction">🔨 拍賣競標</span>
                     <span class="px-1.5 py-0.2 rounded-full bg-emerald-500/25 border border-emerald-400/50 text-emerald-300 text-[9px] font-black" id="badge-auction-count">8</span>
                 </button>
-                <button onclick="switchMainTab('inventory')" id="nav-tab-inventory" class="px-3 py-1.5 rounded-lg text-xs font-bold text-gray-400 hover:text-white transition-all flex items-center gap-1">
-                    <span>🎒 保管庫 (<span id="badge-vault-count">0</span>)</span>
+                <button onclick="switchMainTab('arcade')" id="nav-tab-arcade" class="px-2.5 lg:px-3 py-1.5 rounded-lg text-xs font-bold text-fuchsia-300 hover:text-white transition-all flex items-center gap-1">
+                    <span data-i18n="nav_arcade">🎮 PT遊藝場</span>
+                    <span class="hidden xl:inline px-1.5 py-0.2 rounded-full bg-fuchsia-500/30 border border-fuchsia-400/60 text-fuchsia-200 text-[9px] font-black">WIN PT</span>
+                </button>
+                <button onclick="switchMainTab('inventory')" id="nav-tab-inventory" class="px-2.5 lg:px-3 py-1.5 rounded-lg text-xs font-bold text-gray-400 hover:text-white transition-all flex items-center gap-1">
+                    <span><span data-i18n="nav_vault">🎒 保管庫</span> (<span id="badge-vault-count">0</span>)</span>
                 </button>
             </nav>
 
-            <!-- 右側寶可夢 Lo-Fi 城鎮 BGM 播放器、音效、Email登入與 PT 錢包 -->
-            <div class="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+            <!-- 右側語言切換、寶可夢 Lo-Fi 城鎮 BGM 播放器、音效、Email登入與 PT 錢包 -->
+            <div class="flex items-center gap-1 sm:gap-1.5 flex-shrink-0">
+                <!-- 🌐 多語言切換器 (繁中 / 日本語 / EN) -->
+                <div class="flex items-center bg-slatecard border border-sky-400/45 rounded-xl px-1.5 py-1 gap-0.5" title="語言切換 / 言語切替 / Language">
+                    <button onclick="I18N.setLang('zh')" id="lang-btn-zh" class="lang-switch-btn px-1.5 py-0.5 rounded-lg text-[10px] font-black bg-sky-400 text-black transition-all">中</button>
+                    <button onclick="I18N.setLang('ja')" id="lang-btn-ja" class="lang-switch-btn px-1.5 py-0.5 rounded-lg text-[10px] font-bold text-gray-300 hover:text-white transition-all">日</button>
+                    <button onclick="I18N.setLang('en')" id="lang-btn-en" class="lang-switch-btn px-1.5 py-0.5 rounded-lg text-[10px] font-bold text-gray-300 hover:text-white transition-all">EN</button>
+                </div>
+
                 <!-- Email 綁定登入 & Word 存取按鈕 -->
-                <button onclick="EmailWordAuth.openModal()" id="btn-email-auth" class="flex items-center gap-1.5 bg-slatecard hover:bg-slate-800 border border-indigo-400/50 rounded-xl px-2 sm:px-2.5 py-1.5 text-xs font-black text-indigo-300 hover:text-white transition-all" title="Email 綁定登入 & Word (.doc) 檔案存取">
+                <button onclick="EmailWordAuth.openModal()" id="btn-email-auth" class="flex items-center gap-1 bg-slatecard hover:bg-slate-800 border border-indigo-400/50 rounded-xl px-2 py-1.5 text-xs font-black text-indigo-300 hover:text-white transition-all" title="Email 綁定登入 & Word (.doc) 檔案存取">
                     <span id="auth-btn-icon">📧</span>
-                    <span id="auth-btn-label" class="hidden sm:inline max-w-[105px] truncate">Email登入</span>
+                    <span id="auth-btn-label" class="hidden xl:inline max-w-[90px] truncate" data-i18n="btn_email_login">Email登入</span>
                 </button>
 
                 <!-- 寶可夢 Lo-Fi (Gen 1-3) 背景音樂控制器 -->
-                <div class="flex items-center bg-slatecard border border-fuchsia-500/40 rounded-xl px-2 py-1 gap-1.5" title="Classic Pokémon Lo-Fi (Gen 1-3 Kanto/Johto/Hoenn) 隨機播放">
+                <div class="flex items-center bg-slatecard border border-fuchsia-500/40 rounded-xl px-1.5 sm:px-2 py-1 gap-1" title="Classic Pokémon Lo-Fi (Gen 1-3 Kanto/Johto/Hoenn) 隨機播放">
                     <button onclick="TownBGM.togglePlay()" id="btn-bgm-toggle" class="text-xs font-black text-fuchsia-300 hover:text-white flex items-center gap-1">
                         <span id="bgm-status-icon">🎧</span>
-                        <span id="bgm-track-label" class="hidden lg:inline text-[11px] max-w-[125px] truncate">Lo-Fi BGM: 待命</span>
+                        <span id="bgm-track-label" class="hidden 2xl:inline text-[11px] max-w-[115px] truncate">Lo-Fi BGM: 待命</span>
                     </button>
-                    <button onclick="TownBGM.nextRandomTrack()" class="text-[11px] text-gray-400 hover:text-amber-300 px-1" title="隨機切換下一首 Lo-Fi 寶可夢音樂">
+                    <button onclick="TownBGM.nextRandomTrack()" class="text-[11px] text-gray-400 hover:text-amber-300 px-0.5" title="隨機切換下一首 Lo-Fi 寶可夢音樂">
                         ⏭
                     </button>
                 </div>
 
-                <button onclick="toggleSound()" class="w-9 h-9 rounded-xl bg-slatecard hover:bg-slate-800 border border-slateborder flex items-center justify-center text-gray-300 transition-colors" title="音效開關">
+                <button onclick="toggleSound()" class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-slatecard hover:bg-slate-800 border border-slateborder flex items-center justify-center text-gray-300 transition-colors" title="音效開關">
                     <span id="snd-icon-on">🔊</span>
                     <span id="snd-icon-off" class="hidden">🔇</span>
                 </button>
 
-                <div onclick="openTopupModal()" class="flex items-center gap-2 bg-slatecard hover:bg-slate-800 border border-amber-500/40 rounded-xl px-2.5 sm:px-3 py-1.5 cursor-pointer transition-all group">
+                <div onclick="openTopupModal()" class="flex items-center gap-1.5 sm:gap-2 bg-slatecard hover:bg-slate-800 border border-amber-500/40 rounded-xl px-2 sm:px-3 py-1.5 cursor-pointer transition-all group">
                     <div class="text-right">
-                        <div class="text-[9px] text-gray-400 leading-none">所持ポイント</div>
+                        <div class="text-[9px] text-gray-400 leading-none" data-i18n="wallet_label">所持ポイント</div>
                         <div class="font-display font-black text-xs sm:text-sm text-amber-400 transition-transform" id="wallet-pt-display">50,000</div>
                     </div>
-                    <span class="w-6 h-6 rounded-lg bg-amber-500 group-hover:bg-amber-400 text-black font-black text-xs flex items-center justify-center shadow">+</span>
+                    <span class="w-5 h-5 sm:w-6 sm:h-6 rounded-lg bg-amber-500 group-hover:bg-amber-400 text-black font-black text-xs flex items-center justify-center shadow">+</span>
                 </div>
             </div>
         </div>
-        <!-- 手機版五分頁列 -->
-        <div class="md:hidden flex border-t border-slateborder bg-[#0b0e17]">
-            <button onclick="switchMainTab('pools')" id="m-tab-pools" class="flex-1 py-2.5 text-[10px] font-black text-amber-400 border-b-2 border-amber-400">
-                🔥 オリパ
+        <!-- 手機版六分頁列 -->
+        <div class="md:hidden grid grid-cols-6 border-t border-slateborder bg-[#0b0e17]">
+            <button onclick="switchMainTab('pools')" id="m-tab-pools" class="py-2.5 text-[10px] font-black text-amber-400 border-b-2 border-amber-400 truncate px-0.5" data-i18n="m_pools">
+                🔥オリパ
             </button>
-            <button onclick="switchMainTab('boxes')" id="m-tab-boxes" class="flex-1 py-2.5 text-[10px] font-bold text-gray-300">
-                📦 單包
+            <button onclick="switchMainTab('boxes')" id="m-tab-boxes" class="py-2.5 text-[10px] font-bold text-gray-300 truncate px-0.5" data-i18n="m_boxes">
+                📦單包
             </button>
-            <button onclick="switchMainTab('furnace')" id="m-tab-furnace" class="flex-1 py-2.5 text-[10px] font-bold text-orange-300">
-                🌋 熔爐
+            <button onclick="switchMainTab('furnace')" id="m-tab-furnace" class="py-2.5 text-[10px] font-bold text-orange-300 truncate px-0.5" data-i18n="m_furnace">
+                🌋熔爐
             </button>
-            <button onclick="switchMainTab('auction')" id="m-tab-auction" class="flex-1 py-2.5 text-[10px] font-bold text-emerald-300">
-                🔨 拍賣(<span id="m-badge-auction">8</span>)
+            <button onclick="switchMainTab('auction')" id="m-tab-auction" class="py-2.5 text-[10px] font-bold text-emerald-300 truncate px-0.5">
+                <span data-i18n="m_auction">🔨拍賣</span>(<span id="m-badge-auction">8</span>)
             </button>
-            <button onclick="switchMainTab('inventory')" id="m-tab-inventory" class="flex-1 py-2.5 text-[10px] font-bold text-gray-400">
-                🎒 庫存(<span id="m-badge-vault">0</span>)
+            <button onclick="switchMainTab('arcade')" id="m-tab-arcade" class="py-2.5 text-[10px] font-bold text-fuchsia-300 truncate px-0.5" data-i18n="m_arcade">
+                🎮遊藝場
+            </button>
+            <button onclick="switchMainTab('inventory')" id="m-tab-inventory" class="py-2.5 text-[10px] font-bold text-gray-400 truncate px-0.5">
+                <span data-i18n="m_vault">🎒庫存</span>(<span id="m-badge-vault">0</span>)
             </button>
         </div>
     </header>
@@ -510,27 +552,30 @@
                 <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                     <div class="space-y-1.5 max-w-2xl">
                         <div class="inline-flex flex-wrap items-center gap-2">
-                            <span class="px-2.5 py-0.5 rounded-full bg-rose-600 text-white text-[11px] font-black tracking-wider">🎬 Three.js 3D 電影級隨機動畫 × 原作城鎮BGM</span>
-                            <span class="px-2.5 py-0.5 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 text-[11px] font-bold">100% 嚴格核對官方卡圖・1/2等賞 80%高價回收</span>
+                            <span class="px-2.5 py-0.5 rounded-full bg-rose-600 text-white text-[11px] font-black tracking-wider" data-i18n="hero_badge_1">🎬 Three.js 3D 電影級隨機動畫 × Lo-Fi 城鎮BGM</span>
+                            <span class="px-2.5 py-0.5 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 text-[11px] font-bold" data-i18n="hero_badge_2">100% 嚴格核對官方卡圖・1/2等賞 80%高價回收</span>
                         </div>
-                        <h1 class="text-xl sm:text-3xl font-black text-white tracking-tight">
-                            頂級 3D 線上一番賞！<span class="text-amber-400 font-display">一等賞・二等賞 PSA 10</span> 奇蹟逆轉 & <span class="text-emerald-400">全系列原封盒</span>
+                        <h1 class="text-xl sm:text-3xl font-black text-white tracking-tight" data-i18n="hero_title">
+                            頂級 3D 線上一番賞！一等賞・二等賞 PSA 10 奇蹟逆轉 & 全系列原封盒
                         </h1>
-                        <p class="text-xs sm:text-sm text-gray-300">
-                            內建 <strong>7 大隨機電影級演出</strong>（原作精靈球收服、極巨神獸對決、3D 鋼珠特寫、黑鋼武士刀斬石碑、黃金地鼠爆擊、生化暗廊突圍、月夜花火大會），伴隨經典寶可夢城鎮音樂！
+                        <p class="text-xs sm:text-sm text-gray-300" data-i18n="hero_desc">
+                            內建 7 大隨機電影級演出、PSA 10 歐洲熔爐、AI 即時拍賣會與全新玉虹 PT 遊藝場，伴隨 Classic Pokémon Lo-Fi 音樂盡情抽卡！
                         </p>
                     </div>
-                    <div class="flex flex-wrap items-center gap-2.5 flex-shrink-0">
-                        <button onclick="switchMainTab('auction')" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-400 hover:brightness-110 text-black font-black text-xs shadow-lg transition-transform active:scale-95">
-                            🔨 AI 即時拍賣競標會 ➔
+                    <div class="flex flex-wrap items-center gap-2 flex-shrink-0">
+                        <button onclick="switchMainTab('arcade')" class="px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-fuchsia-500 via-pink-500 to-amber-400 hover:brightness-110 text-black font-black text-xs shadow-lg transition-transform active:scale-95" data-i18n="hero_btn_arcade">
+                            🎮 PT 遊藝場（押PT / 賺PT）➔
                         </button>
-                        <button onclick="switchMainTab('furnace')" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 via-amber-500 to-yellow-400 hover:brightness-110 text-black font-black text-xs shadow-lg transition-transform active:scale-95">
-                            🌋 進入 PSA10 / 鍍金熔爐 ➔
+                        <button onclick="switchMainTab('auction')" class="px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-400 hover:brightness-110 text-black font-black text-xs shadow-lg transition-transform active:scale-95" data-i18n="hero_btn_auction">
+                            🔨 AI 即時拍賣會 ➔
                         </button>
-                        <button onclick="switchMainTab('boxes')" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-purple-600 hover:brightness-110 text-white font-black text-xs shadow-lg transition-transform active:scale-95">
-                            🎴 單包撕開・偷看卡邊 ➔
+                        <button onclick="switchMainTab('furnace')" class="px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 via-amber-500 to-yellow-400 hover:brightness-110 text-black font-black text-xs shadow-lg transition-transform active:scale-95" data-i18n="hero_btn_furnace">
+                            🌋 PSA10 / 鍍金熔爐 ➔
                         </button>
-                        <button onclick="addFreePoints(50000)" class="px-4 py-2.5 rounded-xl bg-slatecard hover:bg-slate-800 border border-amber-400/50 text-amber-300 font-black text-xs shadow-lg transition-transform active:scale-95">
+                        <button onclick="switchMainTab('boxes')" class="px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-purple-600 hover:brightness-110 text-white font-black text-xs shadow-lg transition-transform active:scale-95" data-i18n="hero_btn_boxes">
+                            🎴 單包撕開偷看 ➔
+                        </button>
+                        <button onclick="addFreePoints(50000)" class="px-3.5 py-2.5 rounded-xl bg-slatecard hover:bg-slate-800 border border-amber-400/50 text-amber-300 font-black text-xs shadow-lg transition-transform active:scale-95">
                             🎁 +50,000 PT
                         </button>
                     </div>
@@ -541,14 +586,14 @@
             <div class="bg-gradient-to-r from-[#121626] via-[#191f34] to-[#121626] border border-amber-500/40 rounded-2xl p-3.5 sm:p-4 space-y-3 shadow-xl">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div class="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-2.5 min-w-0">
-                        <span class="inline-flex items-center self-start whitespace-nowrap px-3 py-1 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 text-black text-[11px] font-black shadow-md">
+                        <span class="inline-flex items-center self-start whitespace-nowrap px-3 py-1 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 text-black text-[11px] font-black shadow-md" data-i18n="quick_pack_badge">
                             🎴 全系列單包即開吧檯
                         </span>
-                        <span class="text-xs font-bold text-gray-300 leading-snug">
-                            30週年皇冠・火箭隊・對戰搭檔・太晶慶典・151 隨時單開 1 包！
+                        <span class="text-xs font-bold text-gray-300 leading-snug" data-i18n="quick_pack_desc">
+                            超級勇氣・超級夢想・30週年皇冠・火箭隊・對戰搭檔・151 隨時單開 1 包！
                         </span>
                     </div>
-                    <button onclick="switchMainTab('boxes')" class="text-xs font-black text-amber-400 hover:text-amber-300 self-start sm:self-auto whitespace-nowrap flex-shrink-0">
+                    <button onclick="switchMainTab('boxes')" class="text-xs font-black text-amber-400 hover:text-amber-300 self-start sm:self-auto whitespace-nowrap flex-shrink-0" data-i18n="quick_pack_goto">
                         前往單包 / 單盒專區 ➔
                     </button>
                 </div>
@@ -557,19 +602,19 @@
 
             <!-- 分類篩選列 (已移除動畫選擇器，抽卡演出一律由系統隨機播放) -->
             <div class="flex flex-wrap items-center gap-2">
-                <button onclick="filterPoolsByTag('ALL')" id="pool-filter-ALL" class="pool-tag-btn px-3.5 py-2 rounded-xl text-xs font-black bg-amber-500 text-black shadow transition-all">
+                <button onclick="filterPoolsByTag('ALL')" id="pool-filter-ALL" class="pool-tag-btn px-3.5 py-2 rounded-xl text-xs font-black bg-amber-500 text-black shadow transition-all" data-i18n="filter_all">
                     🔥 全部限定卡池 (11)
                 </button>
-                <button onclick="filterPoolsByTag('ANNIV_30TH')" id="pool-filter-ANNIV_30TH" class="pool-tag-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-slatecard text-yellow-300 hover:text-white border border-yellow-400/50 transition-all">
+                <button onclick="filterPoolsByTag('ANNIV_30TH')" id="pool-filter-ANNIV_30TH" class="pool-tag-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-slatecard text-yellow-300 hover:text-white border border-yellow-400/50 transition-all" data-i18n="filter_30th">
                     👑 30週年紀念特化
                 </button>
-                <button onclick="filterPoolsByTag('LOW_ODDS_199')" id="pool-filter-LOW_ODDS_199" class="pool-tag-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-slatecard text-rose-300 hover:text-white border border-rose-500/40 transition-all">
+                <button onclick="filterPoolsByTag('LOW_ODDS_199')" id="pool-filter-LOW_ODDS_199" class="pool-tag-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-slatecard text-rose-300 hover:text-white border border-rose-500/40 transition-all" data-i18n="filter_199">
                     🎯 1/199・二等賞大量池
                 </button>
-                <button onclick="filterPoolsByTag('NIBUICHI_99')" id="pool-filter-NIBUICHI_99" class="pool-tag-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-slatecard text-amber-300 hover:text-white border border-amber-500/40 transition-all">
+                <button onclick="filterPoolsByTag('NIBUICHI_99')" id="pool-filter-NIBUICHI_99" class="pool-tag-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-slatecard text-amber-300 hover:text-white border border-amber-500/40 transition-all" data-i18n="filter_99">
                     ⚡ 1/99・50%超還元池
                 </button>
-                <button onclick="filterPoolsByTag('PSA10_VIP')" id="pool-filter-PSA10_VIP" class="pool-tag-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-slatecard text-gray-300 hover:text-white border border-slateborder transition-all">
+                <button onclick="filterPoolsByTag('PSA10_VIP')" id="pool-filter-PSA10_VIP" class="pool-tag-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-slatecard text-gray-300 hover:text-white border border-slateborder transition-all" data-i18n="filter_vip">
                     🏆 頂級至尊 PSA10 殿堂
                 </button>
             </div>
@@ -895,6 +940,287 @@
 
             <!-- 拍品列表網格 -->
             <div id="auction-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+        </section>
+
+        <!-- ==================== 視圖六：🎮 玉虹 PT 遊藝場 (押 PT 博弈賭盤 ＆ 免費技巧小遊戲賺 PT) ==================== -->
+        <section id="view-arcade" class="hidden space-y-6">
+            <!-- 遊藝場頂部主視覺橫幅 -->
+            <div class="relative rounded-2xl overflow-hidden bg-gradient-to-r from-[#230829] via-[#1b103a] to-[#0a192f] border border-fuchsia-500/45 p-4 sm:p-6 shadow-2xl">
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                    <div class="space-y-1.5 max-w-3xl">
+                        <div class="inline-flex flex-wrap items-center gap-2">
+                            <span class="px-2.5 py-0.5 rounded-full bg-gradient-to-r from-fuchsia-500 to-amber-400 text-black text-[11px] font-black" data-i18n="arcade_badge">🎮 CELADON GAME CORNER・玉虹 PT 遊藝場</span>
+                            <span class="px-2.5 py-0.5 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 text-[11px] font-bold" data-i18n="arcade_sub_badge">押 PT 最高翻 50 倍 ・ 免費技巧小遊戲無限賺 PT</span>
+                        </div>
+                        <h2 class="text-xl sm:text-3xl font-black text-white" data-i18n="arcade_title">
+                            🎰 寶可夢 PT 遊藝場！以小博大翻倍點數 & 反應小遊戲狂賺 PT
+                        </h2>
+                        <p class="text-xs sm:text-sm text-gray-300" data-i18n="arcade_desc">
+                            點數不夠抽卡？來玩【777 霓虹老虎機】拚 50x 頭獎、【精靈球三色倍率盤】拚 14x 大師球爆擊，或零成本挑戰【皮卡丘 15 秒反應大挑戰】直接領 PT！
+                        </p>
+                    </div>
+                    <!-- 遊藝場今日戰績看板 -->
+                    <div class="bg-black/60 border border-fuchsia-400/40 rounded-2xl p-3.5 min-w-[230px] flex-shrink-0 space-y-1.5">
+                        <div class="flex items-center justify-between text-[11px] font-black">
+                            <span class="text-fuchsia-300" data-i18n="arcade_net_label">🏆 遊藝場累計淨贏得</span>
+                            <span id="arcade-net-profit" class="font-display text-sm text-emerald-400">+0 PT</span>
+                        </div>
+                        <div class="flex items-center justify-between text-[11px] text-gray-300">
+                            <span data-i18n="arcade_best_win">🔥 最高單局贏得</span>
+                            <span id="arcade-best-win" class="font-display font-bold text-amber-300">0 PT</span>
+                        </div>
+                        <div class="flex items-center justify-between text-[11px] text-gray-300">
+                            <span data-i18n="arcade_free_earned">⚡ 免費小遊戲累積</span>
+                            <span id="arcade-free-earned" class="font-display font-bold text-sky-300">0 PT</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 三款內建小遊戲切換列 -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                <button onclick="ArcadeSystem.switchGame('SLOTS')" id="arcade-tab-SLOTS" class="p-3.5 rounded-2xl border-2 border-amber-400 bg-gradient-to-r from-amber-500/20 to-rose-600/20 text-left transition-all shadow-lg">
+                    <div class="flex items-center justify-between">
+                        <span class="font-black text-sm text-amber-300" data-i18n="game_tab_slots">🎰 777 霓虹老虎機</span>
+                        <span class="px-2 py-0.5 rounded bg-amber-400 text-black text-[10px] font-black">MAX 50x</span>
+                    </div>
+                    <p class="text-[11px] text-gray-300 mt-1" data-i18n="game_tab_slots_desc">用 PT 押注拉霸，三顆 7️⃣ 直噴 50 倍超級頭獎！</p>
+                </button>
+                <button onclick="ArcadeSystem.switchGame('ROULETTE')" id="arcade-tab-ROULETTE" class="p-3.5 rounded-2xl border border-slateborder bg-slatecard hover:border-fuchsia-400/60 text-left transition-all">
+                    <div class="flex items-center justify-between">
+                        <span class="font-black text-sm text-fuchsia-300" data-i18n="game_tab_roulette">🎡 精靈球三色倍率盤</span>
+                        <span class="px-2 py-0.5 rounded bg-fuchsia-500/25 text-fuchsia-200 text-[10px] font-black">2x / 14x</span>
+                    </div>
+                    <p class="text-[11px] text-gray-400 mt-1" data-i18n="game_tab_roulette_desc">押紅球 2x、藍球 2x 或紫大師球 14x 爆擊！</p>
+                </button>
+                <button onclick="ArcadeSystem.switchGame('REFLEX')" id="arcade-tab-REFLEX" class="p-3.5 rounded-2xl border border-slateborder bg-slatecard hover:border-emerald-400/60 text-left transition-all">
+                    <div class="flex items-center justify-between">
+                        <span class="font-black text-sm text-emerald-300" data-i18n="game_tab_reflex">⚡ 皮卡丘反應賺 PT</span>
+                        <span class="px-2 py-0.5 rounded bg-emerald-500/25 text-emerald-300 text-[10px] font-black">FREE PT</span>
+                    </div>
+                    <p class="text-[11px] text-gray-400 mt-1" data-i18n="game_tab_reflex_desc">免押注！15 秒點擊皮卡丘與夢幻狂賺免費 PT！</p>
+                </button>
+            </div>
+
+            <!-- ===== 遊戲 1：🎰 寶可夢 777 霓虹老虎機 (押 PT 博弈) ===== -->
+            <div id="arcade-game-SLOTS" class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+                <div class="lg:col-span-7 bg-gradient-to-b from-[#17112b] to-[#0b0e18] border-2 border-amber-400/50 rounded-2xl p-5 sm:p-6 space-y-5 shadow-2xl">
+                    <div class="flex items-center justify-between border-b border-white/10 pb-3">
+                        <div>
+                            <span class="text-[10px] font-mono font-black text-amber-400 tracking-widest">POKÉVAULT NEON SLOTS</span>
+                            <h3 class="text-lg font-black text-white" data-i18n="slots_heading">🎰 寶可夢 777 霓虹拉霸機</h3>
+                        </div>
+                        <span id="slots-status-pill" class="px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400/50 text-amber-300 text-xs font-black">READY</span>
+                    </div>
+
+                    <!-- 三軸霓虹滾輪機台 -->
+                    <div id="slots-machine-frame" class="bg-black/80 border-2 border-amber-500/40 rounded-2xl p-4 sm:p-6 relative overflow-hidden">
+                        <div class="grid grid-cols-3 gap-3 sm:gap-4">
+                            <div class="h-28 sm:h-36 rounded-xl bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 border-2 border-amber-400/35 flex items-center justify-center overflow-hidden shadow-inner">
+                                <span id="slot-reel-0" class="text-5xl sm:text-6xl select-none">7️⃣</span>
+                            </div>
+                            <div class="h-28 sm:h-36 rounded-xl bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 border-2 border-amber-400/35 flex items-center justify-center overflow-hidden shadow-inner">
+                                <span id="slot-reel-1" class="text-5xl sm:text-6xl select-none">⚡</span>
+                            </div>
+                            <div class="h-28 sm:h-36 rounded-xl bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 border-2 border-amber-400/35 flex items-center justify-center overflow-hidden shadow-inner">
+                                <span id="slot-reel-2" class="text-5xl sm:text-6xl select-none">🔮</span>
+                            </div>
+                        </div>
+                        <div id="slots-result-banner" class="mt-4 text-center text-sm font-black text-amber-300 min-h-[24px]">
+                            選擇下注 PT 後點擊拉霸，挑戰 50x 超級頭獎！
+                        </div>
+                    </div>
+
+                    <!-- 下注籌碼選擇與拉霸按鈕 -->
+                    <div class="space-y-3">
+                        <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+                            <span class="text-gray-400 font-bold" data-i18n="arcade_bet_label">下注金額 (BET PT)：</span>
+                            <div class="flex flex-wrap items-center gap-1.5">
+                                <button onclick="ArcadeSystem.setSlotBet(500)" class="slot-bet-btn px-2.5 py-1 rounded-lg bg-amber-500 text-black font-black text-xs" data-bet="500">500</button>
+                                <button onclick="ArcadeSystem.setSlotBet(1000)" class="slot-bet-btn px-2.5 py-1 rounded-lg bg-slate-800 text-gray-300 font-bold text-xs border border-slateborder" data-bet="1000">1,000</button>
+                                <button onclick="ArcadeSystem.setSlotBet(5000)" class="slot-bet-btn px-2.5 py-1 rounded-lg bg-slate-800 text-gray-300 font-bold text-xs border border-slateborder" data-bet="5000">5,000</button>
+                                <button onclick="ArcadeSystem.setSlotBet(10000)" class="slot-bet-btn px-2.5 py-1 rounded-lg bg-slate-800 text-gray-300 font-bold text-xs border border-slateborder" data-bet="10000">10,000</button>
+                                <button onclick="ArcadeSystem.setSlotBet('ALLIN')" class="slot-bet-btn px-2.5 py-1 rounded-lg bg-rose-600/30 text-rose-300 font-black text-xs border border-rose-500/50" data-bet="ALLIN">MAX</button>
+                            </div>
+                        </div>
+                        <button id="btn-slot-spin" onclick="ArcadeSystem.spinSlots()" class="w-full py-4 rounded-2xl bg-gradient-to-r from-amber-400 via-orange-500 to-rose-600 hover:brightness-110 text-black font-black text-base shadow-[0_0_30px_rgba(245,158,11,0.5)] transition-transform active:scale-95">
+                            🎰 押注 <span id="slot-bet-display">500</span> PT 開始拉霸！！
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 右側賠率表 -->
+                <div class="lg:col-span-5 bg-slatecard border border-slateborder rounded-2xl p-5 space-y-3">
+                    <h4 class="text-sm font-black text-amber-300 flex items-center justify-between">
+                        <span data-i18n="slots_paytable">💎 獎金倍率表 (PAYTABLE)</span>
+                        <span class="text-[10px] font-mono text-gray-400">RTP ~96%</span>
+                    </h4>
+                    <div class="space-y-2 text-xs">
+                        <div class="flex items-center justify-between p-2.5 rounded-xl bg-gradient-to-r from-rose-950/70 to-amber-950/60 border border-amber-400/50">
+                            <span class="text-base tracking-widest">7️⃣ 7️⃣ 7️⃣</span>
+                            <span class="font-display font-black text-amber-300 text-sm">× 50 JACKPOT!</span>
+                        </div>
+                        <div class="flex items-center justify-between p-2 rounded-xl bg-obsidian border border-white/10">
+                            <span class="text-base tracking-widest">⚡ ⚡ ⚡</span>
+                            <span class="font-display font-black text-yellow-300">× 15 PT</span>
+                        </div>
+                        <div class="flex items-center justify-between p-2 rounded-xl bg-obsidian border border-white/10">
+                            <span class="text-base tracking-widest">🔮 🔮 🔮</span>
+                            <span class="font-display font-black text-fuchsia-300">× 10 PT</span>
+                        </div>
+                        <div class="flex items-center justify-between p-2 rounded-xl bg-obsidian border border-white/10">
+                            <span class="text-base tracking-widest">🔥 🔥 🔥</span>
+                            <span class="font-display font-black text-orange-300">× 6 PT</span>
+                        </div>
+                        <div class="flex items-center justify-between p-2 rounded-xl bg-obsidian border border-white/10">
+                            <span class="text-base tracking-widest">🌙 🌙 🌙</span>
+                            <span class="font-display font-black text-sky-300">× 4 PT</span>
+                        </div>
+                        <div class="flex items-center justify-between p-2 rounded-xl bg-obsidian border border-white/10">
+                            <span class="text-base tracking-widest">🍒 🍒 🍒</span>
+                            <span class="font-display font-black text-emerald-300">× 2.5 PT</span>
+                        </div>
+                        <div class="flex items-center justify-between p-2 rounded-xl bg-obsidian/70 border border-white/5 text-gray-300">
+                            <span data-i18n="slots_pair_rule">任意 2 顆相同圖案</span>
+                            <span class="font-display font-bold text-emerald-400">× 1.4 PT</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== 遊戲 2：🎡 精靈球三色倍率賭盤 (押 PT 翻 2x / 14x) ===== -->
+            <div id="arcade-game-ROULETTE" class="hidden space-y-5">
+                <div class="bg-slatecard border-2 border-fuchsia-500/40 rounded-2xl p-5 sm:p-6 space-y-5 shadow-2xl">
+                    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-3">
+                        <div>
+                            <span class="text-[10px] font-mono font-black text-fuchsia-400 tracking-widest">POKÉBALL COLOR MULTIPLIER</span>
+                            <h3 class="text-lg font-black text-white" data-i18n="roulette_heading">🎡 精靈球三色倍率賭盤（紅 2x / 藍 2x / 大師球 14x）</h3>
+                        </div>
+                        <div class="flex items-center gap-1.5 text-xs">
+                            <span class="text-gray-400 text-[11px]" data-i18n="roulette_history">近 12 局開獎：</span>
+                            <div id="roulette-history-bar" class="flex items-center gap-1"></div>
+                        </div>
+                    </div>
+
+                    <!-- 橫向滾動輪盤視窗 -->
+                    <div class="relative rounded-2xl bg-[#060912] border-2 border-white/15 h-24 sm:h-28 overflow-hidden flex items-center shadow-inner">
+                        <!-- 中央黃金開獎指針線 -->
+                        <div class="absolute left-1/2 top-0 bottom-0 w-1 bg-amber-400 z-20 -translate-x-1/2 shadow-[0_0_16px_#facc15]"></div>
+                        <div class="absolute left-1/2 top-0 -translate-x-1/2 z-20 text-amber-400 text-xs leading-none">▼</div>
+                        <div class="absolute left-1/2 bottom-0 -translate-x-1/2 z-20 text-amber-400 text-xs leading-none">▲</div>
+                        <!-- 輪盤滑軌 -->
+                        <div id="roulette-strip" class="roulette-track-strip flex items-center gap-2 pl-2"></div>
+                    </div>
+
+                    <div id="roulette-result-text" class="text-center text-sm font-black text-amber-300 min-h-[22px]">
+                        設定下注額後，點擊下方任一精靈球顏色立即開轉！
+                    </div>
+
+                    <!-- 下注額快捷調整列 -->
+                    <div class="flex flex-wrap items-center justify-center gap-2 bg-obsidian border border-white/10 rounded-xl p-3">
+                        <span class="text-xs font-bold text-gray-400" data-i18n="arcade_bet_label">下注金額 (PT)：</span>
+                        <input id="roulette-bet-input" type="number" min="100" step="100" value="1000" class="w-28 sm:w-36 bg-slatecard border border-amber-400/50 rounded-xl px-3 py-1.5 font-display font-black text-sm text-amber-300 text-center focus:outline-none">
+                        <button onclick="ArcadeSystem.adjustRouletteBet('HALF')" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-black text-gray-200">1/2</button>
+                        <button onclick="ArcadeSystem.adjustRouletteBet('DOUBLE')" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-black text-amber-300">2x</button>
+                        <button onclick="ArcadeSystem.adjustRouletteBet('ADD_1000')" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-black text-emerald-300">+1,000</button>
+                        <button onclick="ArcadeSystem.adjustRouletteBet('ADD_5000')" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-black text-rose-300">+5,000</button>
+                    </div>
+
+                    <!-- 三色押注大按鈕 -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <button onclick="ArcadeSystem.spinRoulette('RED')" class="roulette-bet-btn py-4 px-4 rounded-2xl bg-gradient-to-br from-rose-600 to-red-700 hover:brightness-110 border-2 border-rose-400/70 text-white font-black shadow-lg active:scale-95 transition-all">
+                            <div class="text-2xl">🔴</div>
+                            <div class="text-sm mt-0.5" data-i18n="roulette_red">押 精靈球（紅）</div>
+                            <div class="font-display text-amber-300 text-xs mt-0.5">WIN × 2.0 PT</div>
+                        </button>
+                        <button onclick="ArcadeSystem.spinRoulette('MASTER')" class="roulette-bet-btn py-4 px-4 rounded-2xl bg-gradient-to-br from-fuchsia-600 via-purple-600 to-indigo-700 hover:brightness-110 border-2 border-amber-300 text-white font-black shadow-[0_0_25px_rgba(217,70,239,0.5)] active:scale-95 transition-all">
+                            <div class="text-2xl">🟣</div>
+                            <div class="text-sm mt-0.5" data-i18n="roulette_master">押 大師球（紫金）</div>
+                            <div class="font-display text-amber-300 text-xs mt-0.5">WIN × 14.0 JACKPOT!!</div>
+                        </button>
+                        <button onclick="ArcadeSystem.spinRoulette('BLUE')" class="roulette-bet-btn py-4 px-4 rounded-2xl bg-gradient-to-br from-sky-600 to-blue-700 hover:brightness-110 border-2 border-sky-400/70 text-white font-black shadow-lg active:scale-95 transition-all">
+                            <div class="text-2xl">🔵</div>
+                            <div class="text-sm mt-0.5" data-i18n="roulette_blue">押 超級球（藍）</div>
+                            <div class="font-display text-amber-300 text-xs mt-0.5">WIN × 2.0 PT</div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== 遊戲 3：⚡ 皮卡丘 15 秒反應點擊大挑戰 (免押注・純技巧賺 PT 小遊戲!) ===== -->
+            <div id="arcade-game-REFLEX" class="hidden grid-cols-1 lg:grid-cols-12 gap-5">
+                <div class="lg:col-span-7 bg-gradient-to-b from-[#0b1f1a] to-[#0a0f1c] border-2 border-emerald-400/50 rounded-2xl p-4 sm:p-6 space-y-4 shadow-2xl">
+                    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-3">
+                        <div>
+                            <span class="text-[10px] font-mono font-black text-emerald-400 tracking-widest">FREE PT SKILL MINI-GAME</span>
+                            <h3 class="text-lg font-black text-white" data-i18n="reflex_heading">⚡ 皮卡丘 15 秒反應點擊大挑戰（免費賺 PT）</h3>
+                        </div>
+                        <button id="btn-reflex-start" onclick="ArcadeSystem.startReflexGame()" class="px-5 py-2 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-400 hover:brightness-110 text-black font-black text-xs shadow-lg active:scale-95" data-i18n="reflex_start_btn">
+                            ▶ 免費開始 15 秒挑戰
+                        </button>
+                    </div>
+
+                    <!-- 即時倒數 / 連擊 / 本局累積 PT 儀表板 -->
+                    <div class="grid grid-cols-3 gap-2 text-center">
+                        <div class="bg-obsidian border border-white/10 rounded-xl p-2.5">
+                            <div class="text-[10px] text-gray-400 font-bold" data-i18n="reflex_time">剩餘秒數</div>
+                            <div id="reflex-timer" class="font-display font-black text-xl text-rose-400">15.0s</div>
+                        </div>
+                        <div class="bg-obsidian border border-white/10 rounded-xl p-2.5">
+                            <div class="text-[10px] text-gray-400 font-bold" data-i18n="reflex_combo">連擊倍率</div>
+                            <div id="reflex-combo" class="font-display font-black text-xl text-amber-300">0 COMBO</div>
+                        </div>
+                        <div class="bg-obsidian border border-white/10 rounded-xl p-2.5">
+                            <div class="text-[10px] text-gray-400 font-bold" data-i18n="reflex_earned">本局已賺 PT</div>
+                            <div id="reflex-score" class="font-display font-black text-xl text-emerald-400">+0 PT</div>
+                        </div>
+                    </div>
+
+                    <!-- 3x3 寶可夢草原反應點擊盤面 -->
+                    <div id="reflex-grid" class="grid grid-cols-3 gap-2.5 sm:gap-3.5 max-w-md mx-auto py-1">
+                        <button onclick="ArcadeSystem.tapReflexCell(0)" id="reflex-cell-0" class="aspect-square rounded-2xl bg-[#0f172a] border-2 border-emerald-500/30 hover:border-emerald-400 flex flex-col items-center justify-center relative overflow-hidden active:scale-95 transition-transform"></button>
+                        <button onclick="ArcadeSystem.tapReflexCell(1)" id="reflex-cell-1" class="aspect-square rounded-2xl bg-[#0f172a] border-2 border-emerald-500/30 hover:border-emerald-400 flex flex-col items-center justify-center relative overflow-hidden active:scale-95 transition-transform"></button>
+                        <button onclick="ArcadeSystem.tapReflexCell(2)" id="reflex-cell-2" class="aspect-square rounded-2xl bg-[#0f172a] border-2 border-emerald-500/30 hover:border-emerald-400 flex flex-col items-center justify-center relative overflow-hidden active:scale-95 transition-transform"></button>
+                        <button onclick="ArcadeSystem.tapReflexCell(3)" id="reflex-cell-3" class="aspect-square rounded-2xl bg-[#0f172a] border-2 border-emerald-500/30 hover:border-emerald-400 flex flex-col items-center justify-center relative overflow-hidden active:scale-95 transition-transform"></button>
+                        <button onclick="ArcadeSystem.tapReflexCell(4)" id="reflex-cell-4" class="aspect-square rounded-2xl bg-[#0f172a] border-2 border-emerald-500/30 hover:border-emerald-400 flex flex-col items-center justify-center relative overflow-hidden active:scale-95 transition-transform"></button>
+                        <button onclick="ArcadeSystem.tapReflexCell(5)" id="reflex-cell-5" class="aspect-square rounded-2xl bg-[#0f172a] border-2 border-emerald-500/30 hover:border-emerald-400 flex flex-col items-center justify-center relative overflow-hidden active:scale-95 transition-transform"></button>
+                        <button onclick="ArcadeSystem.tapReflexCell(6)" id="reflex-cell-6" class="aspect-square rounded-2xl bg-[#0f172a] border-2 border-emerald-500/30 hover:border-emerald-400 flex flex-col items-center justify-center relative overflow-hidden active:scale-95 transition-transform"></button>
+                        <button onclick="ArcadeSystem.tapReflexCell(7)" id="reflex-cell-7" class="aspect-square rounded-2xl bg-[#0f172a] border-2 border-emerald-500/30 hover:border-emerald-400 flex flex-col items-center justify-center relative overflow-hidden active:scale-95 transition-transform"></button>
+                        <button onclick="ArcadeSystem.tapReflexCell(8)" id="reflex-cell-8" class="aspect-square rounded-2xl bg-[#0f172a] border-2 border-emerald-500/30 hover:border-emerald-400 flex flex-col items-center justify-center relative overflow-hidden active:scale-95 transition-transform"></button>
+                    </div>
+                </div>
+
+                <!-- 右側規則與獎勵說明 -->
+                <div class="lg:col-span-5 bg-slatecard border border-slateborder rounded-2xl p-5 space-y-3.5">
+                    <h4 class="text-sm font-black text-emerald-300" data-i18n="reflex_rules_title">📜 免費賺 PT 規則說明</h4>
+                    <div class="space-y-2.5 text-xs">
+                        <div class="flex items-center gap-3 p-3 rounded-xl bg-obsidian border border-amber-400/35">
+                            <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png" referrerpolicy="no-referrer" class="w-12 h-12 object-contain flex-shrink-0">
+                            <div>
+                                <div class="font-black text-amber-300">⚡ 皮卡丘 (Pikachu)</div>
+                                <div class="text-gray-300">點擊立即獲得 <strong class="text-emerald-400">+250 PT</strong>，連續命中額外加成！</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-fuchsia-950/60 to-amber-950/50 border border-fuchsia-400/50">
+                            <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/151.png" referrerpolicy="no-referrer" class="w-12 h-12 object-contain flex-shrink-0">
+                            <div>
+                                <div class="font-black text-fuchsia-300">🌟 稀有幻獸・夢幻 (Mew)</div>
+                                <div class="text-gray-200">超快閃現！成功點中直接爆賺 <strong class="text-amber-300">+800 PT</strong>！</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3 p-3 rounded-xl bg-rose-950/40 border border-rose-500/40">
+                            <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/100.png" referrerpolicy="no-referrer" class="w-12 h-12 object-contain flex-shrink-0">
+                            <div>
+                                <div class="font-black text-rose-400">💣 頑皮雷彈 (Voltorb)</div>
+                                <div class="text-gray-300">千萬別點！誤觸爆炸會扣除本局 <strong>-350 PT</strong> 並歸零連擊！</div>
+                            </div>
+                        </div>
+                        <p class="text-[11px] text-gray-400 leading-relaxed pt-1">
+                            ※ 本遊戲完全免費遊玩，15 秒結束後賺取的所有 PT 將立即發放至你的抽卡錢包，輸了也不會倒扣原本點數！
+                        </p>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <!-- 頁尾：低調內建 GitHub Pages 原始碼下載與複製工具（不自動彈窗干擾遊玩） -->
@@ -2221,6 +2547,27 @@
                 this.playTone(160, 'sine', 0.20, 0.34, 0.22, 48);
                 this.playNoise(0.09, 0.20, 0.22, 850);
                 this.playTone(1046.5, 'triangle', 0.38, 0.18, 0.42, 1318.5);
+            },
+            // 🎮 遊藝場老虎機、輪盤與反應點擊音效
+            slotSpinTick(pitch = 1) {
+                this.playTone(340 * pitch, 'triangle', 0.04, 0.08, 0, 520 * pitch);
+            },
+            slotWin(isJackpot = false) {
+                if (isJackpot) {
+                    this.grandJackpotSiren();
+                } else {
+                    this.playTone(659.25, 'triangle', 0.11, 0.18, 0);
+                    this.playTone(880.00, 'triangle', 0.14, 0.18, 0.10);
+                    this.playTone(1318.51, 'sine', 0.28, 0.20, 0.21);
+                }
+            },
+            arcadeHit(isRare = false) {
+                this.playTone(isRare ? 1174.66 : 783.99, 'triangle', 0.09, 0.18, 0, isRare ? 1760 : 1046.5);
+                if (isRare) this.playTone(2093, 'sine', 0.18, 0.16, 0.07);
+            },
+            arcadeBomb() {
+                this.playNoise(0.28, 0.28, 0, 480);
+                this.playTone(140, 'sawtooth', 0.26, 0.28, 0, 38);
             }
         };
 
@@ -3366,7 +3713,7 @@
         }
 
         function switchMainTab(tab) {
-            const tabs = ['pools', 'boxes', 'furnace', 'auction', 'inventory'];
+            const tabs = ['pools', 'boxes', 'furnace', 'auction', 'arcade', 'inventory'];
             tabs.forEach(t => {
                 const view = document.getElementById(`view-${t}`);
                 if (view) view.classList.toggle('hidden', t !== tab);
@@ -3374,18 +3721,18 @@
                 const navBtn = document.getElementById(`nav-tab-${t}`);
                 if (navBtn) {
                     if (t === tab) {
-                        navBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-black bg-amber-500 text-black shadow transition-all flex items-center gap-1';
+                        navBtn.className = 'px-2.5 lg:px-3 py-1.5 rounded-lg text-xs font-black bg-amber-500 text-black shadow transition-all flex items-center gap-1';
                     } else {
-                        navBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold text-gray-300 hover:text-white transition-all flex items-center gap-1';
+                        navBtn.className = 'px-2.5 lg:px-3 py-1.5 rounded-lg text-xs font-bold text-gray-300 hover:text-white transition-all flex items-center gap-1';
                     }
                 }
 
                 const mBtn = document.getElementById(`m-tab-${t}`);
                 if (mBtn) {
                     if (t === tab) {
-                        mBtn.className = 'flex-1 py-2.5 text-[10px] font-black text-amber-400 border-b-2 border-amber-400';
+                        mBtn.className = 'py-2.5 text-[10px] font-black text-amber-400 border-b-2 border-amber-400 truncate px-0.5';
                     } else {
-                        mBtn.className = 'flex-1 py-2.5 text-[10px] font-bold text-gray-400';
+                        mBtn.className = 'py-2.5 text-[10px] font-bold text-gray-400 truncate px-0.5';
                     }
                 }
             });
@@ -3393,6 +3740,7 @@
             if (tab === 'inventory') renderVaultGrid();
             if (tab === 'furnace') FurnaceSystem.render();
             if (tab === 'auction') AuctionSystem.renderGrid();
+            if (tab === 'arcade') ArcadeSystem.renderStats();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -7895,10 +8243,701 @@
             }
         };
 
+        /* ==========================================================================
+         * 12. 🌐 多國語言系統 (繁體中文 ZH / 日本語 JA / English EN)
+         * ========================================================================== */
+        const I18N = {
+            STORAGE_KEY: 'pokevault_lang_v1',
+            lang: 'zh',
+            dict: {
+                zh: {
+                    nav_pools: '🔥 線上オリパ',
+                    nav_boxes: '📦 單包/單盒',
+                    nav_boxes_badge: '撕包偷看',
+                    nav_furnace: '🌋 卡片熔爐',
+                    nav_auction: '🔨 拍賣競標',
+                    nav_arcade: '🎮 PT遊藝場',
+                    nav_vault: '🎒 保管庫',
+                    btn_email_login: 'Email登入',
+                    wallet_label: '所持ポイント',
+                    m_pools: '🔥オリパ',
+                    m_boxes: '📦單包',
+                    m_furnace: '🌋熔爐',
+                    m_auction: '🔨拍賣',
+                    m_arcade: '🎮遊藝場',
+                    m_vault: '🎒庫存',
+                    hero_badge_1: '🎬 Three.js 3D 電影級隨機動畫 × Lo-Fi 城鎮BGM',
+                    hero_badge_2: '100% 嚴格核對官方卡圖・1/2等賞 80%高價回收',
+                    hero_title: '頂級 3D 線上一番賞！一等賞・二等賞 PSA 10 奇蹟逆轉 & 全系列原封盒',
+                    hero_desc: '內建 7 大隨機電影級演出、PSA 10 歐洲熔爐、AI 即時拍賣會與全新玉虹 PT 遊藝場，伴隨 Classic Pokémon Lo-Fi 音樂盡情抽卡！',
+                    hero_btn_arcade: '🎮 PT 遊藝場（押PT / 賺PT）➔',
+                    hero_btn_auction: '🔨 AI 即時拍賣會 ➔',
+                    hero_btn_furnace: '🌋 PSA10 / 鍍金熔爐 ➔',
+                    hero_btn_boxes: '🎴 單包撕開偷看 ➔',
+                    quick_pack_badge: '🎴 全系列單包即開吧檯',
+                    quick_pack_desc: '超級勇氣・超級夢想・30週年皇冠・火箭隊・對戰搭檔・151 隨時單開 1 包！',
+                    quick_pack_goto: '前往單包 / 單盒專區 ➔',
+                    filter_all: '🔥 全部限定卡池 (11)',
+                    filter_30th: '👑 30週年紀念特化',
+                    filter_199: '🎯 1/199・二等賞大量池',
+                    filter_99: '⚡ 1/99・50%超還元池',
+                    filter_vip: '🏆 頂級至尊 PSA10 殿堂',
+                    arcade_badge: '🎮 CELADON GAME CORNER・玉虹 PT 遊藝場',
+                    arcade_sub_badge: '押 PT 最高翻 50 倍 ・ 免費技巧小遊戲無限賺 PT',
+                    arcade_title: '🎰 寶可夢 PT 遊藝場！以小博大翻倍點數 & 反應小遊戲狂賺 PT',
+                    arcade_desc: '點數不夠抽卡？來玩【777 霓虹老虎機】拚 50x 頭獎、【精靈球三色倍率盤】拚 14x 大師球爆擊，或零成本挑戰【皮卡丘 15 秒反應大挑戰】直接領 PT！',
+                    arcade_net_label: '🏆 遊藝場累計淨贏得',
+                    arcade_best_win: '🔥 最高單局贏得',
+                    arcade_free_earned: '⚡ 免費小遊戲累積',
+                    game_tab_slots: '🎰 777 霓虹老虎機',
+                    game_tab_slots_desc: '用 PT 押注拉霸，三顆 7️⃣ 直噴 50 倍超級頭獎！',
+                    game_tab_roulette: '🎡 精靈球三色倍率盤',
+                    game_tab_roulette_desc: '押紅球 2x、藍球 2x 或紫大師球 14x 爆擊！',
+                    game_tab_reflex: '⚡ 皮卡丘反應賺 PT',
+                    game_tab_reflex_desc: '免押注！15 秒點擊皮卡丘與夢幻狂賺免費 PT！',
+                    slots_heading: '🎰 寶可夢 777 霓虹拉霸機',
+                    arcade_bet_label: '下注金額 (BET PT)：',
+                    slots_paytable: '💎 獎金倍率表 (PAYTABLE)',
+                    slots_pair_rule: '任意 2 顆相同圖案',
+                    roulette_heading: '🎡 精靈球三色倍率賭盤（紅 2x / 藍 2x / 大師球 14x）',
+                    roulette_history: '近 12 局開獎：',
+                    roulette_red: '押 精靈球（紅）',
+                    roulette_master: '押 大師球（紫金）',
+                    roulette_blue: '押 超級球（藍）',
+                    reflex_heading: '⚡ 皮卡丘 15 秒反應點擊大挑戰（免費賺 PT）',
+                    reflex_start_btn: '▶ 免費開始 15 秒挑戰',
+                    reflex_time: '剩餘秒數',
+                    reflex_combo: '連擊倍率',
+                    reflex_earned: '本局已賺 PT',
+                    reflex_rules_title: '📜 免費賺 PT 規則說明',
+                    lang_switched_msg: '🌐 介面語言已切換為【繁體中文】'
+                },
+                ja: {
+                    nav_pools: '🔥 オンラインオリパ',
+                    nav_boxes: '📦 パック/BOX',
+                    nav_boxes_badge: '開封演出',
+                    nav_furnace: '🌋 カード精錬炉',
+                    nav_auction: '🔨 オークション',
+                    nav_arcade: '🎮 ゲームコーナー',
+                    nav_vault: '🎒 獲得一覧',
+                    btn_email_login: 'メール連携',
+                    wallet_label: '所持ポイント',
+                    m_pools: '🔥オリパ',
+                    m_boxes: '📦パック',
+                    m_furnace: '🌋精錬炉',
+                    m_auction: '🔨競売',
+                    m_arcade: '🎮遊技場',
+                    m_vault: '🎒保管庫',
+                    hero_badge_1: '🎬 Three.js 3D 劇場演出 × ポケモン Lo-Fi BGM',
+                    hero_badge_2: '100% 公式カード画像・1等/2等 80% 高額還元',
+                    hero_title: '極上 3D オンラインオリパ！1等・2等 PSA10 奇跡逆転 & 未開封BOX',
+                    hero_desc: '7種のランダム3D演出、PSA10精錬炉、AIリアルタイム競売、さらにPTを増やせるタマムシ・ゲームコーナーを搭載！',
+                    hero_btn_arcade: '🎮 ゲームコーナー（PT賭け / 稼ぐ）➔',
+                    hero_btn_auction: '🔨 AI オークション会場 ➔',
+                    hero_btn_furnace: '🌋 PSA10 / 純金精錬炉 ➔',
+                    hero_btn_boxes: '🎴 パック開封＆側面チラ見 ➔',
+                    quick_pack_badge: '🎴 全シリーズ 1パック即開封バー',
+                    quick_pack_desc: 'メガブレイブ・MEGAドリーム・30周年記念・ロケット団・151を今すぐ1パック開封！',
+                    quick_pack_goto: 'パック / BOX 専門コーナーへ ➔',
+                    filter_all: '🔥 全てのオリパ (11)',
+                    filter_30th: '👑 30周年記念特集',
+                    filter_199: '🎯 1/199・2等大量放出',
+                    filter_99: '⚡ 1/99・50%超還元',
+                    filter_vip: '🏆 プレミアム PSA10 殿堂',
+                    arcade_badge: '🎮 タマムシ ゲームコーナー・PT遊技場',
+                    arcade_sub_badge: 'PT賭け最大50倍 ・ 無料ミニゲームでPT獲得',
+                    arcade_title: '🎰 ポケモン ゲームコーナー！PT大勝負 & 無料ミニゲームでPTを稼ごう',
+                    arcade_desc: 'PTを増やして神引きを目指そう！【777スロット】で最大50倍、【ボール3色ルーレット】でマスターボール14倍、または無料の【ピカチュウ15秒チャレンジ】でPT獲得！',
+                    arcade_net_label: '🏆 遊技場トータル収支',
+                    arcade_best_win: '🔥 最大一撃獲得',
+                    arcade_free_earned: '⚡ 無料ゲーム累計',
+                    game_tab_slots: '🎰 777 ネオンスロット',
+                    game_tab_slots_desc: 'PTを賭けて回転！7️⃣揃いで一撃50倍ジャックポット！',
+                    game_tab_roulette: '🎡 ボール3色倍率ルーレット',
+                    game_tab_roulette_desc: '赤2倍・青2倍・紫マスターボール14倍のスリル！',
+                    game_tab_reflex: '⚡ ピカチュウ早押しPT稼ぎ',
+                    game_tab_reflex_desc: '参加無料！15秒間タップして大量PTをゲット！',
+                    slots_heading: '🎰 ポケモン 777 ネオンスロット',
+                    arcade_bet_label: 'ベット額 (BET PT)：',
+                    slots_paytable: '💎 配当倍率表 (PAYTABLE)',
+                    slots_pair_rule: 'いずれか2個一致（小役）',
+                    roulette_heading: '🎡 モンスターボール3色倍率盤（赤2x / 青2x / マスター14x）',
+                    roulette_history: '直近12回の履歴：',
+                    roulette_red: 'モンスターボール（赤）',
+                    roulette_master: 'マスターボール（紫金）',
+                    roulette_blue: 'スーパーボール（青）',
+                    reflex_heading: '⚡ ピカチュウ 15秒早押しチャレンジ（無料PT獲得）',
+                    reflex_start_btn: '▶ 無料で15秒チャレンジ開始',
+                    reflex_time: '残り時間',
+                    reflex_combo: 'コンボ数',
+                    reflex_earned: '獲得予定PT',
+                    reflex_rules_title: '📜 無料PT稼ぎのルール',
+                    lang_switched_msg: '🌐 表示言語を【日本語】に切り替えました！'
+                },
+                en: {
+                    nav_pools: '🔥 Oripa Gacha',
+                    nav_boxes: '📦 Packs/Boxes',
+                    nav_boxes_badge: 'PEEK EDGE',
+                    nav_furnace: '🌋 Forge',
+                    nav_auction: '🔨 Auction',
+                    nav_arcade: '🎮 Game Corner',
+                    nav_vault: '🎒 Vault',
+                    btn_email_login: 'Email Login',
+                    wallet_label: 'BALANCE PT',
+                    m_pools: '🔥Oripa',
+                    m_boxes: '📦Packs',
+                    m_furnace: '🌋Forge',
+                    m_auction: '🔨Bid',
+                    m_arcade: '🎮Arcade',
+                    m_vault: '🎒Vault',
+                    hero_badge_1: '🎬 Three.js 3D Cinema Pulls × Pokémon Lo-Fi BGM',
+                    hero_badge_2: '100% Verified Official TCG Art・80% Top-Tier Buyback',
+                    hero_title: 'Ultimate 3D Pokémon Oripa! PSA 10 Tier-1 Comebacks & Sealed Boxes',
+                    hero_desc: 'Featuring 7 random 3D pull animations, PSA 10 Card Forge, AI Live Auctions, and the new PT Game Corner with chill Gen 1-3 Lo-Fi beats!',
+                    hero_btn_arcade: '🎮 PT Game Corner (Bet / Earn PT) ➔',
+                    hero_btn_auction: '🔨 AI Live Auctions ➔',
+                    hero_btn_furnace: '🌋 PSA10 / Gold Forge ➔',
+                    hero_btn_boxes: '🎴 Rip Pack & Peek Edge ➔',
+                    quick_pack_badge: '🎴 Instant 1-Pack Rip Bar',
+                    quick_pack_desc: 'Mega Brave, MEGA Dream, 30th Crown, Team Rocket, Battle Partners & 151 ready to rip!',
+                    quick_pack_goto: 'All Packs & Sealed Boxes ➔',
+                    filter_all: '🔥 All Pools (11)',
+                    filter_30th: '👑 30th Anniversary',
+                    filter_199: '🎯 1/199 High Hit Pools',
+                    filter_99: '⚡ 1/99 50% Return',
+                    filter_vip: '🏆 VIP PSA 10 Hall',
+                    arcade_badge: '🎮 CELADON GAME CORNER・PT ARCADE',
+                    arcade_sub_badge: 'Wager PT up to 50x ・ Play Free Mini-Game to Earn PT',
+                    arcade_title: '🎰 Pokémon PT Game Corner! Multiply Your PT or Earn Free Points',
+                    arcade_desc: 'Need more PT for pulls? Spin the 777 Neon Slots (up to 50x), bet on the 3-Ball Color Roulette (14x Masterball), or play the free 15s Pikachu Reflex Challenge!',
+                    arcade_net_label: '🏆 Arcade Net Profit',
+                    arcade_best_win: '🔥 Biggest Single Win',
+                    arcade_free_earned: '⚡ Free Mini-Game PT',
+                    game_tab_slots: '🎰 777 Neon Slots',
+                    game_tab_slots_desc: 'Bet PT and spin for a massive 50x Triple-7 Jackpot!',
+                    game_tab_roulette: '🎡 Pokéball Roulette',
+                    game_tab_roulette_desc: 'Bet Red (2x), Blue (2x), or Masterball (14x Jackpot)!',
+                    game_tab_reflex: '⚡ Pikachu Reflex (Free PT)',
+                    game_tab_reflex_desc: 'Zero cost! Tap Pikachu & Mew in 15s to earn free PT!',
+                    slots_heading: '🎰 Pokémon 777 Neon Slot Machine',
+                    arcade_bet_label: 'Wager Amount (BET PT):',
+                    slots_paytable: '💎 Payout Multipliers (PAYTABLE)',
+                    slots_pair_rule: 'Any 2 Matching Symbols',
+                    roulette_heading: '🎡 Pokéball Color Roulette (Red 2x / Blue 2x / Master 14x)',
+                    roulette_history: 'Last 12 Rolls:',
+                    roulette_red: 'Bet Poké Ball (Red)',
+                    roulette_master: 'Bet Master Ball (Purple)',
+                    roulette_blue: 'Bet Great Ball (Blue)',
+                    reflex_heading: '⚡ Pikachu 15s Reflex Challenge (Earn Free PT)',
+                    reflex_start_btn: '▶ Start Free 15s Challenge',
+                    reflex_time: 'Time Left',
+                    reflex_combo: 'Combo',
+                    reflex_earned: 'Earned PT',
+                    reflex_rules_title: '📜 Free PT Rules & Rewards',
+                    lang_switched_msg: '🌐 Language switched to [English]!'
+                }
+            },
+
+            init() {
+                try {
+                    const saved = localStorage.getItem(this.STORAGE_KEY);
+                    if (saved && this.dict[saved]) this.lang = saved;
+                } catch (e) {}
+                this.apply(false);
+            },
+
+            t(key) {
+                return (this.dict[this.lang] && this.dict[this.lang][key]) || this.dict.zh[key] || key;
+            },
+
+            setLang(lang) {
+                if (!this.dict[lang]) return;
+                this.lang = lang;
+                try { localStorage.setItem(this.STORAGE_KEY, lang); } catch (e) {}
+                this.apply(true);
+            },
+
+            apply(announce = false) {
+                document.documentElement.lang = this.lang === 'ja' ? 'ja' : (this.lang === 'en' ? 'en' : 'zh-Hant');
+
+                // 更新頂部語言切換按鈕外觀
+                ['zh', 'ja', 'en'].forEach(code => {
+                    const btn = document.getElementById(`lang-btn-${code}`);
+                    if (!btn) return;
+                    btn.className = code === this.lang
+                        ? 'lang-switch-btn px-1.5 py-0.5 rounded-lg text-[10px] font-black bg-sky-400 text-black shadow transition-all'
+                        : 'lang-switch-btn px-1.5 py-0.5 rounded-lg text-[10px] font-bold text-gray-300 hover:text-white transition-all';
+                });
+
+                // 套用所有 data-i18n 靜態節點翻譯
+                document.querySelectorAll('[data-i18n]').forEach(el => {
+                    const key = el.getAttribute('data-i18n');
+                    if (key && this.dict[this.lang] && this.dict[this.lang][key]) {
+                        el.textContent = this.dict[this.lang][key];
+                    }
+                });
+
+                if (announce) {
+                    showToast(this.t('lang_switched_msg'));
+                }
+            }
+        };
+
+        /* ==========================================================================
+         * 13. 🎮 玉虹 PT 遊藝場 (ArcadeSystem)：押 PT 博弈 (老虎機/三色輪盤) & 免費反應賺 PT
+         * ========================================================================== */
+        const ArcadeSystem = {
+            activeGame: 'SLOTS',
+            netProfit: 0,
+            bestWin: 0,
+            freeEarnedTotal: 0,
+
+            // --- Game 1: 777 老虎機 ---
+            slotBet: 500,
+            slotSpinning: false,
+            slotSymbols: [
+                { icon: '7️⃣', weight: 6,  mult3: 50 },
+                { icon: '⚡',  weight: 12, mult3: 15 },
+                { icon: '🔮',  weight: 16, mult3: 10 },
+                { icon: '🔥',  weight: 22, mult3: 6 },
+                { icon: '🌙',  weight: 28, mult3: 4 },
+                { icon: '🍒',  weight: 34, mult3: 2.5 }
+            ],
+
+            // --- Game 2: 三色精靈球倍率賭盤 ---
+            rouletteSpinning: false,
+            rouletteHistory: ['RED', 'BLUE', 'RED', 'BLUE', 'MASTER', 'RED', 'BLUE', 'RED'],
+            rouletteSequence: [],
+
+            // --- Game 3: 皮卡丘 15 秒反應賺 PT ---
+            reflexActive: false,
+            reflexTimeLeft: 15.0,
+            reflexScore: 0,
+            reflexCombo: 0,
+            reflexCells: Array(9).fill(null),
+            reflexTickId: null,
+            reflexSpawnId: null,
+
+            init() {
+                this.renderStats();
+                this.renderRouletteHistory();
+                this.buildRouletteStrip();
+            },
+
+            renderStats() {
+                const netEl = document.getElementById('arcade-net-profit');
+                if (netEl) {
+                    netEl.textContent = `${this.netProfit >= 0 ? '+' : ''}${this.netProfit.toLocaleString()} PT`;
+                    netEl.className = `font-display text-sm ${this.netProfit >= 0 ? 'text-emerald-400' : 'text-rose-400'}`;
+                }
+                const bestEl = document.getElementById('arcade-best-win');
+                if (bestEl) bestEl.textContent = `${this.bestWin.toLocaleString()} PT`;
+                const freeEl = document.getElementById('arcade-free-earned');
+                if (freeEl) freeEl.textContent = `+${this.freeEarnedTotal.toLocaleString()} PT`;
+            },
+
+            recordWagerResult(bet, payout) {
+                const diff = payout - bet;
+                this.netProfit += diff;
+                if (payout > this.bestWin) this.bestWin = payout;
+                this.renderStats();
+            },
+
+            switchGame(game) {
+                this.activeGame = game;
+                ['SLOTS', 'ROULETTE', 'REFLEX'].forEach(g => {
+                    const panel = document.getElementById(`arcade-game-${g}`);
+                    if (panel) {
+                        panel.classList.toggle('hidden', g !== game);
+                        if (g === game && (g === 'SLOTS' || g === 'REFLEX')) panel.classList.add('grid');
+                    }
+                    const tab = document.getElementById(`arcade-tab-${g}`);
+                    if (tab) {
+                        tab.className = g === game
+                            ? 'p-3.5 rounded-2xl border-2 border-amber-400 bg-gradient-to-r from-amber-500/20 to-fuchsia-600/20 text-left transition-all shadow-lg'
+                            : 'p-3.5 rounded-2xl border border-slateborder bg-slatecard hover:border-amber-400/50 text-left transition-all';
+                    }
+                });
+            },
+
+            // ==================== GAME 1: 777 老虎機 ====================
+            setSlotBet(val) {
+                if (this.slotSpinning) return;
+                if (val === 'ALLIN') {
+                    this.slotBet = Math.max(500, Math.min(50000, Math.floor(state.points / 100) * 100));
+                } else {
+                    this.slotBet = val;
+                }
+                document.getElementById('slot-bet-display').textContent = this.slotBet.toLocaleString();
+                document.querySelectorAll('.slot-bet-btn').forEach(btn => {
+                    const isAct = String(btn.dataset.bet) === String(val);
+                    btn.className = isAct
+                        ? 'slot-bet-btn px-2.5 py-1 rounded-lg bg-amber-500 text-black font-black text-xs shadow'
+                        : 'slot-bet-btn px-2.5 py-1 rounded-lg bg-slate-800 text-gray-300 font-bold text-xs border border-slateborder';
+                });
+            },
+
+            rollWeightedSlotSymbol() {
+                const total = this.slotSymbols.reduce((s, item) => s + item.weight, 0);
+                let r = Math.random() * total;
+                for (const item of this.slotSymbols) {
+                    if (r < item.weight) return item;
+                    r -= item.weight;
+                }
+                return this.slotSymbols[this.slotSymbols.length - 1];
+            },
+
+            spinSlots() {
+                if (this.slotSpinning) return;
+                if (state.points < this.slotBet) {
+                    showToast(`⚠️ 點數不足（需要 ${this.slotBet.toLocaleString()} PT），可先玩免費小遊戲或補充 PT！`);
+                    openTopupModal();
+                    return;
+                }
+
+                this.slotSpinning = true;
+                state.points -= this.slotBet;
+                updateWalletUI();
+
+                const frame = document.getElementById('slots-machine-frame');
+                const statusEl = document.getElementById('slots-status-pill');
+                const bannerEl = document.getElementById('slots-result-banner');
+                frame.classList.remove('slot-win-glow');
+                statusEl.textContent = 'SPINNING...';
+                bannerEl.textContent = '🎰 滾輪高速轉動中...祝你好運！！';
+
+                const results = [
+                    this.rollWeightedSlotSymbol(),
+                    this.rollWeightedSlotSymbol(),
+                    this.rollWeightedSlotSymbol()
+                ];
+                const reelEls = [
+                    document.getElementById('slot-reel-0'),
+                    document.getElementById('slot-reel-1'),
+                    document.getElementById('slot-reel-2')
+                ];
+                reelEls.forEach(el => el.classList.add('slot-reel-spinning'));
+
+                let tick = 0;
+                const spinAnim = setInterval(() => {
+                    tick++;
+                    SoundEngine.slotSpinTick(0.9 + (tick % 4) * 0.12);
+                    reelEls.forEach((el, idx) => {
+                        if (el.classList.contains('slot-reel-spinning')) {
+                            el.textContent = this.slotSymbols[(tick + idx * 2) % this.slotSymbols.length].icon;
+                        }
+                    });
+                }, 85);
+
+                // 依序停輪營造刺激感
+                [750, 1300, 1880].forEach((delay, idx) => {
+                    setTimeout(() => {
+                        reelEls[idx].classList.remove('slot-reel-spinning');
+                        reelEls[idx].textContent = results[idx].icon;
+                        SoundEngine.steelBallClink(1.0 + idx * 0.15);
+
+                        if (idx === 2) {
+                            clearInterval(spinAnim);
+                            this.finishSlotSpin(results);
+                        }
+                    }, delay);
+                });
+            },
+
+            finishSlotSpin(results) {
+                const [a, b, c] = results;
+                let payout = 0;
+                let msg = '';
+                let isJackpot = false;
+
+                if (a.icon === b.icon && b.icon === c.icon) {
+                    payout = Math.round(this.slotBet * a.mult3);
+                    isJackpot = a.mult3 >= 15;
+                    msg = isJackpot
+                        ? `🌈 SUPER JACKPOT!! ${a.icon}${b.icon}${c.icon} 狂贏 +${payout.toLocaleString()} PT (×${a.mult3})！！`
+                        : `🎉 三連線大獎！${a.icon}${b.icon}${c.icon} 贏得 +${payout.toLocaleString()} PT (×${a.mult3})！`;
+                } else if (a.icon === b.icon || b.icon === c.icon || a.icon === c.icon) {
+                    payout = Math.round(this.slotBet * 1.4);
+                    msg = `✨ 兩顆相同回本小獎！獲得 +${payout.toLocaleString()} PT (×1.4)`;
+                } else {
+                    msg = `💨 差一點點！沒中連線，再轉一次拚 50x 頭獎！`;
+                }
+
+                const frame = document.getElementById('slots-machine-frame');
+                const statusEl = document.getElementById('slots-status-pill');
+                const bannerEl = document.getElementById('slots-result-banner');
+
+                if (payout > 0) {
+                    state.points += payout;
+                    updateWalletUI();
+                    frame.classList.add('slot-win-glow');
+                    statusEl.textContent = isJackpot ? 'JACKPOT!!' : 'BIG WIN!';
+                    SoundEngine.slotWin(isJackpot);
+                    if (isJackpot) spawnConfetti();
+                    showToast(msg);
+                } else {
+                    statusEl.textContent = 'TRY AGAIN';
+                }
+
+                bannerEl.textContent = msg;
+                this.recordWagerResult(this.slotBet, payout);
+                this.slotSpinning = false;
+            },
+
+            // ==================== GAME 2: 精靈球三色倍率賭盤 ====================
+            adjustRouletteBet(action) {
+                if (this.rouletteSpinning) return;
+                const input = document.getElementById('roulette-bet-input');
+                let val = Math.max(100, Number(input.value) || 1000);
+                if (action === 'HALF') val = Math.max(100, Math.floor(val / 200) * 100);
+                else if (action === 'DOUBLE') val = Math.min(Math.max(100, state.points), val * 2);
+                else if (action === 'ADD_1000') val += 1000;
+                else if (action === 'ADD_5000') val += 5000;
+                input.value = Math.max(100, Math.round(val));
+            },
+
+            renderRouletteHistory() {
+                const bar = document.getElementById('roulette-history-bar');
+                if (!bar) return;
+                bar.innerHTML = this.rouletteHistory.slice(0, 12).map(c => {
+                    const icon = c === 'MASTER' ? '🟣' : (c === 'RED' ? '🔴' : '🔵');
+                    return `<span class="text-sm">${icon}</span>`;
+                }).join('');
+            },
+
+            buildRouletteStrip(forcedOutcome = null) {
+                const strip = document.getElementById('roulette-strip');
+                if (!strip) return;
+                // 產生 48 格精靈球滑軌，並將中獎目標放在第 38 格確保滑動感十足
+                const pattern = ['RED', 'BLUE', 'RED', 'BLUE', 'RED', 'BLUE', 'MASTER', 'BLUE', 'RED', 'BLUE', 'RED', 'BLUE'];
+                const tiles = [];
+                for (let i = 0; i < 48; i++) {
+                    tiles.push(pattern[i % pattern.length]);
+                }
+                if (forcedOutcome) tiles[38] = forcedOutcome;
+                this.rouletteSequence = tiles;
+
+                strip.style.transition = 'none';
+                strip.style.transform = 'translateX(0px)';
+                strip.innerHTML = tiles.map(type => {
+                    const style = type === 'MASTER'
+                        ? 'bg-gradient-to-br from-fuchsia-600 to-purple-800 border-amber-300 shadow-[0_0_16px_rgba(217,70,239,0.75)]'
+                        : (type === 'RED' ? 'bg-gradient-to-br from-rose-600 to-red-800 border-rose-400/60' : 'bg-gradient-to-br from-sky-600 to-blue-800 border-sky-400/60');
+                    const icon = type === 'MASTER' ? '🟣' : (type === 'RED' ? '🔴' : '🔵');
+                    const mult = type === 'MASTER' ? '14x' : '2x';
+                    return `<div class="w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0 rounded-xl border-2 ${style} flex flex-col items-center justify-center">
+                        <span class="text-2xl sm:text-3xl leading-none">${icon}</span>
+                        <span class="text-[10px] font-display font-black text-white/95 mt-0.5">${mult}</span>
+                    </div>`;
+                }).join('');
+            },
+
+            spinRoulette(choice) {
+                if (this.rouletteSpinning) return;
+                const bet = Math.max(100, Math.round(Number(document.getElementById('roulette-bet-input').value) || 1000));
+                if (state.points < bet) {
+                    showToast(`⚠️ 點數不足（需要 ${bet.toLocaleString()} PT），請先免費賺 PT 或補充！`);
+                    openTopupModal();
+                    return;
+                }
+
+                this.rouletteSpinning = true;
+                state.points -= bet;
+                updateWalletUI();
+
+                // 機率配置：紅球 46% (2x) / 藍球 46% (2x) / 大師球 8% (14x!)
+                const r = Math.random();
+                const outcome = r < 0.08 ? 'MASTER' : (r < 0.54 ? 'RED' : 'BLUE');
+
+                this.buildRouletteStrip(outcome);
+                const strip = document.getElementById('roulette-strip');
+                const containerWidth = strip.parentElement.clientWidth || 600;
+                const firstTile = strip.children[0];
+                const tileStep = (firstTile ? firstTile.offsetWidth : 80) + 8; // width + gap-2 (8px)
+                const jitter = (Math.random() - 0.5) * (tileStep * 0.45);
+                const targetX = (38 * tileStep) + (tileStep / 2) - (containerWidth / 2) + jitter;
+
+                document.getElementById('roulette-result-text').textContent = `🎡 輪盤高速滑動中...你押注了 ${choice === 'MASTER' ? '🟣大師球(14x)' : (choice === 'RED' ? '🔴紅球(2x)' : '🔵藍球(2x)')}！`;
+
+                // 啟動過場滑動
+                void strip.offsetWidth;
+                strip.style.transition = 'transform 3.7s cubic-bezier(0.08, 0.82, 0.14, 1)';
+                strip.style.transform = `translateX(-${Math.max(0, targetX)}px)`;
+
+                let ticks = 0;
+                const tickTimer = setInterval(() => {
+                    ticks++;
+                    SoundEngine.slotSpinTick(0.85 + Math.min(ticks, 12) * 0.04);
+                    if (ticks >= 16) clearInterval(tickTimer);
+                }, 190);
+
+                setTimeout(() => {
+                    clearInterval(tickTimer);
+                    this.rouletteHistory.unshift(outcome);
+                    if (this.rouletteHistory.length > 15) this.rouletteHistory.pop();
+                    this.renderRouletteHistory();
+
+                    const won = (choice === outcome);
+                    const mult = outcome === 'MASTER' ? 14 : 2;
+                    const payout = won ? Math.round(bet * mult) : 0;
+                    const outLabel = outcome === 'MASTER' ? '🟣 大師球 (14x)' : (outcome === 'RED' ? '🔴 精靈球 (2x)' : '🔵 超級球 (2x)');
+
+                    if (won) {
+                        state.points += payout;
+                        updateWalletUI();
+                        SoundEngine.slotWin(outcome === 'MASTER');
+                        if (outcome === 'MASTER') spawnConfetti();
+                        const winMsg = `🎉 精準命中 ${outLabel}！！贏得 +${payout.toLocaleString()} PT！！`;
+                        document.getElementById('roulette-result-text').textContent = winMsg;
+                        showToast(winMsg);
+                    } else {
+                        const loseMsg = `開出 ${outLabel}，這次未命中，下一局翻倍討回來！`;
+                        document.getElementById('roulette-result-text').textContent = loseMsg;
+                    }
+
+                    this.recordWagerResult(bet, payout);
+                    this.rouletteSpinning = false;
+                }, 3850);
+            },
+
+            // ==================== GAME 3: 皮卡丘 15 秒反應大挑戰 (免費賺 PT) ====================
+            startReflexGame() {
+                if (this.reflexActive) return;
+                this.reflexActive = true;
+                this.reflexTimeLeft = 15.0;
+                this.reflexScore = 0;
+                this.reflexCombo = 0;
+                this.reflexCells = Array(9).fill(null);
+
+                document.getElementById('btn-reflex-start').disabled = true;
+                document.getElementById('btn-reflex-start').classList.add('opacity-50');
+                this.updateReflexHUD();
+                this.renderReflexCells();
+                SoundEngine.coin();
+
+                // 每 0.1 秒更新倒數
+                if (this.reflexTickId) clearInterval(this.reflexTickId);
+                this.reflexTickId = setInterval(() => {
+                    this.reflexTimeLeft = Math.max(0, this.reflexTimeLeft - 0.1);
+                    this.updateReflexHUD();
+                    if (this.reflexTimeLeft <= 0) {
+                        this.endReflexGame();
+                    }
+                }, 100);
+
+                // 每 580ms 隨機彈出目標寶可夢
+                if (this.reflexSpawnId) clearInterval(this.reflexSpawnId);
+                this.spawnReflexWave();
+                this.reflexSpawnId = setInterval(() => this.spawnReflexWave(), 580);
+            },
+
+            spawnReflexWave() {
+                if (!this.reflexActive) return;
+                // 清掉部分舊目標，生成 1~2 個新目標
+                this.reflexCells = Array(9).fill(null);
+                const count = Math.random() < 0.55 ? 2 : 1;
+                const used = new Set();
+                for (let i = 0; i < count; i++) {
+                    const idx = Math.floor(Math.random() * 9);
+                    if (used.has(idx)) continue;
+                    used.add(idx);
+                    const roll = Math.random();
+                    let type = 'PIKA';
+                    if (roll < 0.16) type = 'MEW';
+                    else if (roll < 0.36) type = 'BOMB';
+                    this.reflexCells[idx] = type;
+                }
+                this.renderReflexCells();
+            },
+
+            renderReflexCells() {
+                for (let i = 0; i < 9; i++) {
+                    const el = document.getElementById(`reflex-cell-${i}`);
+                    if (!el) continue;
+                    const type = this.reflexCells[i];
+                    if (!type) {
+                        el.innerHTML = `<span class="text-slate-700 text-lg font-mono">●</span>`;
+                        el.className = 'aspect-square rounded-2xl bg-[#0f172a] border-2 border-emerald-500/20 flex flex-col items-center justify-center relative overflow-hidden active:scale-95 transition-transform';
+                    } else if (type === 'PIKA') {
+                        el.className = 'aspect-square rounded-2xl bg-amber-500/20 border-2 border-amber-400 flex flex-col items-center justify-center relative overflow-hidden active:scale-95 transition-transform shadow-[0_0_16px_rgba(250,204,21,0.4)]';
+                        el.innerHTML = `
+                            <img src="${OFFICIAL_ART_BASE}/25.png" referrerpolicy="no-referrer" class="w-14 h-14 sm:w-16 sm:h-16 object-contain reflex-target-pop pointer-events-none">
+                            <span class="text-[10px] font-black text-amber-300 leading-none">+250</span>`;
+                    } else if (type === 'MEW') {
+                        el.className = 'aspect-square rounded-2xl bg-fuchsia-500/25 border-2 border-fuchsia-300 flex flex-col items-center justify-center relative overflow-hidden active:scale-95 transition-transform shadow-[0_0_22px_rgba(232,121,249,0.7)]';
+                        el.innerHTML = `
+                            <img src="${OFFICIAL_ART_BASE}/151.png" referrerpolicy="no-referrer" class="w-14 h-14 sm:w-16 sm:h-16 object-contain reflex-target-pop pointer-events-none">
+                            <span class="text-[10px] font-black text-fuchsia-200 leading-none">🌟+800</span>`;
+                    } else {
+                        el.className = 'aspect-square rounded-2xl bg-rose-950/60 border-2 border-rose-500 flex flex-col items-center justify-center relative overflow-hidden active:scale-95 transition-transform';
+                        el.innerHTML = `
+                            <img src="${OFFICIAL_ART_BASE}/100.png" referrerpolicy="no-referrer" class="w-14 h-14 sm:w-16 sm:h-16 object-contain reflex-target-pop pointer-events-none">
+                            <span class="text-[10px] font-black text-rose-400 leading-none">💣 -350</span>`;
+                    }
+                }
+            },
+
+            tapReflexCell(idx) {
+                if (!this.reflexActive) return;
+                const type = this.reflexCells[idx];
+                if (!type) return;
+
+                this.reflexCells[idx] = null;
+                if (type === 'PIKA' || type === 'MEW') {
+                    this.reflexCombo++;
+                    const base = type === 'MEW' ? 800 : 250;
+                    const comboBonus = Math.min(300, (this.reflexCombo - 1) * 35);
+                    this.reflexScore += (base + comboBonus);
+                    SoundEngine.arcadeHit(type === 'MEW');
+                } else {
+                    this.reflexCombo = 0;
+                    this.reflexScore = Math.max(0, this.reflexScore - 350);
+                    SoundEngine.arcadeBomb();
+                }
+
+                this.updateReflexHUD();
+                this.renderReflexCells();
+            },
+
+            updateReflexHUD() {
+                document.getElementById('reflex-timer').textContent = `${this.reflexTimeLeft.toFixed(1)}s`;
+                document.getElementById('reflex-combo').textContent = `${this.reflexCombo} COMBO`;
+                document.getElementById('reflex-score').textContent = `+${this.reflexScore.toLocaleString()} PT`;
+            },
+
+            endReflexGame() {
+                this.reflexActive = false;
+                clearInterval(this.reflexTickId);
+                clearInterval(this.reflexSpawnId);
+                this.reflexCells = Array(9).fill(null);
+                this.renderReflexCells();
+
+                const btn = document.getElementById('btn-reflex-start');
+                btn.disabled = false;
+                btn.classList.remove('opacity-50');
+
+                if (this.reflexScore > 0) {
+                    state.points += this.reflexScore;
+                    this.freeEarnedTotal += this.reflexScore;
+                    this.netProfit += this.reflexScore;
+                    if (this.reflexScore > this.bestWin) this.bestWin = this.reflexScore;
+                    updateWalletUI();
+                    this.renderStats();
+                    SoundEngine.slotWin(this.reflexScore >= 3000);
+                    if (this.reflexScore >= 3000) spawnConfetti();
+                    showToast(`⚡ 挑戰完成！免費賺取 +${this.reflexScore.toLocaleString()} PT 已存入錢包！`);
+                } else {
+                    showToast('⚡ 時間到！再挑戰一次把免費 PT 帶回家吧！');
+                }
+            }
+        };
+
         window.onload = function () {
             initPoolsData();
             EmailWordAuth.init();
             AuctionSystem.init();
+            ArcadeSystem.init();
+            I18N.init();
             renderTicker();
             renderLobbyQuickPacksBar();
             renderPoolsGrid();
