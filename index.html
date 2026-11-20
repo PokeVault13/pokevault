@@ -158,6 +158,26 @@
         .animate-hit-flash {
             animation: hitFlashBurst 0.6s ease-out forwards;
         }
+
+        @keyframes cinemaShake {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            20% { transform: translate(-6px, 4px) rotate(-0.8deg); }
+            40% { transform: translate(6px, -4px) rotate(0.8deg); }
+            60% { transform: translate(-4px, -3px) rotate(-0.5deg); }
+            80% { transform: translate(4px, 3px) rotate(0.5deg); }
+        }
+        .animate-cinema-shake {
+            animation: cinemaShake 0.45s ease-in-out 2;
+        }
+
+        @keyframes slotSpinBlur {
+            0% { transform: translateY(-6px) scale(0.95); filter: blur(1.5px); }
+            50% { transform: translateY(6px) scale(1.04); filter: blur(2px); }
+            100% { transform: translateY(-6px) scale(0.95); filter: blur(1.5px); }
+        }
+        .slot-spinning {
+            animation: slotSpinBlur 0.14s linear infinite;
+        }
     </style>
 </head>
 <body class="bg-obsidian text-slate-100 min-h-screen flex flex-col">
@@ -332,12 +352,12 @@
             </div>
         </section>
 
-        <!-- ==================== 分頁 A：線上一番賞（14 大卡池・每池 50 種正版卡牌） ==================== -->
+        <!-- ==================== 分頁 A：線上一番賞（15 大卡池・每池 50 種正版卡牌） ==================== -->
         <section id="view-pools" class="space-y-4">
             <div class="flex items-center justify-between gap-2 flex-wrap">
                 <div class="flex items-center gap-1.5 overflow-x-auto pb-1">
-                    <button onclick="filterPoolsByTag('ALL')" id="filter-btn-ALL" class="pool-filter-btn px-3 py-1.5 rounded-xl bg-amber-400 text-black text-xs font-black whitespace-nowrap">🔥 全部卡池 (14池・各50種)</button>
-                    <button onclick="filterPoolsByTag('MICRO')" id="filter-btn-MICRO" class="pool-filter-btn px-3 py-1.5 rounded-xl bg-slatecard border border-white/10 text-gray-300 text-xs font-bold whitespace-nowrap">🪙 39/46PT 銅板＆天堂地獄</button>
+                    <button onclick="filterPoolsByTag('ALL')" id="filter-btn-ALL" class="pool-filter-btn px-3 py-1.5 rounded-xl bg-amber-400 text-black text-xs font-black whitespace-nowrap">🔥 全部卡池 (15池・各50種)</button>
+                    <button onclick="filterPoolsByTag('MICRO')" id="filter-btn-MICRO" class="pool-filter-btn px-3 py-1.5 rounded-xl bg-slatecard border border-white/10 text-gray-300 text-xs font-bold whitespace-nowrap">🪙 銅板＆1/2天堂地獄</button>
                     <button onclick="filterPoolsByTag('ANNIV')" id="filter-btn-ANNIV" class="pool-filter-btn px-3 py-1.5 rounded-xl bg-slatecard border border-white/10 text-gray-300 text-xs font-bold whitespace-nowrap">👑 30週年 M6a / 25週年</button>
                     <button onclick="filterPoolsByTag('MEGA')" id="filter-btn-MEGA" class="pool-filter-btn px-3 py-1.5 rounded-xl bg-slatecard border border-white/10 text-gray-300 text-xs font-bold whitespace-nowrap">🥊 MEGA 超級進化</button>
                     <button onclick="filterPoolsByTag('POPULAR')" id="filter-btn-POPULAR" class="pool-filter-btn px-3 py-1.5 rounded-xl bg-slatecard border border-white/10 text-gray-300 text-xs font-bold whitespace-nowrap">🚀 火箭隊 / 伊布 / 151</button>
@@ -454,22 +474,44 @@
 
         <!-- ==================== 分頁 E：玉虹 PT 遊藝場（777 老虎機 / 精靈球賭盤 / 每日 1000 PT 反應挑戰） ==================== -->
         <section id="view-arcade" class="hidden space-y-5">
+            <div class="rounded-2xl bg-gradient-to-r from-amber-500/15 via-purple-500/15 to-emerald-500/15 border border-amber-400/35 p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <div class="space-y-1">
+                    <span class="px-2.5 py-0.5 rounded-full bg-amber-400 text-black text-[10px] font-black">CELADON GAME CORNER • 玉虹遊藝場</span>
+                    <h2 class="text-lg sm:text-xl font-black text-white">🎮 玉虹 PT 遊藝場（PT 博弈翻倍 ＆ 免費小遊戲賺 PT）</h2>
+                    <p class="text-xs text-gray-300">使用現有 PT 挑戰 777 老虎機與精靈球 14 倍賭盤，或免費遊玩皮卡丘極速反應挑戰（每日最高領取 1,000 PT）！</p>
+                </div>
+                <div class="px-3.5 py-2 rounded-xl bg-obsidian border border-emerald-400/40 text-xs font-black text-emerald-300 whitespace-nowrap">
+                    📅 <span id="arcade-banner-daily">今日免費額度：0 / 1,000 PT</span>
+                </div>
+            </div>
+
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
                 <!-- 1. 777 霓虹老虎機 -->
-                <div class="bg-slatecard border border-amber-400/40 rounded-2xl p-4 flex flex-col justify-between space-y-4">
+                <div class="bg-slatecard border border-amber-400/40 rounded-2xl p-4 flex flex-col justify-between space-y-4 shadow-xl">
                     <div class="space-y-1">
                         <span class="px-2 py-0.5 rounded bg-amber-400/20 text-amber-300 text-[10px] font-black">SLOT MACHINE • 最高 50X</span>
                         <h3 class="text-base font-black text-white">🎰 寶可夢 777 霓虹老虎機</h3>
-                        <p class="text-[11px] text-gray-400">三顆 7️⃣ 直噴 50 倍頭獎！皮卡丘 15x、大師球 10x，兩顆相同也有 1.4x 保底。</p>
+                        <p class="text-[11px] text-gray-400">三顆 7️⃣ 直噴 50 倍頭獎！皮卡丘 15x、大師球 10x、火焰 6x，任意兩顆相同也有 1.4x 保底。</p>
                     </div>
-                    <div class="grid grid-cols-3 gap-2 bg-obsidian border-2 border-amber-400/60 rounded-2xl p-4 text-center">
-                        <div id="slot-reel-0" class="text-4xl py-3 bg-slate-900 rounded-xl border border-white/10">7️⃣</div>
-                        <div id="slot-reel-1" class="text-4xl py-3 bg-slate-900 rounded-xl border border-white/10">⚡</div>
-                        <div id="slot-reel-2" class="text-4xl py-3 bg-slate-900 rounded-xl border border-white/10">🟣</div>
-                    </div>
+
                     <div class="space-y-2">
+                        <div class="grid grid-cols-3 gap-2 bg-obsidian border-2 border-amber-400/60 rounded-2xl p-4 text-center shadow-inner">
+                            <div id="slot-reel-0" class="text-4xl py-3.5 bg-slate-900 rounded-xl border border-white/10 select-none">7️⃣</div>
+                            <div id="slot-reel-1" class="text-4xl py-3.5 bg-slate-900 rounded-xl border border-white/10 select-none">⚡</div>
+                            <div id="slot-reel-2" class="text-4xl py-3.5 bg-slate-900 rounded-xl border border-white/10 select-none">🟣</div>
+                        </div>
+                        <div id="slot-status-text" class="text-center text-xs font-black text-amber-300 min-h-[18px]">選擇押注金額並拉動拉桿！</div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <div class="grid grid-cols-4 gap-1.5 text-[10px] font-black">
+                            <button onclick="ArcadeSystem.setSlotBet(500)" class="slot-chip py-1.5 rounded-lg bg-obsidian border border-white/15 text-gray-300 hover:border-amber-400">500</button>
+                            <button onclick="ArcadeSystem.setSlotBet(1000)" class="slot-chip py-1.5 rounded-lg bg-amber-400 text-black">1,000</button>
+                            <button onclick="ArcadeSystem.setSlotBet(5000)" class="slot-chip py-1.5 rounded-lg bg-obsidian border border-white/15 text-gray-300 hover:border-amber-400">5,000</button>
+                            <button onclick="ArcadeSystem.setSlotBet(10000)" class="slot-chip py-1.5 rounded-lg bg-obsidian border border-white/15 text-gray-300 hover:border-amber-400">10,000</button>
+                        </div>
                         <div class="flex items-center justify-between text-xs font-bold">
-                            <span class="text-gray-400">押注金額：</span>
+                            <span class="text-gray-400">當前押注：</span>
                             <select id="slot-bet-select" class="bg-obsidian border border-white/15 rounded-lg px-2.5 py-1 text-amber-300 font-black">
                                 <option value="500">500 PT</option>
                                 <option value="1000" selected>1,000 PT</option>
@@ -477,23 +519,30 @@
                                 <option value="10000">10,000 PT</option>
                             </select>
                         </div>
-                        <button onclick="ArcadeSystem.spinSlot()" id="btn-spin-slot" class="w-full py-3 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 text-black font-black text-xs shadow-lg">
+                        <button onclick="ArcadeSystem.spinSlot()" id="btn-spin-slot" class="w-full py-3 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 hover:brightness-110 text-black font-black text-xs shadow-lg">
                             🎰 拉動拉桿開轉！
                         </button>
                     </div>
                 </div>
 
                 <!-- 2. 精靈球三色倍率賭盤 -->
-                <div class="bg-slatecard border border-purple-400/40 rounded-2xl p-4 flex flex-col justify-between space-y-4">
+                <div class="bg-slatecard border border-purple-400/40 rounded-2xl p-4 flex flex-col justify-between space-y-4 shadow-xl">
                     <div class="space-y-1">
                         <span class="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 text-[10px] font-black">ROULETTE • 2X / 14X</span>
                         <h3 class="text-base font-black text-white">🎡 精靈球三色倍率賭盤</h3>
                         <p class="text-[11px] text-gray-400">押中紅球或超級球翻 2 倍；押中稀有的紫色大師球直接暴擊 14 倍！</p>
                     </div>
-                    <div class="bg-obsidian border border-white/10 rounded-2xl p-4 text-center space-y-2">
-                        <div id="roulette-result-ball" class="text-5xl py-2">🟣</div>
+
+                    <div class="bg-obsidian border border-white/10 rounded-2xl p-4 text-center space-y-2.5">
+                        <div id="roulette-track" class="flex items-center justify-center gap-1.5 text-xl py-1 bg-slate-900/90 rounded-xl border border-white/10">
+                            <span>🔴</span><span>🔵</span><span class="px-1.5 py-0.5 rounded-lg bg-amber-400/25 border border-amber-400 scale-110" id="roulette-result-ball">🟣</span><span>🔴</span><span>🔵</span>
+                        </div>
                         <div id="roulette-result-text" class="text-xs font-black text-purple-300">選擇下方精靈球顏色並下注</div>
+                        <div id="roulette-history" class="flex items-center justify-center gap-1 text-xs">
+                            <span class="text-[10px] text-gray-500">近期：</span><span>🔴</span><span>🔵</span><span>🔴</span><span>🟣</span><span>🔵</span>
+                        </div>
                     </div>
+
                     <div class="space-y-2">
                         <div class="flex items-center justify-between text-xs font-bold">
                             <span class="text-gray-400">下注籌碼：</span>
@@ -505,17 +554,17 @@
                             </select>
                         </div>
                         <div class="grid grid-cols-3 gap-1.5">
-                            <button onclick="ArcadeSystem.playRoulette('RED')" class="py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-black text-xs">🔴 紅球 2x</button>
-                            <button onclick="ArcadeSystem.playRoulette('BLUE')" class="py-2.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-black text-xs">🔵 超級 2x</button>
-                            <button onclick="ArcadeSystem.playRoulette('MASTER')" class="py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-black text-xs">🟣 大師 14x</button>
+                            <button onclick="ArcadeSystem.playRoulette('RED')" id="btn-roul-RED" class="py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-black text-xs shadow">🔴 紅球 2x</button>
+                            <button onclick="ArcadeSystem.playRoulette('BLUE')" id="btn-roul-BLUE" class="py-2.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-black text-xs shadow">🔵 超級 2x</button>
+                            <button onclick="ArcadeSystem.playRoulette('MASTER')" id="btn-roul-MASTER" class="py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-black text-xs shadow">🟣 大師 14x</button>
                         </div>
                     </div>
                 </div>
 
                 <!-- 3. 皮卡丘 15 秒極速反應大挑戰（免費小遊戲・每日最高 1,000 PT） -->
-                <div class="bg-slatecard border border-emerald-400/40 rounded-2xl p-4 flex flex-col justify-between space-y-3">
+                <div class="bg-slatecard border border-emerald-400/40 rounded-2xl p-4 flex flex-col justify-between space-y-3 shadow-xl">
                     <div class="space-y-1">
-                        <div class="flex items-center justify-between">
+                        <div class="flex items-center justify-between gap-1">
                             <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-[10px] font-black">FREE MINI-GAME • HARD</span>
                             <span id="daily-free-pt-label" class="text-[10px] font-black text-amber-300">今日額度：0 / 1,000 PT</span>
                         </div>
@@ -525,14 +574,18 @@
 
                     <div class="flex items-center justify-between text-xs font-black bg-obsidian border border-white/10 rounded-xl px-3 py-1.5">
                         <span class="text-rose-400">⏱ <span id="reflex-timer">15.0s</span></span>
-                        <span class="text-emerald-300">得分：<span id="reflex-score">0 PT</span></span>
+                        <span class="text-emerald-300">本局得分：<span id="reflex-score">0 PT</span></span>
                     </div>
 
-                    <div id="reflex-arena" class="relative h-36 bg-obsidian border border-emerald-500/30 rounded-2xl flex items-center justify-center overflow-hidden">
-                        <span class="text-xs text-gray-500 font-bold">點擊下方按鈕開始極速挑戰</span>
+                    <div id="reflex-arena" class="relative h-48 bg-gradient-to-b from-slate-950 to-obsidian border-2 border-emerald-500/40 rounded-2xl flex flex-col items-center justify-center overflow-hidden select-none">
+                        <div class="flex items-center gap-4 text-3xl mb-2 animate-bounce">
+                            <span>⚡</span><span>🌟</span><span>💣</span>
+                        </div>
+                        <span class="text-xs text-emerald-200 font-black">點擊下方綠色按鈕立即開始 15 秒挑戰！</span>
+                        <span class="text-[10px] text-gray-400 mt-1">⚡ +35 PT ｜ 🌟 +120 PT ｜ 💣 -80 PT</span>
                     </div>
 
-                    <button onclick="ArcadeSystem.startReflexGame()" id="btn-start-reflex" class="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-500 text-black font-black text-xs shadow-lg">
+                    <button onclick="ArcadeSystem.startReflexGame()" id="btn-start-reflex" class="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-500 hover:brightness-110 text-black font-black text-xs shadow-lg">
                         ⚡ 免費開始 15 秒挑戰
                     </button>
                 </div>
@@ -572,8 +625,10 @@
         </div>
     </footer>
 
-    <!-- ==================== 彈窗 1：Three.js 3D 電影級抽卡演出視窗 ==================== -->
+    <!-- ==================== 彈窗 1：Three.js 3D 電影級抽卡演出視窗（7 套獨立 3D 演出＋昇格逆轉） ==================== -->
     <div id="cinema-modal" class="hidden fixed inset-0 z-50 bg-black flex flex-col justify-between overflow-hidden" style="height: 100dvh;">
+        <div id="cinema-flash-screen" class="pointer-events-none hidden absolute inset-0 z-30 bg-white"></div>
+
         <div class="relative z-20 flex items-center justify-between px-4 py-3 bg-gradient-to-b from-black/90 to-transparent">
             <div class="flex items-center gap-2 min-w-0">
                 <span id="cinema-script-badge" class="px-2.5 py-1 rounded-full bg-amber-400 text-black text-[10px] font-black whitespace-nowrap">3D CINEMA</span>
@@ -587,18 +642,18 @@
         <div id="cinema-stage" class="relative flex-1 w-full flex items-center justify-center overflow-hidden">
             <canvas id="cinema-canvas" class="absolute inset-0 w-full h-full block"></canvas>
 
-            <div class="relative z-10 flex flex-col items-center justify-center text-center px-4 space-y-3 pointer-events-none">
-                <div id="cinema-phase-banner" class="px-4 py-1.5 rounded-full bg-black/80 border-2 border-sky-400 text-sky-300 text-xs sm:text-sm font-black shadow-2xl">
+            <div class="relative z-10 flex flex-col items-center justify-between h-full py-6 text-center px-4 pointer-events-none">
+                <div id="cinema-phase-banner" class="px-4 py-1.5 rounded-full bg-black/85 border-2 border-sky-400 text-sky-300 text-xs sm:text-sm font-black shadow-2xl">
                     STAGE 1 • 能量核心充能中...
                 </div>
 
-                <div id="cinema-reveal-wrap" class="hidden relative flex flex-col items-center space-y-2">
+                <div id="cinema-reveal-wrap" class="hidden relative flex flex-col items-center space-y-2 my-auto">
                     <div id="cinema-aura-ring" class="absolute -inset-4 rounded-3xl blur-xl bg-amber-400/50 cinema-aura-pulse"></div>
                     <img id="cinema-reveal-img" src="https://images.pokemontcg.io/sv3pt5/25.png" alt="Highlight Card" referrerpolicy="no-referrer" onerror="handleCardImgError(this)" class="relative w-44 sm:w-52 aspect-[3/4.15] object-contain rounded-2xl border-2 border-amber-300 bg-slate-950 shadow-2xl">
                     <div id="cinema-reveal-title" class="relative px-3.5 py-1.5 rounded-xl bg-black/90 border border-amber-400/60 text-xs sm:text-sm font-black text-amber-300 shadow-lg"></div>
                 </div>
 
-                <div id="cinema-sub-banner" class="text-xs font-bold text-gray-200 bg-black/75 px-3.5 py-1.5 rounded-xl border border-white/15">
+                <div id="cinema-sub-banner" class="text-xs font-bold text-gray-200 bg-black/80 px-4 py-2 rounded-xl border border-white/15">
                     正在召喚高解析 3D 神光粒子...
                 </div>
             </div>
@@ -900,7 +955,8 @@
         /* ==========================================================================
            第 1 節：全域狀態、錢包防 NaN 保護與精準卡片回收 PT 引擎
            ========================================================================== */
-        const STORAGE_KEY = 'pokevault_oripa_v2026_full_sets';
+        const STORAGE_KEY = 'pokevault_oripa_v2026_rebalanced_v2';
+        const PREV_STORAGE_KEY = 'pokevault_oripa_v2026_full_sets';
 
         const state = {
             pt: 50000,
@@ -908,26 +964,11 @@
             poolsRemaining: {},
             poolsTotalDrawn: {},
             furnaceEmber: 0,
-            lastScript: -1,
             lang: 'zh',
             currentFilter: 'ALL',
-            pendingResultCards: []
-        };
-
-        const RARITY_TO_TIER = {
-            'RGB': 1, 'MUR': 1, 'BWR': 1, 'PROMO': 1,
-            'SAR': 2, 'UR': 2, 'FUR': 2, 'MA': 2, 'SSR': 2,
-            'SR': 3, 'ACE': 3, 'RRR': 3,
-            'AR': 4, 'RR': 4, 'R': 4,
-            'U': 5, 'C': 5
-        };
-
-        const TIER_BUYBACK_RATE = {
-            1: 0.80,
-            2: 0.80,
-            3: 0.45,
-            4: 0.25,
-            5: 0.12
+            lastScript: -1,
+            pendingResultCards: [],
+            uidCounter: 1
         };
 
         const TIER_LABEL_MAP = {
@@ -938,86 +979,79 @@
             5: '5等賞'
         };
 
+        const TIER_BUYBACK_RATE = {
+            1: 0.80,
+            2: 0.80,
+            3: 0.42,
+            4: 0.22,
+            5: 0.10
+        };
+
         function resolveCardTier(card) {
             if (!card) return 5;
-            const rawTier = Number(card.tier);
-            if (rawTier >= 1 && rawTier <= 5) return rawTier;
+            const explicit = Number(card.tier);
+            if (explicit >= 1 && explicit <= 5) return explicit;
             const r = String(card.rarity || '').toUpperCase();
-            if (RARITY_TO_TIER[r]) return RARITY_TO_TIER[r];
-            const val = Number(card.pt) || 0;
-            if (val >= 40000) return 1;
-            if (val >= 12000) return 2;
-            if (val >= 3500) return 3;
-            if (val >= 800) return 4;
+            const pt = Number(card.pt) || 0;
+            if (['RGB', 'MUR', 'BWR'].includes(r) || pt >= 90000) return 1;
+            if (['SAR', 'UR', 'FUR', 'SA', 'PROMO'].includes(r) || pt >= 18000) return 2;
+            if (['SR', 'AR', 'MA', 'RRR', 'CHR', 'CSR', 'ACE'].includes(r) || pt >= 3500) return 3;
+            if (['RR', 'R'].includes(r) || pt >= 600) return 4;
             return 5;
         }
 
         function calcBuybackPt(card) {
             if (!card) return 0;
-            if (Number.isFinite(Number(card.buybackPt)) && Number(card.buybackPt) > 0) {
-                return Math.round(Number(card.buybackPt));
-            }
-            const basePt = Math.max(20, Math.round(Number(card.pt) || 100));
+            const basePt = Math.max(10, Math.round(Number(card.pt) || 100));
+            const isGradedOrForged = Boolean(card.graded) || (Number(card.forgeLv) || 0) > 0;
             const tier = resolveCardTier(card);
-            const isGradedOrForged = Boolean(card.graded || (Number(card.forgeLv) || 0) >= 1 || String(card.name || '').includes('PSA 10'));
-            const rate = isGradedOrForged ? Math.max(0.80, TIER_BUYBACK_RATE[tier] || 0.25) : (TIER_BUYBACK_RATE[tier] || 0.12);
-            return Math.max(5, Math.round(basePt * rate));
+            const rate = isGradedOrForged ? 0.80 : (TIER_BUYBACK_RATE[tier] || 0.10);
+            return Math.max(10, Math.round(basePt * rate));
         }
 
-        function normalizeCardInstance(rawCard) {
-            const pt = Math.max(20, Math.round(Number(rawCard.pt) || 100));
-            const tier = resolveCardTier({ ...rawCard, pt });
-            const cloned = {
-                ...rawCard,
-                uid: rawCard.uid || ('card_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 7)),
-                pt,
+        function normalizeCardInstance(raw) {
+            const tier = resolveCardTier(raw);
+            const pt = Math.max(10, Math.round(Number(raw.pt) || 100));
+            const inst = {
+                uid: raw.uid || ('card_' + Date.now() + '_' + (state.uidCounter++)),
+                id: raw.id || ('CARD_' + state.uidCounter),
+                name: raw.name || '寶可夢紀念閃卡',
+                code: raw.code || 'PTCG',
+                rarity: raw.rarity || 'R',
                 tier,
-                rarity: rawCard.rarity || (tier === 1 ? 'SAR' : tier === 2 ? 'UR' : tier === 3 ? 'SR' : tier === 4 ? 'RR' : 'C')
+                pt,
+                img: raw.img || 'https://images.pokemontcg.io/sv3pt5/25_hires.png',
+                ptcgSet: raw.ptcgSet || 'sv3pt5',
+                ptcgNum: raw.ptcgNum || '25',
+                dex: raw.dex || 25,
+                graded: Boolean(raw.graded),
+                forgeLv: Number(raw.forgeLv) || 0
             };
-            cloned.buybackPt = calcBuybackPt(cloned);
-            return cloned;
-        }
-
-        function addPtSafe(amount) {
-            const delta = Math.round(Number(amount));
-            if (!Number.isFinite(delta) || delta <= 0) return;
-            if (!Number.isFinite(Number(state.pt))) state.pt = 50000;
-            state.pt = Math.max(0, Math.round(Number(state.pt) + delta));
-            updateWalletUI();
-            saveState();
-        }
-
-        function spendPtSafe(amount) {
-            const cost = Math.round(Number(amount));
-            if (!Number.isFinite(cost) || cost < 0) return false;
-            if (!Number.isFinite(Number(state.pt))) state.pt = 50000;
-            if (state.pt < cost) {
-                showToast(`⚠️ PT 點數不足（需要 ${cost.toLocaleString()} PT），可點右上角 + 免費補充！`);
-                return false;
-            }
-            state.pt = Math.max(0, Math.round(Number(state.pt) - cost));
-            updateWalletUI();
-            saveState();
-            return true;
+            inst.buybackPt = calcBuybackPt(inst);
+            return inst;
         }
 
         function saveState() {
             try {
-                const payload = {
-                    pt: Number.isFinite(Number(state.pt)) ? Math.round(Number(state.pt)) : 50000,
-                    vault: Array.isArray(state.vault) ? state.vault : [],
-                    poolsRemaining: state.poolsRemaining || {},
-                    poolsTotalDrawn: state.poolsTotalDrawn || {},
-                    furnaceEmber: Number(state.furnaceEmber) || 0,
-                    lang: state.lang || 'zh'
-                };
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+                localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                    pt: state.pt,
+                    vault: state.vault,
+                    poolsRemaining: state.poolsRemaining,
+                    poolsTotalDrawn: state.poolsTotalDrawn,
+                    furnaceEmber: state.furnaceEmber,
+                    lang: state.lang
+                }));
             } catch (e) {}
         }
 
         function loadState() {
             try {
-                const raw = localStorage.getItem(STORAGE_KEY);
+                let raw = localStorage.getItem(STORAGE_KEY);
+                let isMigration = false;
+                if (!raw) {
+                    raw = localStorage.getItem(PREV_STORAGE_KEY);
+                    isMigration = Boolean(raw);
+                }
                 if (!raw) return;
                 const parsed = JSON.parse(raw);
                 if (Number.isFinite(Number(parsed.pt)) && Number(parsed.pt) >= 0) {
@@ -1026,10 +1060,10 @@
                 if (Array.isArray(parsed.vault)) {
                     state.vault = parsed.vault.map(c => normalizeCardInstance(c));
                 }
-                if (parsed.poolsRemaining && typeof parsed.poolsRemaining === 'object') {
+                if (!isMigration && parsed.poolsRemaining && typeof parsed.poolsRemaining === 'object') {
                     state.poolsRemaining = parsed.poolsRemaining;
                 }
-                if (parsed.poolsTotalDrawn && typeof parsed.poolsTotalDrawn === 'object') {
+                if (!isMigration && parsed.poolsTotalDrawn && typeof parsed.poolsTotalDrawn === 'object') {
                     state.poolsTotalDrawn = parsed.poolsTotalDrawn;
                 }
                 if (Number.isFinite(Number(parsed.furnaceEmber))) {
@@ -1040,56 +1074,76 @@
         }
 
         function updateWalletUI() {
-            if (!Number.isFinite(Number(state.pt))) state.pt = 50000;
-            const ptStr = Math.round(state.pt).toLocaleString();
-            const el = document.getElementById('wallet-pt-display');
-            if (el) el.textContent = ptStr;
-
-            const vCount = state.vault.length;
-            const navVc = document.getElementById('nav-vault-count');
-            const mobVc = document.getElementById('mob-vault-count');
-            if (navVc) navVc.textContent = vCount;
-            if (mobVc) mobVc.textContent = vCount;
-
+            const safePt = Number.isFinite(Number(state.pt)) ? Math.max(0, Math.round(Number(state.pt))) : 0;
+            state.pt = safePt;
+            const ptEl = document.getElementById('wallet-pt-display');
+            if (ptEl) ptEl.textContent = safePt.toLocaleString();
+            const navCnt = document.getElementById('nav-vault-count');
+            if (navCnt) navCnt.textContent = state.vault.length;
+            const mobCnt = document.getElementById('mob-vault-count');
+            if (mobCnt) mobCnt.textContent = state.vault.length;
             const emberEl = document.getElementById('furnace-ember-display');
             if (emberEl) emberEl.textContent = `${state.furnaceEmber}%`;
-
             if (typeof EmailWordAuth !== 'undefined') {
                 EmailWordAuth.syncCurrentAccountProgress();
             }
         }
 
-        function openTopupModal() {
-            document.getElementById('topup-modal').classList.remove('hidden');
+        function addPtSafe(amount) {
+            const gain = Math.max(0, Math.round(Number(amount) || 0));
+            state.pt = Math.max(0, Math.round((Number(state.pt) || 0) + gain));
+            updateWalletUI();
+            saveState();
+            return gain;
         }
 
-        function addFreePoints(pts) {
-            addPtSafe(pts);
-            SoundEngine.playWin();
-            showToast(`💰 已免費補充 +${pts.toLocaleString()} PT！`);
+        function spendPtSafe(amount) {
+            const cost = Math.max(0, Math.round(Number(amount) || 0));
+            if (cost <= 0) return true;
+            if ((Number(state.pt) || 0) < cost) {
+                showToast(`⚠️ PT 點數不足（需要 ${cost.toLocaleString()} PT）！請點擊右上角 + 免費補充或回收卡片`);
+                openTopupModal();
+                return false;
+            }
+            state.pt = Math.max(0, Math.round(state.pt - cost));
+            updateWalletUI();
+            saveState();
+            return true;
+        }
+
+        function openTopupModal() {
+            const modal = document.getElementById('topup-modal');
+            if (modal) modal.classList.remove('hidden');
+        }
+
+        function addFreePoints(amount) {
+            const added = addPtSafe(amount);
             document.getElementById('topup-modal').classList.add('hidden');
+            SoundEngine.playWin();
+            showToast(`💰 已免費領取 +${added.toLocaleString()} PT 點數！`);
         }
 
         function showToast(msg) {
             const container = document.getElementById('toast-container');
             if (!container) return;
-            const item = document.createElement('div');
-            item.className = 'px-4 py-2.5 rounded-2xl bg-slate-900/95 border border-amber-400/60 text-white text-xs font-black shadow-2xl transition-all duration-300';
-            item.textContent = msg;
-            container.appendChild(item);
+            const el = document.createElement('div');
+            el.className = 'px-4 py-2.5 rounded-2xl bg-slate-900/95 border border-amber-400/60 text-xs font-black text-amber-200 shadow-2xl transition-all duration-300 text-center';
+            el.textContent = msg;
+            container.appendChild(el);
             setTimeout(() => {
-                item.style.opacity = '0';
-                item.style.transform = 'translateY(8px)';
-                setTimeout(() => item.remove(), 300);
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(8px)';
+                setTimeout(() => el.remove(), 300);
             }, 2600);
         }
 
         /* ==========================================================================
-           第 2 節：Web Audio 音效引擎 ＆ Classic Pokémon Lo-Fi (Gen 1-3) BGM
+           第 2 節：Web Audio 音效引擎 ＆ Classic Pokémon Lo-Fi (Gen 1-3) 音樂引擎
            ========================================================================== */
         const SoundEngine = {
-            ctx: null,
             muted: false,
+            ctx: null,
+
             ensureCtx() {
                 if (!this.ctx) {
                     const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -1099,37 +1153,63 @@
                     this.ctx.resume().catch(() => {});
                 }
             },
+
             toggleMute() {
                 this.muted = !this.muted;
-                const label = this.muted ? '🔇' : '🔊';
-                ['btn-sfx-toggle', 'mob-btn-sfx-toggle'].forEach(id => {
-                    const el = document.getElementById(id);
-                    if (el) el.textContent = label;
-                });
-                if (this.muted) TownBGM.stop();
-                showToast(this.muted ? '🔇 已靜音所有音效與背景音樂' : '🔊 已開啟音效');
+                const icon = this.muted ? '🔇' : '🔊';
+                const d = document.getElementById('btn-sfx-toggle');
+                const m = document.getElementById('mob-btn-sfx-toggle');
+                if (d) d.textContent = icon;
+                if (m) m.textContent = icon;
+                showToast(this.muted ? '🔇 已靜音遊戲音效' : '🔊 已開啟遊戲音效');
             },
-            playTone(freq, dur = 0.14, type = 'triangle', vol = 0.12, delay = 0) {
+
+            playTone(freq, dur = 0.12, type = 'sine', vol = 0.12, delay = 0) {
                 if (this.muted) return;
                 this.ensureCtx();
                 if (!this.ctx) return;
-                const now = this.ctx.currentTime + delay;
-                const osc = this.ctx.createOscillator();
-                const gain = this.ctx.createGain();
-                osc.type = type;
-                osc.frequency.setValueAtTime(freq, now);
-                gain.gain.setValueAtTime(0.001, now);
-                gain.gain.linearRampToValueAtTime(vol, now + 0.015);
-                gain.gain.exponentialRampToValueAtTime(0.0008, now + dur);
-                osc.connect(gain);
-                gain.connect(this.ctx.destination);
-                osc.start(now);
-                osc.stop(now + dur + 0.02);
+                try {
+                    const now = this.ctx.currentTime + delay;
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = type;
+                    osc.frequency.setValueAtTime(freq, now);
+                    gain.gain.setValueAtTime(0.001, now);
+                    gain.gain.linearRampToValueAtTime(vol, now + 0.015);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + dur);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(now);
+                    osc.stop(now + dur + 0.02);
+                } catch (e) {}
             },
-            playClick() { this.playTone(620, 0.07, 'sine', 0.09); },
+
+            playClick() {
+                this.playTone(620, 0.06, 'triangle', 0.08, 0);
+            },
+
+            playCharge() {
+                [260, 330, 415, 520, 660].forEach((f, i) => {
+                    this.playTone(f, 0.18, 'sawtooth', 0.07, i * 0.09);
+                });
+            },
+
+            playWin() {
+                [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => {
+                    this.playTone(f, 0.22, 'triangle', 0.12, i * 0.08);
+                });
+            },
+
+            playJackpot() {
+                [523.25, 659.25, 783.99, 1046.5, 1318.5, 1567.98].forEach((f, i) => {
+                    this.playTone(f, 0.32, 'triangle', 0.15, i * 0.075);
+                });
+            },
+
             playTear() {
                 this.playRealisticFoilRip();
             },
+
             playRealisticFoilRip() {
                 if (this.muted) return;
                 this.ensureCtx();
@@ -1167,332 +1247,390 @@
                     this.playTone(1180, 0.11, 'triangle', 0.14, 0.28);
                 } catch (e) {}
             },
+
             playCardSlide() {
                 this.playTone(420, 0.05, 'sine', 0.08, 0);
                 this.playTone(680, 0.06, 'triangle', 0.07, 0.03);
-            },
-            playCharge() {
-                [260, 330, 392, 523, 659, 784].forEach((f, idx) => {
-                    this.playTone(f, 0.16, 'triangle', 0.11, idx * 0.07);
-                });
-            },
-            playWin() {
-                [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => {
-                    this.playTone(f, 0.22, 'triangle', 0.15, i * 0.08);
-                });
-            },
-            playJackpot() {
-                [523.25, 659.25, 783.99, 1046.5, 1318.5, 1567.98].forEach((f, i) => {
-                    this.playTone(f, 0.35, 'sawtooth', 0.13, i * 0.07);
-                });
             }
         };
 
         const TownBGM = {
             playing: false,
-            timer: null,
-            step: 0,
             trackIdx: 0,
+            step: 0,
+            timer: null,
             tracks: [
-                { name: '真新鎮 Lo-Fi', notes: [261.6, 329.6, 392.0, 493.9, 440.0, 392.0, 329.6, 293.7] },
-                { name: '華藍市 Lo-Fi', notes: [329.6, 392.0, 493.9, 587.3, 493.9, 440.0, 392.0, 329.6] },
-                { name: '紫苑鎮 Lo-Fi', notes: [261.6, 392.0, 493.9, 369.9, 261.6, 392.0, 493.9, 369.9] },
-                { name: '緣朱市 Lo-Fi', notes: [293.7, 349.2, 440.0, 523.3, 440.0, 392.0, 349.2, 293.7] },
-                { name: '滿金市 Lo-Fi', notes: [349.2, 440.0, 523.3, 659.3, 587.3, 523.3, 440.0, 392.0] },
-                { name: '未白鎮 Lo-Fi', notes: [261.6, 349.2, 440.0, 523.3, 493.9, 440.0, 392.0, 349.2] },
-                { name: '凱那市 Lo-Fi', notes: [392.0, 493.9, 587.3, 659.3, 587.3, 493.9, 440.0, 392.0] }
+                { name: '真新鎮 Lo-Fi', notes: [392, 330, 293.66, 330, 392, 440, 392, 330], chords: [196, 164.81, 174.61, 196] },
+                { name: '華藍市 Lo-Fi', notes: [523.25, 493.88, 440, 392, 440, 493.88, 523.25, 587.33], chords: [261.63, 220, 174.61, 196] },
+                { name: '紫苑鎮 Chill', notes: [523.25, 783.99, 739.99, 659.25, 523.25, 783.99, 739.99, 659.25], chords: [130.81, 164.81, 146.83, 130.81] },
+                { name: '緣朱市 Lo-Fi', notes: [440, 523.25, 587.33, 659.25, 587.33, 523.25, 440, 392], chords: [220, 174.61, 196, 164.81] },
+                { name: '滿金市 Beats', notes: [349.23, 440, 523.25, 587.33, 523.25, 440, 392, 349.23], chords: [174.61, 220, 233.08, 196] },
+                { name: '未白鎮 Lo-Fi', notes: [329.63, 392, 493.88, 523.25, 493.88, 392, 329.63, 293.66], chords: [164.81, 196, 220, 196] },
+                { name: '凱那市 Breeze', notes: [392, 493.88, 587.33, 659.25, 587.33, 493.88, 440, 392], chords: [196, 246.94, 220, 196] },
+                { name: '雙葉鎮 Rain', notes: [293.66, 369.99, 440, 554.37, 440, 369.99, 329.63, 293.66], chords: [146.83, 185, 220, 196] }
             ],
+
             toggle() {
-                if (this.playing) this.stop();
-                else this.start();
-            },
-            start() {
-                if (SoundEngine.muted) SoundEngine.muted = false;
-                SoundEngine.ensureCtx();
-                this.playing = true;
-                this.updateUI();
-                if (this.timer) clearInterval(this.timer);
-                this.timer = setInterval(() => this.tick(), 560);
-                this.tick();
-            },
-            stop() {
-                this.playing = false;
-                if (this.timer) clearInterval(this.timer);
-                this.timer = null;
+                this.playing = !this.playing;
+                if (this.playing) {
+                    SoundEngine.ensureCtx();
+                    this.startLoop();
+                    showToast(`🎧 正在播放 Classic Pokémon Lo-Fi：${this.tracks[this.trackIdx].name}`);
+                } else {
+                    this.stopLoop();
+                    showToast('⏸️ 已暫停 Lo-Fi 背景音樂');
+                }
                 this.updateUI();
             },
+
             nextTrack() {
                 this.trackIdx = (this.trackIdx + 1) % this.tracks.length;
                 this.step = 0;
-                if (!this.playing) this.start();
-                else this.updateUI();
-            },
-            tick() {
-                if (!this.playing || SoundEngine.muted || !SoundEngine.ctx) return;
-                const tr = this.tracks[this.trackIdx];
-                const freq = tr.notes[this.step % tr.notes.length];
-                const now = SoundEngine.ctx.currentTime;
-
-                const osc = SoundEngine.ctx.createOscillator();
-                const filter = SoundEngine.ctx.createBiquadFilter();
-                const gain = SoundEngine.ctx.createGain();
-                osc.type = 'triangle';
-                osc.frequency.setValueAtTime(freq, now);
-                filter.type = 'lowpass';
-                filter.frequency.setValueAtTime(780, now);
-
-                gain.gain.setValueAtTime(0.001, now);
-                gain.gain.linearRampToValueAtTime(0.055, now + 0.05);
-                gain.gain.exponentialRampToValueAtTime(0.0008, now + 0.52);
-
-                osc.connect(filter);
-                filter.connect(gain);
-                gain.connect(SoundEngine.ctx.destination);
-                osc.start(now);
-                osc.stop(now + 0.54);
-
-                if (this.step % 2 === 0) {
-                    const bass = SoundEngine.ctx.createOscillator();
-                    const bGain = SoundEngine.ctx.createGain();
-                    bass.type = 'sine';
-                    bass.frequency.setValueAtTime(freq * 0.5, now);
-                    bGain.gain.setValueAtTime(0.001, now);
-                    bGain.gain.linearRampToValueAtTime(0.04, now + 0.06);
-                    bGain.gain.exponentialRampToValueAtTime(0.0008, now + 0.95);
-                    bass.connect(bGain);
-                    bGain.connect(SoundEngine.ctx.destination);
-                    bass.start(now);
-                    bass.stop(now + 0.98);
+                this.updateUI();
+                if (!this.playing) {
+                    this.playing = true;
+                    SoundEngine.ensureCtx();
+                    this.startLoop();
                 }
-                this.step++;
+                showToast(`⏭ 切換 Lo-Fi 曲目：${this.tracks[this.trackIdx].name}`);
             },
+
             updateUI() {
-                const icon = this.playing ? '⏸' : '🎵';
-                const text = this.playing ? this.tracks[this.trackIdx].name : 'Lo-Fi 音樂';
-                ['btn-bgm-toggle', 'mob-btn-bgm-toggle'].forEach(id => {
-                    const el = document.getElementById(id);
-                    if (el) el.textContent = icon;
-                });
-                ['bgm-track-name', 'mob-bgm-track-name'].forEach(id => {
-                    const el = document.getElementById(id);
-                    if (el) el.textContent = text;
-                });
+                const label = this.playing ? `🎧 ${this.tracks[this.trackIdx].name}` : 'Lo-Fi 音樂';
+                const dName = document.getElementById('bgm-track-name');
+                const mName = document.getElementById('mob-bgm-track-name');
+                if (dName) dName.textContent = label;
+                if (mName) mName.textContent = label;
+            },
+
+            startLoop() {
+                this.stopLoop();
+                this.timer = setInterval(() => {
+                    if (!this.playing || SoundEngine.muted) return;
+                    SoundEngine.ensureCtx();
+                    if (!SoundEngine.ctx) return;
+                    const tr = this.tracks[this.trackIdx];
+                    const note = tr.notes[this.step % tr.notes.length];
+                    const chord = tr.chords[Math.floor(this.step / 2) % tr.chords.length];
+                    try {
+                        const now = SoundEngine.ctx.currentTime;
+                        const filter = SoundEngine.ctx.createBiquadFilter();
+                        filter.type = 'lowpass';
+                        filter.frequency.value = 920;
+
+                        const osc1 = SoundEngine.ctx.createOscillator();
+                        const g1 = SoundEngine.ctx.createGain();
+                        osc1.type = 'triangle';
+                        osc1.frequency.setValueAtTime(note, now);
+                        g1.gain.setValueAtTime(0.001, now);
+                        g1.gain.linearRampToValueAtTime(0.045, now + 0.04);
+                        g1.gain.exponentialRampToValueAtTime(0.001, now + 0.52);
+                        osc1.connect(filter);
+
+                        if (this.step % 2 === 0) {
+                            const osc2 = SoundEngine.ctx.createOscillator();
+                            osc2.type = 'sine';
+                            osc2.frequency.setValueAtTime(chord, now);
+                            osc2.connect(filter);
+                            osc2.start(now);
+                            osc2.stop(now + 0.95);
+                        }
+
+                        filter.connect(g1);
+                        g1.connect(SoundEngine.ctx.destination);
+                        osc1.start(now);
+                        osc1.stop(now + 0.55);
+                    } catch (e) {}
+                    this.step++;
+                }, 560);
+            },
+
+            stopLoop() {
+                if (this.timer) {
+                    clearInterval(this.timer);
+                    this.timer = null;
+                }
             }
         };
 
         /* ==========================================================================
-           第 3 節：多國語言即時切換（繁體中文 / 日本語 / English）
+           第 3 節：多國語言切換系統 (繁中 / 日本語 / English)
            ========================================================================== */
         const I18N = {
-            lang: 'zh',
             dict: {
-                zh: { tab_pools: '🔥 線上一番賞', tab_boxes: '📦 單包/單盒', tab_furnace: '🌋 卡片熔爐', tab_auction: '🔨 拍賣競標', tab_arcade: '🎮 PT遊藝場', tab_vault: '🎒 保管庫', btn_login: '登入' },
-                ja: { tab_pools: '🔥 オンラインオリパ', tab_boxes: '📦 パック/BOX', tab_furnace: '🌋 カード炉', tab_auction: '🔨 オークション', tab_arcade: '🎮 ゲームコーナー', tab_vault: '🎒 コレクション', btn_login: 'ログイン' },
-                en: { tab_pools: '🔥 Live Oripa', tab_boxes: '📦 Packs/Boxes', tab_furnace: '🌋 Card Furnace', tab_auction: '🔨 Auctions', tab_arcade: '🎮 PT Arcade', tab_vault: '🎒 Vault', btn_login: 'Login' }
+                zh: {
+                    tab_pools: '🔥 線上一番賞',
+                    tab_boxes: '📦 單包/單盒',
+                    tab_furnace: '🌋 卡片熔爐',
+                    tab_auction: '🔨 拍賣競標',
+                    tab_arcade: '🎮 PT遊藝場',
+                    tab_vault: '🎒 保管庫',
+                    btn_login: '登入'
+                },
+                ja: {
+                    tab_pools: '🔥 オンラインオリパ',
+                    tab_boxes: '📦 パック/BOX',
+                    tab_furnace: '🌋 カード錬成炉',
+                    tab_auction: '🔨 オークション',
+                    tab_arcade: '🎮 ゲームコーナー',
+                    tab_vault: '🎒 コレクション',
+                    btn_login: 'ログイン'
+                },
+                en: {
+                    tab_pools: '🔥 Oripa Pools',
+                    tab_boxes: '📦 Packs & Boxes',
+                    tab_furnace: '🌋 Card Furnace',
+                    tab_auction: '🔨 Live Auction',
+                    tab_arcade: '🎮 PT Arcade',
+                    tab_vault: '🎒 My Vault',
+                    btn_login: 'Sign In'
+                }
             },
-            setLang(code) {
-                this.lang = code;
+
+            setLang(lang) {
+                const code = this.dict[lang] ? lang : 'zh';
                 state.lang = code;
-                const d = this.dict[code] || this.dict.zh;
+                const pack = this.dict[code];
                 document.querySelectorAll('[data-i18n]').forEach(el => {
-                    const k = el.getAttribute('data-i18n');
-                    if (d[k]) el.textContent = d[k];
+                    const key = el.getAttribute('data-i18n');
+                    if (pack[key]) el.textContent = pack[key];
                 });
-                ['zh', 'ja', 'en'].forEach(c => {
-                    const b = document.getElementById(`lang-btn-${c}`);
-                    if (b) b.className = c === code ? 'px-1.5 py-1 rounded-lg bg-amber-400 text-black' : 'px-1.5 py-1 rounded-lg text-gray-400 hover:text-white';
-                    const mb = document.getElementById(`mob-lang-btn-${c}`);
-                    if (mb) mb.className = c === code ? 'px-2 py-1 rounded-lg bg-amber-400 text-black' : 'px-2 py-1 rounded-lg text-gray-400';
+                ['zh', 'ja', 'en'].forEach(l => {
+                    const dBtn = document.getElementById(`lang-btn-${l}`);
+                    if (dBtn) dBtn.className = l === code ? 'px-1.5 py-1 rounded-lg bg-amber-400 text-black' : 'px-1.5 py-1 rounded-lg text-gray-400 hover:text-white';
+                    const mBtn = document.getElementById(`mob-lang-btn-${l}`);
+                    if (mBtn) mBtn.className = l === code ? 'px-2 py-1 rounded-lg bg-amber-400 text-black' : 'px-2 py-1 rounded-lg text-gray-400';
                 });
                 saveState();
             }
         };
 
         /* ==========================================================================
-           第 4 節：100% 官方正版卡圖輔助與主力驗證卡表（M6a / SV10 / MEGA / SV11 / SV8a / SV9 / 151）
+           第 4 節：100% 一對一官方驗證寶可夢卡牌掃描圖庫 (`VERIFIED_CARDS`)
            ========================================================================== */
-        function tcImg(set, num) {
-            return `https://images.pokemontcg.io/${set}/${num}_hires.png`;
+        function tcImg(setCode, numStr) {
+            return `https://images.pokemontcg.io/${setCode}/${numStr}_hires.png`;
         }
-        function scryImg(set, num) {
-            return `https://images.scrydex.com/pokemon/${set}-${num}/medium`;
+
+        function scryImg(setCode, numStr) {
+            return `https://images.scrydex.com/pokemon/${setCode}-${numStr}/large`;
         }
 
         const VERIFIED_CARDS = {
-            // 2026 30th Celebration (M6a / me55) — 100% 圖文卡號一致
-            M6A_MEW_RGB: { id: 'M6A_MEW_RGB', name: '【PSA 10】【30週年 M6a】夢幻 ex RGB 虹彩隱藏', code: 'M6a 135/103', rarity: 'RGB', pt: 185000, img: scryImg('me55', 'R'), ptcgSet: 'cel25', ptcgNum: '25', dex: 151 },
-            M6A_MEW_FUR: { id: 'M6A_MEW_FUR', name: '【PSA 10】【30週年 M6a】夢幻 ex FUR 未來稀有', code: 'M6a 158/103', rarity: 'FUR', pt: 78000, img: tcImg('sv3pt5', '205'), ptcgSet: 'sv3pt5', ptcgNum: '205', dex: 151 },
-            M6A_MEWTWO_SAR: { id: 'M6A_MEWTWO_SAR', name: '【PSA 10】【30週年 M6a】超夢 ex SAR 紀念全圖', code: 'M6a 134/103', rarity: 'SAR', pt: 68000, img: tcImg('sv10', '231'), ptcgSet: 'sv10', ptcgNum: '231', dex: 150 },
-            M6A_PIKA_FUR: { id: 'M6A_PIKA_FUR', name: '【PSA 10】【30週年 M6a】皮卡丘 ex FUR 紀念版', code: 'M6a 126/103', rarity: 'FUR', pt: 64000, img: tcImg('sv8pt5', '179'), ptcgSet: 'sv8pt5', ptcgNum: '179', dex: 25 },
-            M6A_GRENINJA_SAR: { id: 'M6A_GRENINJA_SAR', name: '【PSA 10】【30週年 M6a】甲賀忍蛙 ex SAR', code: 'M6a 125/103', rarity: 'SAR', pt: 48000, img: tcImg('sv6', '214'), ptcgSet: 'sv6', ptcgNum: '214', dex: 658 },
-            M6A_SYLVEON_SAR: { id: 'M6A_SYLVEON_SAR', name: '【PSA 10】【30週年 M6a】仙子伊布 ex SAR', code: 'M6a 130/103', rarity: 'SAR', pt: 44000, img: tcImg('sv8pt5', '156'), ptcgSet: 'sv8pt5', ptcgNum: '156', dex: 700 },
-            M6A_CHARIZARD_30TH: { id: 'M6A_CHARIZARD_30TH', name: '【PSA 10】【30週年 M6a】經典復刻噴火龍', code: 'M6a 137/103', rarity: 'SAR', pt: 55000, img: tcImg('cel25c', '4_A'), ptcgSet: 'cel25c', ptcgNum: '4_A', dex: 6 },
-            M6A_LUGIA_30TH: { id: 'M6A_LUGIA_30TH', name: '【30週年 M6a】洛奇亞 30th 經典復刻', code: 'M6a 142/103', rarity: 'SR', pt: 15800, img: tcImg('cel25', '22'), ptcgSet: 'cel25', ptcgNum: '22', dex: 249 },
+            // 1 等傳說頂級神卡
+            M6A_MEW_RGB: { id: 'M6A_MEW_RGB', name: '【PSA 10】【30週年 M6a】夢幻 ex RGB 三原色隱藏', code: 'M6a 135/103', rarity: 'RGB', pt: 240000, img: scryImg('me55', 'R'), ptcgSet: 'cel25', ptcgNum: '25', dex: 151 },
+            TERA_PIKA_UR: { id: 'TERA_PIKA_UR', name: '【PSA 10】【SV8】太晶黃金皮卡丘 ex UR (247/191)', code: 'SV8 247/191', rarity: 'UR', pt: 185000, img: tcImg('sv8', '247'), ptcgSet: 'sv8', ptcgNum: '247', dex: 25 },
+            TERA_PIKA_SAR: { id: 'TERA_PIKA_SAR', name: '【PSA 10】【SV8】太晶皮卡丘 ex SAR 全圖 (238/191)', code: 'SV8 238/191', rarity: 'SAR', pt: 145000, img: tcImg('sv8', '238'), ptcgSet: 'sv8', ptcgNum: '238', dex: 25 },
+            RAYQUAZA_218: { id: 'RAYQUAZA_218', name: '【PSA 10】【蒼空烈流】烈空坐 VMAX SA (218/203)', code: 'S7R 218/203', rarity: 'SA', pt: 165000, img: tcImg('swsh7', '218'), ptcgSet: 'swsh7', ptcgNum: '218', dex: 384 },
+            UMBREON_215: { id: 'UMBREON_215', name: '【PSA 10】【伊布英雄】月亮伊布 VMAX SA (215/203)', code: 'S6a 215/203', rarity: 'SA', pt: 195000, img: tcImg('swsh7', '215'), ptcgSet: 'swsh7', ptcgNum: '215', dex: 197 },
+            XY_PIKA_EX_FA: { id: 'XY_PIKA_EX_FA', name: '【PSA 10】【XY-P】皮卡丘 EX 全圖特典 (XY124)', code: 'XY-P XY124', rarity: 'PROMO', pt: 148000, img: tcImg('xyp', 'XY124'), ptcgSet: 'xyp', ptcgNum: 'XY124', dex: 25 },
+            VINTAGE_ZARD: { id: 'VINTAGE_ZARD', name: '【PSA 10】【1999 Vintage】初版噴火龍 Holo (4/102)', code: 'BASE 004/102', rarity: 'R', pt: 220000, img: tcImg('base1', '4'), ptcgSet: 'base1', ptcgNum: '4', dex: 6 },
+            GIRATINA_V_SA: { id: 'GIRATINA_V_SA', name: '【PSA 10】【迷途深淵】騎拉帝納 V SA (186/196)', code: 'S11 186/196', rarity: 'SA', pt: 125000, img: tcImg('swsh11', '186'), ptcgSet: 'swsh11', ptcgNum: '186', dex: 487 },
+
+            // 2026 30週年 M6a ＆ 25週年 S8a
+            M6A_MEW_FUR: { id: 'M6A_MEW_FUR', name: '【PSA 10】【30週年 M6a】夢幻 ex FUR 未來稀有', code: 'M6a 135/103', rarity: 'FUR', pt: 92000, img: tcImg('sv3pt5', '205'), ptcgSet: 'sv3pt5', ptcgNum: '205', dex: 151 },
+            M6A_MEWTWO_SAR: { id: 'M6A_MEWTWO_SAR', name: '【PSA 10】【30週年 M6a】超夢 ex SAR 全圖', code: 'M6a 134/103', rarity: 'SAR', pt: 78000, img: tcImg('swsh12pt5gg', 'GG44'), ptcgSet: 'swsh12pt5gg', ptcgNum: 'GG44', dex: 150 },
+            M6A_PIKA_FUR: { id: 'M6A_PIKA_FUR', name: '【PSA 10】【30週年 M6a】皮卡丘 ex FUR 紀念稀有', code: 'M6a 126/103', rarity: 'FUR', pt: 68000, img: tcImg('sv8', '238'), ptcgSet: 'sv8', ptcgNum: '238', dex: 25 },
+            M6A_CHARIZARD_30TH: { id: 'M6A_CHARIZARD_30TH', name: '【PSA 10】【30週年 M6a】經典噴火龍 30th 復刻', code: 'M6a 137/103', rarity: 'SAR', pt: 55000, img: tcImg('cel25c', '4_A'), ptcgSet: 'cel25c', ptcgNum: '4_A', dex: 6 },
+            M6A_GRENINJA_SAR: { id: 'M6A_GRENINJA_SAR', name: '【PSA 10】【30週年 M6a】甲賀忍蛙 ex SAR', code: 'M6a 125/103', rarity: 'SAR', pt: 36000, img: tcImg('sv6', '214'), ptcgSet: 'sv6', ptcgNum: '214', dex: 658 },
+            M6A_SYLVEON_SAR: { id: 'M6A_SYLVEON_SAR', name: '【PSA 10】【30週年 M6a】仙子伊布 ex SAR', code: 'M6a 130/103', rarity: 'SAR', pt: 34000, img: tcImg('sv8pt5', '156'), ptcgSet: 'sv8pt5', ptcgNum: '156', dex: 700 },
+            M6A_LUGIA_30TH: { id: 'M6A_LUGIA_30TH', name: '【30週年 M6a】洛奇亞 30th 經典復刻', code: 'M6a 142/103', rarity: 'SAR', pt: 15800, img: tcImg('swsh12', '186'), ptcgSet: 'swsh12', ptcgNum: '186', dex: 249 },
             M6A_MOLTRES_AR: { id: 'M6A_MOLTRES_AR', name: '【30週年 M6a】火焰鳥 AR 滿版插畫', code: 'M6a 105/103', rarity: 'AR', pt: 1250, img: tcImg('sv10', '229'), ptcgSet: 'sv10', ptcgNum: '229', dex: 146 },
+            G25_PIKA_V: { id: 'G25_PIKA_V', name: '【PSA 10】【25週年黃金箱】純金皮卡丘 V (SWSH145)', code: 'S8a-G 001/015', rarity: 'UR', pt: 85000, img: tcImg('swshp', 'SWSH145'), ptcgSet: 'swshp', ptcgNum: 'SWSH145', dex: 25 },
+            G25_MEW_UR: { id: 'G25_MEW_UR', name: '【PSA 10】【25週年 S8a】黃金色違夢幻 UR (025/028)', code: 'S8a 025/028', rarity: 'UR', pt: 58000, img: tcImg('cel25', '25'), ptcgSet: 'cel25', ptcgNum: '25', dex: 151 },
+            G25_POKEBALL: { id: 'G25_POKEBALL', name: '【25週年黃金箱】純金精靈球 UR (SWSH146)', code: 'S8a-G 002/015', rarity: 'UR', pt: 14800, img: tcImg('swshp', 'SWSH146'), ptcgSet: 'swshp', ptcgNum: 'SWSH146', dex: 25 },
 
-            // 25週年黃金箱 / Celebrations (100% 開放驗證卡圖)
-            G25_PIKA_V: { id: 'G25_PIKA_V', name: '【PSA 10】【25週年黃金箱】純金皮卡丘 V', code: 'SWSH145', rarity: 'UR', pt: 72000, img: tcImg('swshp', 'SWSH145'), ptcgSet: 'swshp', ptcgNum: 'SWSH145', dex: 25 },
-            G25_MEW_UR: { id: 'G25_MEW_UR', name: '【PSA 10】【25週年 Celebrations】黃金色違夢幻 UR', code: 'S8a 025/028', rarity: 'UR', pt: 58000, img: 'https://images.pokemontcg.io/cel25/25.png', ptcgSet: 'cel25', ptcgNum: '25', dex: 151 },
-            G25_POKEBALL: { id: 'G25_POKEBALL', name: '【PSA 10】【25週年黃金箱】純金精靈球 UR', code: 'SWSH146', rarity: 'UR', pt: 14800, img: tcImg('swshp', 'SWSH146'), ptcgSet: 'swshp', ptcgNum: 'SWSH146', dex: 25 },
+            // 特典與 Vintage 2 等大獎
+            VANGOGH_PIKA: { id: 'VANGOGH_PIKA', name: '【PSA 10】【SVP 085】梵谷美術館戴帽皮卡丘 PROMO', code: 'SVP 085', rarity: 'PROMO', pt: 58000, img: tcImg('svp', '85'), ptcgSet: 'svp', ptcgNum: '85', dex: 25 },
+            RED_PIKA_CHR: { id: 'RED_PIKA_CHR', name: '【PSA 10】【夢想聯組】赤紅與皮卡丘 CHR (241/236)', code: 'SM11b 054/049', rarity: 'CHR', pt: 42000, img: tcImg('sm12', '241'), ptcgSet: 'sm12', ptcgNum: '241', dex: 25 },
+            VINTAGE_BLASTOISE: { id: 'VINTAGE_BLASTOISE', name: '【PSA 10】【1999 Vintage】初版水箭龜 Holo (2/102)', code: 'BASE 002/102', rarity: 'R', pt: 68000, img: tcImg('base1', '2'), ptcgSet: 'base1', ptcgNum: '2', dex: 9 },
+            VINTAGE_VENUSAUR: { id: 'VINTAGE_VENUSAUR', name: '【PSA 10】【1999 Vintage】初版妙蛙花 Holo (15/102)', code: 'BASE 015/102', rarity: 'R', pt: 54000, img: tcImg('base1', '15'), ptcgSet: 'base1', ptcgNum: '15', dex: 3 },
+            LUGIA_V_SA: { id: 'LUGIA_V_SA', name: '【PSA 10】【銀白暴風】洛奇亞 V SA (186/195)', code: 'S12 110/098', rarity: 'SA', pt: 68000, img: tcImg('swsh12', '186'), ptcgSet: 'swsh12', ptcgNum: '186', dex: 249 },
+            ARCEUS_GOLD_UR: { id: 'ARCEUS_GOLD_UR', name: '【皇冠宇宙】黃金阿爾宙斯 VSTAR UR (GG70)', code: 'S12a 262/172', rarity: 'UR', pt: 14900, img: tcImg('swsh12pt5gg', 'GG70'), ptcgSet: 'swsh12pt5gg', ptcgNum: 'GG70', dex: 493 },
 
-            // 頂級皮卡丘特典 / 太晶黃金 / 烈空坐 218 / 1999 Vintage 初版（100% 圖文卡號完全一致）
-            TERA_PIKA_UR: { id: 'TERA_PIKA_UR', name: '【PSA 10】太晶黃金皮卡丘 ex UR 皇冠', code: 'SV8 247/191', rarity: 'UR', pt: 260000, img: tcImg('sv8', '247'), ptcgSet: 'sv8', ptcgNum: '247', dex: 25 },
-            TERA_PIKA_SAR: { id: 'TERA_PIKA_SAR', name: '【PSA 10】太晶皮卡丘 ex SAR 虹光全圖', code: 'SV8 238/191', rarity: 'SAR', pt: 245000, img: tcImg('sv8', '238'), ptcgSet: 'sv8', ptcgNum: '238', dex: 25 },
-            XY_PIKA_EX_FA: { id: 'XY_PIKA_EX_FA', name: '【PSA 10】XY 經典特典皮卡丘 EX 全圖', code: 'XYP XY124', rarity: 'PROMO', pt: 145000, img: tcImg('xyp', 'XY124'), ptcgSet: 'xyp', ptcgNum: 'XY124', dex: 25 },
-            VANGOGH_PIKA: { id: 'VANGOGH_PIKA', name: '【PSA 10】梵谷美術館戴帽皮卡丘 PROMO', code: 'SVP 085', rarity: 'PROMO', pt: 68000, img: tcImg('svp', '85'), ptcgSet: 'svp', ptcgNum: '85', dex: 25 },
-            RED_PIKA_CHR: { id: 'RED_PIKA_CHR', name: '【PSA 10】赤紅與皮卡丘 CHR 羈絆全圖', code: 'SM12 241/236', rarity: 'SAR', pt: 56000, img: tcImg('sm12', '241'), ptcgSet: 'sm12', ptcgNum: '241', dex: 25 },
-            RAYQUAZA_218: { id: 'RAYQUAZA_218', name: '【PSA 10】烈空坐 VMAX 218/203 Alt Art', code: 'swsh7 218/203', rarity: 'SAR', pt: 165000, img: tcImg('swsh7', '218'), ptcgSet: 'swsh7', ptcgNum: '218', dex: 384 },
-            UMBREON_215: { id: 'UMBREON_215', name: '【PSA 10】月亮伊布 VMAX 215/203 月下伊布', code: 'swsh7 215/203', rarity: 'SAR', pt: 195000, img: tcImg('swsh7', '215'), ptcgSet: 'swsh7', ptcgNum: '215', dex: 197 },
-            VINTAGE_ZARD: { id: 'VINTAGE_ZARD', name: '【PSA 10】【1999 Vintage】初版噴火龍 Holo', code: 'Base 4/102', rarity: 'PROMO', pt: 220000, img: tcImg('base1', '4'), ptcgSet: 'base1', ptcgNum: '4', dex: 6 },
-            VINTAGE_BLASTOISE: { id: 'VINTAGE_BLASTOISE', name: '【PSA 10】【1999 Vintage】初版水箭龜 Holo', code: 'Base 2/102', rarity: 'PROMO', pt: 98000, img: tcImg('base1', '2'), ptcgSet: 'base1', ptcgNum: '2', dex: 9 },
-            VINTAGE_VENUSAUR: { id: 'VINTAGE_VENUSAUR', name: '【PSA 10】【1999 Vintage】初版妙蛙花 Holo', code: 'Base 15/102', rarity: 'PROMO', pt: 88000, img: tcImg('base1', '15'), ptcgSet: 'base1', ptcgNum: '15', dex: 3 },
-
-            // SV10 火箭隊的榮耀 (Destined Rivals / sv10)
+            // SV10 火箭隊的榮耀
             SV10_MEWTWO_SAR: { id: 'SV10_MEWTWO_SAR', name: '【PSA 10】【SV10】火箭隊的超夢 ex SAR', code: 'SV10 125/098', rarity: 'SAR', pt: 86000, img: tcImg('sv10', '231'), ptcgSet: 'sv10', ptcgNum: '231', dex: 150 },
             SV10_MEWTWO_UR: { id: 'SV10_MEWTWO_UR', name: '【PSA 10】【SV10】火箭隊的超夢 ex UR 黃金', code: 'SV10 130/098', rarity: 'UR', pt: 64000, img: tcImg('sv10', '240'), ptcgSet: 'sv10', ptcgNum: '240', dex: 150 },
             SV10_MOLTRES_SAR: { id: 'SV10_MOLTRES_SAR', name: '【PSA 10】【SV10】火箭隊的火焰鳥 ex SAR', code: 'SV10 124/098', rarity: 'SAR', pt: 52000, img: tcImg('sv10', '229'), ptcgSet: 'sv10', ptcgNum: '229', dex: 146 },
             SV10_GIOVANNI_SAR: { id: 'SV10_GIOVANNI_SAR', name: '【PSA 10】【SV10】火箭隊的坂木老大 SAR', code: 'SV10 129/098', rarity: 'SAR', pt: 46000, img: tcImg('sv10', '238'), ptcgSet: 'sv10', ptcgNum: '238', dex: 150 },
-            SV10_CROBAT_SAR: { id: 'SV10_CROBAT_SAR', name: '【PSA 10】【SV10】火箭隊的叉字蝠 ex SAR', code: 'SV10 127/098', rarity: 'SAR', pt: 34000, img: tcImg('sv10', '234'), ptcgSet: 'sv10', ptcgNum: '234', dex: 169 },
-            SV10_NIDOKING_SAR: { id: 'SV10_NIDOKING_SAR', name: '【PSA 10】【SV10】火箭隊的尼多王 ex SAR', code: 'SV10 126/098', rarity: 'SAR', pt: 31000, img: tcImg('sv10', '233'), ptcgSet: 'sv10', ptcgNum: '233', dex: 34 },
+            SV10_CROBAT_SAR: { id: 'SV10_CROBAT_SAR', name: '【SV10】火箭隊的叉字蝠 ex SAR', code: 'SV10 127/098', rarity: 'SAR', pt: 34000, img: tcImg('sv10', '234'), ptcgSet: 'sv10', ptcgNum: '234', dex: 169 },
+            SV10_NIDOKING_SAR: { id: 'SV10_NIDOKING_SAR', name: '【SV10】火箭隊的尼多王 ex SAR', code: 'SV10 126/098', rarity: 'SAR', pt: 14200, img: tcImg('sv10', '233'), ptcgSet: 'sv10', ptcgNum: '233', dex: 34 },
 
-            // MEGA 超級進化系列 (me1 / me2 / me2pt5 — 100% 開放驗證卡圖)
+            // MEGA 超級進化系列 (M1L / M1S / M2 / M2a)
             M1L_LUCARIO_MUR: { id: 'M1L_LUCARIO_MUR', name: '【PSA 10】【M1L】超級路卡利歐 ex MUR 純金', code: 'M1L 092/063', rarity: 'MUR', pt: 95000, img: tcImg('me1', '187'), ptcgSet: 'me1', ptcgNum: '187', dex: 448 },
             M1L_LILLIE_SAR: { id: 'M1L_LILLIE_SAR', name: '【PSA 10】【M1L】莉莉艾的決心 SAR 全圖', code: 'M1L 091/063', rarity: 'SAR', pt: 88000, img: tcImg('me1', '184'), ptcgSet: 'me1', ptcgNum: '184', dex: 35 },
             M1L_LUCARIO_SAR: { id: 'M1L_LUCARIO_SAR', name: '【PSA 10】【M1L】超級路卡利歐 ex SAR', code: 'M1L 088/063', rarity: 'SAR', pt: 46000, img: tcImg('me1', '178'), ptcgSet: 'me1', ptcgNum: '178', dex: 448 },
             M1S_GARDEVOIR_MUR: { id: 'M1S_GARDEVOIR_MUR', name: '【PSA 10】【M1S】超級沙奈朵 ex MUR 純金', code: 'M1S 092/063', rarity: 'MUR', pt: 82000, img: tcImg('me1', '188'), ptcgSet: 'me1', ptcgNum: '188', dex: 282 },
-            M1S_GARDEVOIR_SAR: { id: 'M1S_GARDEVOIR_SAR', name: '【PSA 10】【M1S】超級沙奈朵 ex SAR', code: 'M1S 087/063', rarity: 'SAR', pt: 42000, img: tcImg('me1', '179'), ptcgSet: 'me1', ptcgNum: '179', dex: 282 },
+            M1S_GARDEVOIR_SAR: { id: 'M1S_GARDEVOIR_SAR', name: '【PSA 10】【M1S】超級沙奈朵 ex SAR', code: 'M1S 087/063', rarity: 'SAR', pt: 44000, img: tcImg('me1', '179'), ptcgSet: 'me1', ptcgNum: '179', dex: 282 },
             M2_ZARD_X_MUR: { id: 'M2_ZARD_X_MUR', name: '【PSA 10】【M2】超級噴火龍 X ex MUR 純金', code: 'M2 116/080', rarity: 'MUR', pt: 135000, img: tcImg('me2', '130'), ptcgSet: 'me2', ptcgNum: '130', dex: 6 },
             M2_ZARD_X_SAR: { id: 'M2_ZARD_X_SAR', name: '【PSA 10】【M2】超級噴火龍 X ex SAR', code: 'M2 110/080', rarity: 'SAR', pt: 58000, img: tcImg('me2', '125'), ptcgSet: 'me2', ptcgNum: '125', dex: 6 },
             M2_DAWN_SAR: { id: 'M2_DAWN_SAR', name: '【PSA 10】【M2】小光 (Dawn) SAR 全圖', code: 'M2 115/080', rarity: 'SAR', pt: 45000, img: tcImg('me2', '129'), ptcgSet: 'me2', ptcgNum: '129', dex: 393 },
             M2A_DRAGONITE_MUR: { id: 'M2A_DRAGONITE_MUR', name: '【PSA 10】【M2a】超級快龍 ex MUR 純金', code: 'M2a 250/193', rarity: 'MUR', pt: 128000, img: tcImg('me2pt5', '284'), ptcgSet: 'me2pt5', ptcgNum: '284', dex: 149 },
             M2A_GENGAR_SAR: { id: 'M2A_GENGAR_SAR', name: '【PSA 10】【M2a】超級耿鬼 ex SAR 暗影全圖', code: 'M2a 240/193', rarity: 'SAR', pt: 74000, img: tcImg('me2pt5', '280'), ptcgSet: 'me2pt5', ptcgNum: '280', dex: 94 },
 
-            // SV11 黑雷＆白焰 BWR / SV8a 太晶 / SV9 對戰搭檔 / 151 / 劍盾神獸
+            // SV11 黑雷＆白焰 BWR / SV8a 太晶 / SV9 對戰搭檔 / 151
             SV11_ZEKROM_BWR: { id: 'SV11_ZEKROM_BWR', name: '【PSA 10】【SV11B】純黑捷克羅姆 ex BWR', code: 'SV11B 174/086', rarity: 'BWR', pt: 92000, img: tcImg('zsv10pt5', '172'), ptcgSet: 'zsv10pt5', ptcgNum: '172', dex: 644 },
             SV11_RESHIRAM_BWR: { id: 'SV11_RESHIRAM_BWR', name: '【PSA 10】【SV11W】純白萊希拉姆 ex BWR', code: 'SV11W 174/086', rarity: 'BWR', pt: 90000, img: tcImg('rsv10pt5', '172'), ptcgSet: 'rsv10pt5', ptcgNum: '172', dex: 643 },
-            SV11_VICTINI_BWR: { id: 'SV11_VICTINI_BWR', name: '【SV11】緋紅比克提尼 AR 勝利紀念', code: 'SV11B 097/086', rarity: 'AR', pt: 15200, img: tcImg('rsv10pt5', '171'), ptcgSet: 'rsv10pt5', ptcgNum: '171', dex: 494 },
+            SV11_VICTINI_BWR: { id: 'SV11_VICTINI_BWR', name: '【SV11】緋紅比克提尼 AR 勝利紀念', code: 'SV11B 097/086', rarity: 'BWR', pt: 24000, img: tcImg('zsv10pt5', '171'), ptcgSet: 'zsv10pt5', ptcgNum: '171', dex: 494 },
             SV85_UMBREON_SAR: { id: 'SV85_UMBREON_SAR', name: '【PSA 10】【SV8a】太晶月亮伊布 ex SAR', code: 'SV8a 217/187', rarity: 'SAR', pt: 76000, img: tcImg('sv8pt5', '161'), ptcgSet: 'sv8pt5', ptcgNum: '161', dex: 197 },
-            SV85_SYLVEON_SAR: { id: 'SV85_SYLVEON_SAR', name: '【SV8a】太晶仙子伊布 ex SAR', code: 'SV8a 212/187', rarity: 'SAR', pt: 16000, img: tcImg('sv8pt5', '156'), ptcgSet: 'sv8pt5', ptcgNum: '156', dex: 700 },
+            SV85_SYLVEON_SAR: { id: 'SV85_SYLVEON_SAR', name: '【PSA 10】【SV8a】太晶仙子伊布 ex SAR', code: 'SV8a 212/187', rarity: 'SAR', pt: 48000, img: tcImg('sv8pt5', '156'), ptcgSet: 'sv8pt5', ptcgNum: '156', dex: 700 },
             SV9_LILLIE_SAR: { id: 'SV9_LILLIE_SAR', name: '【PSA 10】【SV9】莉莉艾的皮皮 ex SAR', code: 'SV9 126/100', rarity: 'SAR', pt: 52000, img: tcImg('sv9', '184'), ptcgSet: 'sv9', ptcgNum: '184', dex: 35 },
             ZARD_151_SAR: { id: 'ZARD_151_SAR', name: '【PSA 10】【SV2a 151】噴火龍 ex SAR 火山全圖', code: 'SV2a 201/165', rarity: 'SAR', pt: 64000, img: tcImg('sv3pt5', '199'), ptcgSet: 'sv3pt5', ptcgNum: '199', dex: 6 },
             BLASTOISE_151_SAR: { id: 'BLASTOISE_151_SAR', name: '【PSA 10】【SV2a 151】水箭龜 ex SAR 深海全圖', code: 'SV2a 202/165', rarity: 'SAR', pt: 32000, img: tcImg('sv3pt5', '200'), ptcgSet: 'sv3pt5', ptcgNum: '200', dex: 9 },
             VENUSAUR_151_SAR: { id: 'VENUSAUR_151_SAR', name: '【SV2a 151】妙蛙花 ex SAR 密林全圖', code: 'SV2a 200/165', rarity: 'SAR', pt: 13800, img: tcImg('sv3pt5', '198'), ptcgSet: 'sv3pt5', ptcgNum: '198', dex: 3 },
-            GIRATINA_V_SA: { id: 'GIRATINA_V_SA', name: '【PSA 10】騎拉帝納 V SA 異次元空間', code: 'S11 111/100', rarity: 'SAR', pt: 98000, img: tcImg('swsh11', '186'), ptcgSet: 'swsh11', ptcgNum: '186', dex: 487 },
-            LUGIA_V_SA: { id: 'LUGIA_V_SA', name: '【PSA 10】洛奇亞 V SA 銀白暴風', code: 'S12 110/098', rarity: 'SAR', pt: 62000, img: tcImg('swsh12', '186'), ptcgSet: 'swsh12', ptcgNum: '186', dex: 249 },
-            ARCEUS_GOLD_UR: { id: 'ARCEUS_GOLD_UR', name: '【PSA 10】黃金阿爾宙斯 VSTAR UR', code: 'S12a 262/172', rarity: 'UR', pt: 14900, img: tcImg('swsh12pt5gg', 'GG70'), ptcgSet: 'swsh12pt5gg', ptcgNum: 'GG70', dex: 493 },
 
-            // 3 等賞中堅全圖
-            T3_IONO_SR: { id: 'T3_IONO_SR', name: '奇樹 SR 釀光道館主全圖', code: 'SV2D 091/071', rarity: 'SR', pt: 6200, img: tcImg('sv2', '254'), ptcgSet: 'sv2', ptcgNum: '254', dex: 939 },
-            T3_MAGIKARP_AR: { id: 'T3_MAGIKARP_AR', name: '鯉魚王 AR 躍龍門浮世繪全圖', code: 'SV1a 080/073', rarity: 'AR', pt: 5400, img: tcImg('sv2', '203'), ptcgSet: 'sv2', ptcgNum: '203', dex: 129 },
-            T3_DRAGONITE_V: { id: 'T3_DRAGONITE_V', name: '快龍 V SR 蒼空翱翔全圖', code: 'S7R 074/067', rarity: 'SR', pt: 5800, img: tcImg('swsh7', '192'), ptcgSet: 'swsh7', ptcgNum: '192', dex: 149 },
-            T3_ALAKAZAM_SAR: { id: 'T3_ALAKAZAM_SAR', name: '胡地 ex SAR 念力全圖 (151)', code: 'SV2a 203/165', rarity: 'SAR', pt: 6500, img: tcImg('sv3pt5', '201'), ptcgSet: 'sv3pt5', ptcgNum: '201', dex: 65 },
-            T3_MIRIAM_SR: { id: 'T3_MIRIAM_SR', name: '牡丹 SR 保健室老師全圖', code: 'SV1V 100/078', rarity: 'SR', pt: 5200, img: tcImg('sv1', '238'), ptcgSet: 'sv1', ptcgNum: '238', dex: 133 },
-            T3_ZAPDOS_SAR: { id: 'T3_ZAPDOS_SAR', name: '閃電鳥 ex SAR 三神鳥全圖 (151)', code: 'SV2a 204/165', rarity: 'SAR', pt: 6800, img: tcImg('sv3pt5', '202'), ptcgSet: 'sv3pt5', ptcgNum: '202', dex: 145 },
-            T3_ERIKA_SAR: { id: 'T3_ERIKA_SAR', name: '莉佳的招待 SAR 彩虹道館主 (151)', code: 'SV2a 206/165', rarity: 'SAR', pt: 6400, img: tcImg('sv3pt5', '203'), ptcgSet: 'sv3pt5', ptcgNum: '203', dex: 45 },
-            T3_GIOVANNI_151: { id: 'T3_GIOVANNI_151', name: '坂木的魅力 SAR 火箭隊首領 (151)', code: 'SV2a 207/165', rarity: 'SAR', pt: 5600, img: tcImg('sv3pt5', '204'), ptcgSet: 'sv3pt5', ptcgNum: '204', dex: 150 },
+            // 3 等中堅全圖賞 (SR / SAR / AR)
+            T3_IONO_SR: { id: 'T3_IONO_SR', name: '【碟旋暴擊】奇樹 SR 釀光道館主 (254/193)', code: 'SV2D 091/071', rarity: 'SR', pt: 12800, img: tcImg('sv2', '254'), ptcgSet: 'sv2', ptcgNum: '254', dex: 939 },
+            T3_MAGIKARP_AR: { id: 'T3_MAGIKARP_AR', name: '【三連音爆】鯉魚王 AR 躍龍門浮世繪 (203/193)', code: 'SV1a 080/073', rarity: 'AR', pt: 9800, img: tcImg('sv2', '203'), ptcgSet: 'sv2', ptcgNum: '203', dex: 129 },
+            T3_DRAGONITE_V: { id: 'T3_DRAGONITE_V', name: '【蒼空烈流】快龍 V SR 蒼空翱翔 (192/203)', code: 'S7R 074/067', rarity: 'SR', pt: 13500, img: tcImg('swsh7', '192'), ptcgSet: 'swsh7', ptcgNum: '192', dex: 149 },
+            T3_ALAKAZAM_SAR: { id: 'T3_ALAKAZAM_SAR', name: '【SV2a 151】胡地 ex SAR 念力全圖 (201/165)', code: 'SV2a 203/165', rarity: 'SAR', pt: 11200, img: tcImg('sv3pt5', '201'), ptcgSet: 'sv3pt5', ptcgNum: '201', dex: 65 },
+            T3_MIRIAM_SR: { id: 'T3_MIRIAM_SR', name: '【紫ex】牡丹 SR 保健室老師 (238/198)', code: 'SV1V 100/078', rarity: 'SR', pt: 8900, img: tcImg('sv1', '238'), ptcgSet: 'sv1', ptcgNum: '238', dex: 25 },
+            T3_ZAPDOS_SAR: { id: 'T3_ZAPDOS_SAR', name: '【SV2a 151】閃電鳥 ex SAR 三神鳥全圖 (202/165)', code: 'SV2a 204/165', rarity: 'SAR', pt: 12400, img: tcImg('sv3pt5', '202'), ptcgSet: 'sv3pt5', ptcgNum: '202', dex: 145 },
+            T3_ERIKA_SAR: { id: 'T3_ERIKA_SAR', name: '【SV2a 151】莉佳的招待 SAR 全圖 (203/165)', code: 'SV2a 206/165', rarity: 'SAR', pt: 14500, img: tcImg('sv3pt5', '203'), ptcgSet: 'sv3pt5', ptcgNum: '203', dex: 45 },
+            T3_GIOVANNI_151: { id: 'T3_GIOVANNI_151', name: '【SV2a 151】坂木的魅力 SAR 全圖 (204/165)', code: 'SV2a 207/165', rarity: 'SAR', pt: 9500, img: tcImg('sv3pt5', '204'), ptcgSet: 'sv3pt5', ptcgNum: '204', dex: 150 },
 
-            // 4 等賞閃卡
-            T4_PIKA_AR: { id: 'T4_PIKA_AR', name: '皮卡丘 AR 街角散步全圖 (151)', code: 'SV2a 173/165', rarity: 'AR', pt: 1450, img: tcImg('sv3pt5', '173'), ptcgSet: 'sv3pt5', ptcgNum: '173', dex: 25 },
-            T4_MEW_RR: { id: 'T4_MEW_RR', name: '夢幻 ex RR 幻之閃卡 (151)', code: 'SV2a 151/165', rarity: 'RR', pt: 1250, img: tcImg('sv3pt5', '151'), ptcgSet: 'sv3pt5', ptcgNum: '151', dex: 151 },
-            T4_CHARMANDER_AR: { id: 'T4_CHARMANDER_AR', name: '小火龍 AR 窗邊仰望全圖 (151)', code: 'SV2a 168/165', rarity: 'AR', pt: 1350, img: tcImg('sv3pt5', '168'), ptcgSet: 'sv3pt5', ptcgNum: '168', dex: 4 },
-            T4_CHARIZARD_RR: { id: 'T4_CHARIZARD_RR', name: '噴火龍 ex RR 雙重稀有 (151)', code: 'SV2a 006/165', rarity: 'RR', pt: 1400, img: tcImg('sv3pt5', '6'), ptcgSet: 'sv3pt5', ptcgNum: '6', dex: 6 },
-            T4_BLASTOISE_RR: { id: 'T4_BLASTOISE_RR', name: '水箭龜 ex RR 雙重稀有 (151)', code: 'SV2a 009/165', rarity: 'RR', pt: 1150, img: tcImg('sv3pt5', '9'), ptcgSet: 'sv3pt5', ptcgNum: '9', dex: 9 },
-            T4_DRAGONAIR_AR: { id: 'T4_DRAGONAIR_AR', name: '哈克龍 AR 瀑布月夜全圖 (151)', code: 'SV2a 181/165', rarity: 'AR', pt: 1300, img: tcImg('sv3pt5', '181'), ptcgSet: 'sv3pt5', ptcgNum: '181', dex: 148 },
-            T4_BULBASAUR_AR: { id: 'T4_BULBASAUR_AR', name: '妙蛙種子 AR 陽光森林全圖 (151)', code: 'SV2a 166/165', rarity: 'AR', pt: 1300, img: tcImg('sv3pt5', '166'), ptcgSet: 'sv3pt5', ptcgNum: '166', dex: 1 },
+            // 4 等精選閃卡賞 (AR / RR)
+            T4_PIKA_AR: { id: 'T4_PIKA_AR', name: '【SV2a 151】皮卡丘 AR 街角散步全圖 (173/165)', code: 'SV2a 173/165', rarity: 'AR', pt: 1850, img: tcImg('sv3pt5', '173'), ptcgSet: 'sv3pt5', ptcgNum: '173', dex: 25 },
+            T4_MEW_RR: { id: 'T4_MEW_RR', name: '【SV2a 151】夢幻 ex RR 超能閃卡 (151/165)', code: 'SV2a 151/165', rarity: 'RR', pt: 1200, img: tcImg('sv3pt5', '151'), ptcgSet: 'sv3pt5', ptcgNum: '151', dex: 151 },
+            T4_CHARMANDER_AR: { id: 'T4_CHARMANDER_AR', name: '【SV2a 151】小火龍 AR 窗邊仰望全圖 (168/165)', code: 'SV2a 168/165', rarity: 'AR', pt: 1650, img: tcImg('sv3pt5', '168'), ptcgSet: 'sv3pt5', ptcgNum: '168', dex: 4 },
+            T4_CHARIZARD_RR: { id: 'T4_CHARIZARD_RR', name: '【SV2a 151】噴火龍 ex RR 火焰閃卡 (006/165)', code: 'SV2a 006/165', rarity: 'RR', pt: 1450, img: tcImg('sv3pt5', '6'), ptcgSet: 'sv3pt5', ptcgNum: '6', dex: 6 },
+            T4_BLASTOISE_RR: { id: 'T4_BLASTOISE_RR', name: '【SV2a 151】水箭龜 ex RR 水砲閃卡 (009/165)', code: 'SV2a 009/165', rarity: 'RR', pt: 1150, img: tcImg('sv3pt5', '9'), ptcgSet: 'sv3pt5', ptcgNum: '9', dex: 9 },
+            T4_DRAGONAIR_AR: { id: 'T4_DRAGONAIR_AR', name: '【SV2a 151】哈克龍 AR 瀑布月夜全圖 (181/165)', code: 'SV2a 181/165', rarity: 'AR', pt: 1480, img: tcImg('sv3pt5', '181'), ptcgSet: 'sv3pt5', ptcgNum: '181', dex: 148 },
+            T4_BULBASAUR_AR: { id: 'T4_BULBASAUR_AR', name: '【SV2a 151】妙蛙種子 AR 陽光森林全圖 (166/165)', code: 'SV2a 166/165', rarity: 'AR', pt: 1520, img: tcImg('sv3pt5', '166'), ptcgSet: 'sv3pt5', ptcgNum: '166', dex: 1 },
 
-            // 5 等賞普卡
-            T5_EEVEE_C: { id: 'T5_EEVEE_C', name: '伊布 基礎普卡 (151)', code: 'SV2a 133/165', rarity: 'C', pt: 180, img: tcImg('sv3pt5', '133'), ptcgSet: 'sv3pt5', ptcgNum: '133', dex: 133 },
-            T5_MEOWTH_C: { id: 'T5_MEOWTH_C', name: '喵喵 基礎普卡 (151)', code: 'SV2a 052/165', rarity: 'C', pt: 150, img: tcImg('sv3pt5', '52'), ptcgSet: 'sv3pt5', ptcgNum: '52', dex: 52 },
-            T5_SQUIRTLE_C: { id: 'T5_SQUIRTLE_C', name: '傑尼龜 基礎普卡 (151)', code: 'SV2a 007/165', rarity: 'C', pt: 190, img: tcImg('sv3pt5', '7'), ptcgSet: 'sv3pt5', ptcgNum: '7', dex: 7 },
-            T5_MAGIKARP_C: { id: 'T5_MAGIKARP_C', name: '鯉魚王 基礎普卡 (151)', code: 'SV2a 129/165', rarity: 'C', pt: 140, img: tcImg('sv3pt5', '129'), ptcgSet: 'sv3pt5', ptcgNum: '129', dex: 129 },
-            T5_HELL_50: { id: 'T5_HELL_50', name: '【地獄保底】鯉魚王 50 PT 試煉卡', code: 'SV2a 129/165', rarity: 'C', pt: 50, img: tcImg('sv3pt5', '129'), ptcgSet: 'sv3pt5', ptcgNum: '129', dex: 129 },
-            T5_SNORLAX_R: { id: 'T5_SNORLAX_R', name: '卡比獸 閃卡 (151)', code: 'SV2a 143/165', rarity: 'R', pt: 350, img: tcImg('sv3pt5', '143'), ptcgSet: 'sv3pt5', ptcgNum: '143', dex: 143 },
-            T5_GENGAR_R: { id: 'T5_GENGAR_R', name: '耿鬼 暗影閃卡 (151)', code: 'SV2a 094/165', rarity: 'R', pt: 420, img: tcImg('sv3pt5', '94'), ptcgSet: 'sv3pt5', ptcgNum: '94', dex: 94 },
-            T5_GYARADOS_R: { id: 'T5_GYARADOS_R', name: '暴鯉龍 閃卡 (151)', code: 'SV2a 130/165', rarity: 'R', pt: 360, img: tcImg('sv3pt5', '130'), ptcgSet: 'sv3pt5', ptcgNum: '130', dex: 130 }
+            // 5 等基礎普閃賞 (C / U / R)
+            T5_EEVEE_C: { id: 'T5_EEVEE_C', name: '【SV2a 151】伊布 基礎卡 (133/165)', code: 'SV2a 133/165', rarity: 'C', pt: 120, img: tcImg('sv3pt5', '133'), ptcgSet: 'sv3pt5', ptcgNum: '133', dex: 133 },
+            T5_MEOWTH_C: { id: 'T5_MEOWTH_C', name: '【SV2a 151】喵喵 基礎卡 (052/165)', code: 'SV2a 052/165', rarity: 'C', pt: 110, img: tcImg('sv3pt5', '52'), ptcgSet: 'sv3pt5', ptcgNum: '52', dex: 52 },
+            T5_SQUIRTLE_C: { id: 'T5_SQUIRTLE_C', name: '【SV2a 151】傑尼龜 基礎卡 (007/165)', code: 'SV2a 007/165', rarity: 'C', pt: 150, img: tcImg('sv3pt5', '7'), ptcgSet: 'sv3pt5', ptcgNum: '7', dex: 7 },
+            T5_MAGIKARP_C: { id: 'T5_MAGIKARP_C', name: '【SV2a 151】鯉魚王 基礎卡 (129/165)', code: 'SV2a 129/165', rarity: 'C', pt: 100, img: tcImg('sv3pt5', '129'), ptcgSet: 'sv3pt5', ptcgNum: '129', dex: 129 },
+            T5_SNORLAX_R: { id: 'T5_SNORLAX_R', name: '【SV2a 151】卡比獸 R 閃卡 (143/165)', code: 'SV2a 143/165', rarity: 'R', pt: 260, img: tcImg('sv3pt5', '143'), ptcgSet: 'sv3pt5', ptcgNum: '143', dex: 143 },
+            T5_GENGAR_R: { id: 'T5_GENGAR_R', name: '【SV2a 151】耿鬼 R 閃卡 (094/165)', code: 'SV2a 094/165', rarity: 'R', pt: 320, img: tcImg('sv3pt5', '94'), ptcgSet: 'sv3pt5', ptcgNum: '94', dex: 94 },
+            T5_GYARADOS_R: { id: 'T5_GYARADOS_R', name: '【SV2a 151】暴鯉龍 R 閃卡 (130/165)', code: 'SV2a 130/165', rarity: 'R', pt: 280, img: tcImg('sv3pt5', '130'), ptcgSet: 'sv3pt5', ptcgNum: '130', dex: 130 },
+            T5_HELL_50: { id: 'T5_HELL_50', name: '【地獄保底】水濺躍鯉魚王 (50 PT)', code: 'SV2a 129/165', rarity: 'C', pt: 50, img: tcImg('sv3pt5', '129'), ptcgSet: 'sv3pt5', ptcgNum: '129', dex: 129 }
         };
 
-        // 100% 官方卡號與圖片一對一對應的擴充卡片庫（供 14 大一番賞卡池自動補滿至每池 50 種）
+        // 擴充 60 張 100% 圖文卡號一對一對應的 SV2a 151 四、五等賞正版卡牌（供每池補滿 50 種正版卡牌）
         const EXACT_151_EXTRA_CARDS = [
-            // Tier 4 擴充 (AR / RR)
-            ['167', '妙蛙草 AR 森林溪流 (151)', 'AR', 1200, 2, 4],
-            ['169', '火恐龍 AR 峽谷烈焰 (151)', 'AR', 1250, 5, 4],
-            ['170', '傑尼龜 AR 海灘浪花 (151)', 'AR', 1350, 7, 4],
-            ['171', '卡咪龜 AR 深海暢泳 (151)', 'AR', 1200, 8, 4],
-            ['172', '綠毛蟲 AR 樹梢陽光 (151)', 'AR', 1050, 10, 4],
-            ['174', '尼多王 AR 夕陽荒野 (151)', 'AR', 1250, 34, 4],
-            ['175', '可達鴨 AR 階梯發呆 (151)', 'AR', 1300, 54, 4],
-            ['176', '蚊香君 AR 雨夜倒影 (151)', 'AR', 1250, 61, 4],
-            ['177', '豪力 AR 都市搬運 (151)', 'AR', 1100, 67, 4],
-            ['178', '蔓藤怪 AR 叢林秘境 (151)', 'AR', 1100, 114, 4],
-            ['179', '魔牆人偶 AR 街頭默劇 (151)', 'AR', 1150, 122, 4],
-            ['180', '菊石獸 AR 古代海底 (151)', 'AR', 1100, 138, 4],
-            ['3', '妙蛙花 ex RR (151)', 'RR', 1100, 3, 4],
-            ['24', '阿柏怪 ex RR (151)', 'RR', 950, 24, 4],
-            ['38', '九尾 ex RR (151)', 'RR', 1050, 38, 4],
-            ['40', '胖可丁 ex RR (151)', 'RR', 950, 40, 4],
-            ['65', '胡地 ex RR (151)', 'RR', 1050, 65, 4],
-            ['76', '隆隆岩 ex RR (151)', 'RR', 950, 76, 4],
-            ['115', '袋獸 ex RR (151)', 'RR', 980, 115, 4],
-            ['124', '迷唇姐 ex RR (151)', 'RR', 920, 124, 4],
-            ['145', '閃電鳥 ex RR (151)', 'RR', 1150, 145, 4],
-
-            // Tier 5 擴充 (C / U / R)
-            ['1', '妙蛙種子 普卡 (151)', 'C', 160, 1, 5],
-            ['4', '小火龍 普卡 (151)', 'C', 170, 4, 5],
-            ['25', '皮卡丘 普卡 (151)', 'C', 220, 25, 5],
-            ['26', '雷丘 閃卡 (151)', 'R', 340, 26, 5],
-            ['35', '皮皮 普卡 (151)', 'C', 160, 35, 5],
-            ['37', '六尾 普卡 (151)', 'C', 160, 37, 5],
-            ['39', '胖丁 普卡 (151)', 'C', 150, 39, 5],
-            ['54', '可達鴨 普卡 (151)', 'C', 170, 54, 5],
-            ['58', '卡蒂狗 普卡 (151)', 'C', 160, 58, 5],
-            ['59', '風速狗 閃卡 (151)', 'U', 240, 59, 5],
-            ['63', '凱西 普卡 (151)', 'C', 150, 63, 5],
-            ['66', '腕力 普卡 (151)', 'C', 140, 66, 5],
-            ['68', '怪力 閃卡 (151)', 'R', 320, 68, 5],
-            ['79', '呆呆獸 普卡 (151)', 'C', 160, 79, 5],
-            ['80', '呆殼獸 閃卡 (151)', 'U', 230, 80, 5],
-            ['92', '鬼斯 普卡 (151)', 'C', 160, 92, 5],
-            ['93', '鬼斯通 非普卡 (151)', 'U', 220, 93, 5],
-            ['113', '吉利蛋 閃卡 (151)', 'R', 330, 113, 5],
-            ['123', '飛天螳螂 非普卡 (151)', 'U', 240, 123, 5],
-            ['125', '電擊獸 非普卡 (151)', 'U', 220, 125, 5],
-            ['126', '鴨嘴火獸 非普卡 (151)', 'U', 220, 126, 5],
-            ['131', '拉普拉斯 閃卡 (151)', 'U', 280, 131, 5],
-            ['132', '百變怪 閃卡 (151)', 'R', 360, 132, 5],
-            ['134', '水伊布 閃卡 (151)', 'R', 390, 134, 5],
-            ['135', '雷伊布 閃卡 (151)', 'R', 390, 135, 5],
-            ['136', '火伊布 閃卡 (151)', 'R', 390, 136, 5],
-            ['144', '急凍鳥 閃卡 (151)', 'R', 380, 144, 5],
-            ['146', '火焰鳥 閃卡 (151)', 'R', 380, 146, 5],
-            ['147', '迷你龍 普卡 (151)', 'C', 170, 147, 5],
-            ['148', '哈克龍 非普卡 (151)', 'U', 240, 148, 5],
-            ['149', '快龍 閃卡 (151)', 'R', 440, 149, 5],
-            ['150', '超夢 閃卡 (151)', 'R', 460, 150, 5]
-        ].map(([num, name, rarity, pt, dex, tier]) => ({
-            id: `EXACT151_${num}`,
-            name,
+            // 4 等賞 (AR / RR / SR) — 18 張
+            [167, '妙蛙草 AR 滿版插畫', 'AR', 1350, 2],
+            [169, '火恐龍 AR 滿版插畫', 'AR', 1420, 5],
+            [170, '傑尼龜 AR 海灘波浪', 'AR', 1680, 7],
+            [171, '卡咪龜 AR 深海潛行', 'AR', 1380, 8],
+            [172, '綠毛蟲 AR 森林晨光', 'AR', 950, 10],
+            [174, '皮皮 AR 月夜祈願', 'AR', 1280, 35],
+            [175, '可達鴨 AR 階梯發呆', 'AR', 1450, 54],
+            [176, '蚊香君 AR 雨夜街角', 'AR', 1180, 61],
+            [177, '豪力 AR 搬運特訓', 'AR', 980, 67],
+            [178, '蔓藤怪 AR 叢林迷霧', 'AR', 920, 114],
+            [179, '魔牆人偶 AR 默劇舞台', 'AR', 960, 122],
+            [180, '菊石獸 AR 遠古海域', 'AR', 1020, 138],
+            [182, '妙蛙花 ex SR 全圖', 'SR', 2100, 3],
+            [183, '噴火龍 ex SR 全圖', 'SR', 2800, 6],
+            [184, '水箭龜 ex SR 全圖', 'SR', 2200, 9],
+            [24, '阿柏怪 ex RR', 'RR', 850, 24],
+            [38, '九尾 ex RR', 'RR', 980, 38],
+            [115, '袋獸 ex RR', 'RR', 880, 115],
+            // 5 等賞 (C / U / R) — 42 張
+            [1, '妙蛙種子 (001/165)', 'C', 140, 1],
+            [4, '小火龍 (004/165)', 'C', 160, 4],
+            [10, '綠毛蟲 (010/165)', 'C', 90, 10],
+            [12, '巴大蝶 (012/165)', 'U', 130, 12],
+            [15, '大針蜂 R (015/165)', 'R', 220, 15],
+            [16, '波波 (016/165)', 'C', 95, 16],
+            [18, '大比鳥 R (018/165)', 'R', 210, 18],
+            [25, '皮卡丘 (025/165)', 'C', 180, 25],
+            [26, '雷丘 R (026/165)', 'R', 240, 26],
+            [34, '尼多王 R (034/165)', 'R', 230, 34],
+            [35, '皮皮 (035/165)', 'C', 110, 35],
+            [39, '胖丁 (039/165)', 'C', 115, 39],
+            [54, '可達鴨 (054/165)', 'C', 130, 54],
+            [58, '卡蒂狗 (058/165)', 'C', 120, 58],
+            [59, '風速狗 U (059/165)', 'U', 160, 59],
+            [63, '凱西 (063/165)', 'C', 105, 63],
+            [66, '腕力 (066/165)', 'C', 100, 66],
+            [68, '怪力 R (068/165)', 'R', 220, 68],
+            [79, '呆呆獸 (079/165)', 'C', 125, 79],
+            [81, '小磁怪 (081/165)', 'C', 100, 81],
+            [92, '鬼斯 (092/165)', 'C', 120, 92],
+            [93, '鬼斯通 U (093/165)', 'U', 150, 93],
+            [95, '大岩蛇 (095/165)', 'C', 110, 95],
+            [104, '卡拉卡拉 (104/165)', 'C', 125, 104],
+            [106, '飛腿郎 U (106/165)', 'U', 145, 106],
+            [107, '快拳郎 U (107/165)', 'U', 145, 107],
+            [113, '吉利蛋 R (113/165)', 'R', 240, 113],
+            [116, '墨海馬 (116/165)', 'C', 105, 116],
+            [120, '海星星 (120/165)', 'C', 105, 120],
+            [121, '寶石海星 R (121/165)', 'R', 210, 121],
+            [123, '飛天螳螂 U (123/165)', 'U', 165, 123],
+            [125, '電擊獸 U (125/165)', 'U', 140, 125],
+            [126, '鴨嘴火獸 U (126/165)', 'U', 140, 126],
+            [131, '拉普拉斯 U (131/165)', 'U', 175, 131],
+            [132, '百變怪 R (132/165)', 'R', 250, 132],
+            [134, '水伊布 R (134/165)', 'R', 260, 134],
+            [135, '雷伊布 R (135/165)', 'R', 260, 135],
+            [136, '火伊布 R (136/165)', 'R', 260, 136],
+            [137, '多邊獸 (137/165)', 'C', 115, 137],
+            [144, '急凍鳥 R (144/165)', 'R', 280, 144],
+            [146, '火焰鳥 R (146/165)', 'R', 280, 146],
+            [149, '快龍 R (149/165)', 'R', 320, 149]
+        ].map(([num, name, rarity, pt, dex]) => ({
+            id: `SV2A_EX_${String(num).padStart(3, '0')}`,
+            name: `【SV2a 151】${name}`,
             code: `SV2a ${String(num).padStart(3, '0')}/165`,
             rarity,
+            tier: ['AR', 'SR', 'RR'].includes(rarity) ? 4 : 5,
             pt,
-            tier,
-            img: tcImg('sv3pt5', num),
+            img: tcImg('sv3pt5', String(num)),
             ptcgSet: 'sv3pt5',
-            ptcgNum: num,
+            ptcgNum: String(num),
             dex
         }));
 
         /* ==========================================================================
-           第 5 節：14 大線上一番賞卡池設定（每池自動補滿 50 種正版卡牌・整數賞調低・最後一賞維持）
+           第 5 節：15 大線上一番賞卡池設定（大幅調低 1~4 等高 PT 配率・新增 12,000 PT 天堂地獄 1/2 池）
            ========================================================================== */
         const POOL_CONFIGS = [
+            {
+                id: 'pool-12k-heaven-hell',
+                tag: 'MICRO',
+                badge: '⚡ 12,000 PT 天堂與地獄 1/2 (50種)',
+                title: '【12,000 PT 天堂或地獄 1/2】50% 轟出 1萬～2萬好卡 vs 50% 保底 6,000 PT',
+                price: 12000,
+                totalTickets: 1000,
+                isExactCustomOdds: true,
+                lastOneCard: { ...VERIFIED_CARDS.M6A_LUGIA_30TH, name: '【最後一賞】洛奇亞 30th 經典復刻', pt: 15800 },
+                milestoneCard: { ...VERIFIED_CARDS.T4_PIKA_AR, name: '【整數賞】皮卡丘 AR 街角散步', pt: 1200 },
+                prizes: [
+                    // 1等賞：1% (10 / 1,000 口) -> 價值 20,000 PT
+                    { card: { ...VERIFIED_CARDS.TERA_PIKA_UR, name: '【1等賞 2萬PT】太晶黃金皮卡丘 ex UR', pt: 20000 }, tier: 1, count: 5 },
+                    { card: { ...VERIFIED_CARDS.M6A_MEW_RGB, name: '【1等賞 2萬PT】30週年夢幻 ex RGB 虹彩', pt: 20000 }, tier: 1, count: 5 },
+                    // 2等賞：19% (190 / 1,000 口) -> 價值 12,000 PT
+                    { card: { ...VERIFIED_CARDS.VANGOGH_PIKA, name: '【2等賞 1.2萬PT】梵谷美術館戴帽皮卡丘', pt: 12000 }, tier: 2, count: 38 },
+                    { card: { ...VERIFIED_CARDS.SV10_MEWTWO_SAR, name: '【2等賞 1.2萬PT】火箭隊的超夢 ex SAR', pt: 12000 }, tier: 2, count: 38 },
+                    { card: { ...VERIFIED_CARDS.M1L_LUCARIO_MUR, name: '【2等賞 1.2萬PT】超級路卡利歐 ex MUR', pt: 12000 }, tier: 2, count: 38 },
+                    { card: { ...VERIFIED_CARDS.SV85_UMBREON_SAR, name: '【2等賞 1.2萬PT】太晶月亮伊布 ex SAR', pt: 12000 }, tier: 2, count: 38 },
+                    { card: { ...VERIFIED_CARDS.ZARD_151_SAR, name: '【2等賞 1.2萬PT】151 噴火龍 ex SAR', pt: 12000 }, tier: 2, count: 38 },
+                    // 3等賞：30% (300 / 1,000 口) -> 價值 10,000 PT
+                    { card: { ...VERIFIED_CARDS.T3_IONO_SR, name: '【3等賞 1萬PT】奇樹 SR 釀光道館主', pt: 10000 }, tier: 3, count: 30 },
+                    { card: { ...VERIFIED_CARDS.T3_MAGIKARP_AR, name: '【3等賞 1萬PT】鯉魚王 AR 躍龍門浮世繪', pt: 10000 }, tier: 3, count: 30 },
+                    { card: { ...VERIFIED_CARDS.T3_DRAGONITE_V, name: '【3等賞 1萬PT】快龍 V SR 蒼空翱翔', pt: 10000 }, tier: 3, count: 30 },
+                    { card: { ...VERIFIED_CARDS.T3_ALAKAZAM_SAR, name: '【3等賞 1萬PT】胡地 ex SAR 念力全圖', pt: 10000 }, tier: 3, count: 30 },
+                    { card: { ...VERIFIED_CARDS.T3_MIRIAM_SR, name: '【3等賞 1萬PT】牡丹 SR 保健室老師', pt: 10000 }, tier: 3, count: 30 },
+                    { card: { ...VERIFIED_CARDS.T3_ZAPDOS_SAR, name: '【3等賞 1萬PT】閃電鳥 ex SAR 三神鳥', pt: 10000 }, tier: 3, count: 30 },
+                    { card: { ...VERIFIED_CARDS.T3_ERIKA_SAR, name: '【3等賞 1萬PT】莉佳的招待 SAR 全圖', pt: 10000 }, tier: 3, count: 30 },
+                    { card: { ...VERIFIED_CARDS.T3_GIOVANNI_151, name: '【3等賞 1萬PT】坂木的魅力 SAR 全圖', pt: 10000 }, tier: 3, count: 30 },
+                    { card: { ...VERIFIED_CARDS.M6A_GRENINJA_SAR, name: '【3等賞 1萬PT】30週年甲賀忍蛙 ex SAR', pt: 10000 }, tier: 3, count: 30 },
+                    { card: { ...VERIFIED_CARDS.M6A_SYLVEON_SAR, name: '【3等賞 1萬PT】30週年仙子伊布 ex SAR', pt: 10000 }, tier: 3, count: 30 }
+                    // 其餘 33 種由 expandAllPoolsTo50Types 自動補滿 500 口 (50%) -> 每張保底價值 6,000 PT！
+                ]
+            },
             {
                 id: 'pool-39-micro',
                 tag: 'MICRO',
                 badge: '🪙 39 PT 奇蹟銅板池 (50種)',
                 title: '【39 PT 奇蹟銅板池】太晶黃金皮卡丘 / 梵谷 / 烈空坐 218',
                 price: 39,
-                totalTickets: 2200,
+                totalTickets: 10000,
                 isMicro: true,
                 lastOneCard: { ...VERIFIED_CARDS.T3_IONO_SR, name: '【最後一賞】奇樹 SR 釀光道館主', pt: 12800 },
                 milestoneCard: { ...VERIFIED_CARDS.T4_PIKA_AR, name: '【整數賞】皮卡丘 AR 街角散步', pt: 1150 },
@@ -1501,10 +1639,10 @@
                     { card: VERIFIED_CARDS.RAYQUAZA_218, tier: 1, count: 1 },
                     { card: VERIFIED_CARDS.XY_PIKA_EX_FA, tier: 1, count: 1 },
                     { card: VERIFIED_CARDS.VANGOGH_PIKA, tier: 2, count: 2 },
-                    { card: VERIFIED_CARDS.T3_MAGIKARP_AR, tier: 3, count: 15 },
-                    { card: VERIFIED_CARDS.T4_MEW_RR, tier: 4, count: 180 },
-                    { card: VERIFIED_CARDS.T5_EEVEE_C, tier: 5, count: 1000 },
-                    { card: VERIFIED_CARDS.T5_MEOWTH_C, tier: 5, count: 1000 }
+                    { card: VERIFIED_CARDS.T3_MAGIKARP_AR, tier: 3, count: 4 },
+                    { card: VERIFIED_CARDS.T4_MEW_RR, tier: 4, count: 45 },
+                    { card: VERIFIED_CARDS.T5_EEVEE_C, tier: 5, count: 2400 },
+                    { card: VERIFIED_CARDS.T5_MEOWTH_C, tier: 5, count: 2400 }
                 ]
             },
             {
@@ -1513,7 +1651,7 @@
                 badge: '🏛️ 46 PT 絕版 Vintage 夢池 (50種)',
                 title: '【46 PT 絕版復古夢池】1999 初版噴火龍 / 水箭龜 / 太晶皮卡丘 SAR',
                 price: 46,
-                totalTickets: 2000,
+                totalTickets: 10000,
                 isMicro: true,
                 lastOneCard: { ...VERIFIED_CARDS.T3_DRAGONITE_V, name: '【最後一賞】快龍 V SR 蒼空翱翔', pt: 13500 },
                 milestoneCard: { ...VERIFIED_CARDS.T4_CHARMANDER_AR, name: '【整數賞】小火龍 AR 窗邊仰望', pt: 1050 },
@@ -1522,17 +1660,17 @@
                     { card: VERIFIED_CARDS.VINTAGE_ZARD, tier: 1, count: 1 },
                     { card: VERIFIED_CARDS.VINTAGE_BLASTOISE, tier: 2, count: 2 },
                     { card: VERIFIED_CARDS.VINTAGE_VENUSAUR, tier: 2, count: 2 },
-                    { card: VERIFIED_CARDS.T3_ALAKAZAM_SAR, tier: 3, count: 14 },
-                    { card: VERIFIED_CARDS.T4_CHARIZARD_RR, tier: 4, count: 180 },
-                    { card: VERIFIED_CARDS.T5_SQUIRTLE_C, tier: 5, count: 900 },
-                    { card: VERIFIED_CARDS.T5_MAGIKARP_C, tier: 5, count: 900 }
+                    { card: VERIFIED_CARDS.T3_ALAKAZAM_SAR, tier: 3, count: 4 },
+                    { card: VERIFIED_CARDS.T4_CHARIZARD_RR, tier: 4, count: 45 },
+                    { card: VERIFIED_CARDS.T5_SQUIRTLE_C, tier: 5, count: 2400 },
+                    { card: VERIFIED_CARDS.T5_MAGIKARP_C, tier: 5, count: 2400 }
                 ]
             },
             {
                 id: 'pool-100k-heaven-hell',
                 tag: 'MICRO',
-                badge: '⚡ 10萬 PT 天堂與地獄 1/2 (50種)',
-                title: '【100,000 PT 天堂或地獄】50% 轟出 18萬～26萬神卡 vs 50% 50 PT 地獄',
+                badge: '💀 10萬 PT 極限賭命 1/2 (50種)',
+                title: '【100,000 PT 極限賭命】50% 轟出 18萬～26萬神卡 vs 50% 50 PT 地獄',
                 price: 100000,
                 totalTickets: 100,
                 lastOneCard: { ...VERIFIED_CARDS.VANGOGH_PIKA, name: '【最後一賞】梵谷美術館皮卡丘', pt: 16200 },
@@ -1550,18 +1688,18 @@
                 badge: '👑 2026 30週年正宗 M6a (50種)',
                 title: '【30週年紀念 M6a】夢幻 RGB 三原色 & FUR 降臨祭',
                 price: 980,
-                totalTickets: 900,
+                totalTickets: 3500,
                 lastOneCard: { ...VERIFIED_CARDS.M6A_LUGIA_30TH, name: '【最後一賞】洛奇亞 30th 經典復刻', pt: 15800 },
                 milestoneCard: { ...VERIFIED_CARDS.M6A_MOLTRES_AR, name: '【整數賞】30週年火焰鳥 AR', pt: 1250 },
                 prizes: [
                     { card: VERIFIED_CARDS.M6A_MEW_RGB, tier: 1, count: 1 },
-                    { card: VERIFIED_CARDS.M6A_MEW_FUR, tier: 2, count: 2 },
-                    { card: VERIFIED_CARDS.M6A_MEWTWO_SAR, tier: 2, count: 2 },
-                    { card: VERIFIED_CARDS.M6A_PIKA_FUR, tier: 2, count: 2 },
-                    { card: VERIFIED_CARDS.M6A_GRENINJA_SAR, tier: 3, count: 8 },
-                    { card: VERIFIED_CARDS.M6A_SYLVEON_SAR, tier: 3, count: 8 },
-                    { card: VERIFIED_CARDS.T4_PIKA_AR, tier: 4, count: 180 },
-                    { card: VERIFIED_CARDS.T5_EEVEE_C, tier: 5, count: 697 }
+                    { card: VERIFIED_CARDS.M6A_MEW_FUR, tier: 2, count: 1 },
+                    { card: VERIFIED_CARDS.M6A_MEWTWO_SAR, tier: 2, count: 1 },
+                    { card: VERIFIED_CARDS.M6A_PIKA_FUR, tier: 2, count: 1 },
+                    { card: VERIFIED_CARDS.M6A_GRENINJA_SAR, tier: 3, count: 2 },
+                    { card: VERIFIED_CARDS.M6A_SYLVEON_SAR, tier: 3, count: 2 },
+                    { card: VERIFIED_CARDS.T4_PIKA_AR, tier: 4, count: 25 },
+                    { card: VERIFIED_CARDS.T5_EEVEE_C, tier: 5, count: 950 }
                 ]
             },
             {
@@ -1570,16 +1708,16 @@
                 badge: '🎂 25週年黃金紀念箱 (50種)',
                 title: '【25週年 S8a 黃金盒】純金皮卡丘 V & 黃金色違夢幻 UR',
                 price: 880,
-                totalTickets: 900,
+                totalTickets: 3500,
                 lastOneCard: { ...VERIFIED_CARDS.G25_POKEBALL, name: '【最後一賞】25週年純金精靈球 UR', pt: 14800 },
                 milestoneCard: { ...VERIFIED_CARDS.T4_MEW_RR, name: '【整數賞】夢幻 ex RR 紀念閃卡', pt: 1100 },
                 prizes: [
                     { card: VERIFIED_CARDS.G25_PIKA_V, tier: 1, count: 1 },
-                    { card: VERIFIED_CARDS.G25_MEW_UR, tier: 2, count: 3 },
-                    { card: VERIFIED_CARDS.RED_PIKA_CHR, tier: 2, count: 2 },
-                    { card: VERIFIED_CARDS.T3_IONO_SR, tier: 3, count: 10 },
-                    { card: VERIFIED_CARDS.T4_PIKA_AR, tier: 4, count: 180 },
-                    { card: VERIFIED_CARDS.T5_MEOWTH_C, tier: 5, count: 704 }
+                    { card: VERIFIED_CARDS.G25_MEW_UR, tier: 2, count: 2 },
+                    { card: VERIFIED_CARDS.RED_PIKA_CHR, tier: 2, count: 1 },
+                    { card: VERIFIED_CARDS.T3_IONO_SR, tier: 3, count: 3 },
+                    { card: VERIFIED_CARDS.T4_PIKA_AR, tier: 4, count: 25 },
+                    { card: VERIFIED_CARDS.T5_MEOWTH_C, tier: 5, count: 960 }
                 ]
             },
             {
@@ -1588,17 +1726,17 @@
                 badge: '🚀 SV10 火箭隊的榮耀 (50種)',
                 title: '【SV10 火箭隊的榮耀】火箭隊超夢 ex SAR/UR & 坂木老大',
                 price: 780,
-                totalTickets: 900,
+                totalTickets: 3500,
                 lastOneCard: { ...VERIFIED_CARDS.SV10_NIDOKING_SAR, name: '【最後一賞】火箭隊的尼多王 ex SAR', pt: 14200 },
                 milestoneCard: { ...VERIFIED_CARDS.T4_CHARMANDER_AR, name: '【整數賞】小火龍 AR 精選閃卡', pt: 1150 },
                 prizes: [
                     { card: VERIFIED_CARDS.SV10_MEWTWO_SAR, tier: 1, count: 1 },
-                    { card: VERIFIED_CARDS.SV10_MEWTWO_UR, tier: 2, count: 2 },
-                    { card: VERIFIED_CARDS.SV10_MOLTRES_SAR, tier: 2, count: 2 },
-                    { card: VERIFIED_CARDS.SV10_GIOVANNI_SAR, tier: 2, count: 2 },
-                    { card: VERIFIED_CARDS.SV10_CROBAT_SAR, tier: 3, count: 9 },
-                    { card: VERIFIED_CARDS.T4_CHARIZARD_RR, tier: 4, count: 180 },
-                    { card: VERIFIED_CARDS.T5_MEOWTH_C, tier: 5, count: 704 }
+                    { card: VERIFIED_CARDS.SV10_MEWTWO_UR, tier: 2, count: 1 },
+                    { card: VERIFIED_CARDS.SV10_MOLTRES_SAR, tier: 2, count: 1 },
+                    { card: VERIFIED_CARDS.SV10_GIOVANNI_SAR, tier: 2, count: 1 },
+                    { card: VERIFIED_CARDS.SV10_CROBAT_SAR, tier: 3, count: 3 },
+                    { card: VERIFIED_CARDS.T4_CHARIZARD_RR, tier: 4, count: 25 },
+                    { card: VERIFIED_CARDS.T5_MEOWTH_C, tier: 5, count: 960 }
                 ]
             },
             {
@@ -1607,16 +1745,16 @@
                 badge: '🥊 M1L 超級勇氣 MUR (50種)',
                 title: '【M1L 超級勇氣】超級路卡利歐 ex MUR 純金 & 莉莉艾的決心 SAR',
                 price: 850,
-                totalTickets: 900,
+                totalTickets: 3500,
                 lastOneCard: { ...VERIFIED_CARDS.M1L_LUCARIO_SAR, name: '【最後一賞】超級路卡利歐 ex SAR', pt: 15500 },
                 milestoneCard: { ...VERIFIED_CARDS.T4_BULBASAUR_AR, name: '【整數賞】妙蛙種子 AR 陽光森林', pt: 1100 },
                 prizes: [
                     { card: VERIFIED_CARDS.M1L_LUCARIO_MUR, tier: 1, count: 1 },
-                    { card: VERIFIED_CARDS.M1L_LILLIE_SAR, tier: 2, count: 2 },
-                    { card: VERIFIED_CARDS.M1L_LUCARIO_SAR, tier: 2, count: 3 },
-                    { card: VERIFIED_CARDS.T3_MIRIAM_SR, tier: 3, count: 10 },
-                    { card: VERIFIED_CARDS.T4_BLASTOISE_RR, tier: 4, count: 180 },
-                    { card: VERIFIED_CARDS.T5_SQUIRTLE_C, tier: 5, count: 704 }
+                    { card: VERIFIED_CARDS.M1L_LILLIE_SAR, tier: 2, count: 1 },
+                    { card: VERIFIED_CARDS.M1L_LUCARIO_SAR, tier: 2, count: 2 },
+                    { card: VERIFIED_CARDS.T3_MIRIAM_SR, tier: 3, count: 3 },
+                    { card: VERIFIED_CARDS.T4_BLASTOISE_RR, tier: 4, count: 25 },
+                    { card: VERIFIED_CARDS.T5_SQUIRTLE_C, tier: 5, count: 960 }
                 ]
             },
             {
@@ -1625,15 +1763,15 @@
                 badge: '🐉 M2a 超級夢想 ex (50種)',
                 title: '【M2a 超級夢想 ex】超級快龍 ex MUR 純金 & 超級耿鬼 SAR',
                 price: 920,
-                totalTickets: 900,
+                totalTickets: 3500,
                 lastOneCard: { ...VERIFIED_CARDS.T3_DRAGONITE_V, name: '【最後一賞】快龍 V SR 蒼空全圖', pt: 14600 },
                 milestoneCard: { ...VERIFIED_CARDS.T4_DRAGONAIR_AR, name: '【整數賞】哈克龍 AR 瀑布月夜', pt: 1200 },
                 prizes: [
                     { card: VERIFIED_CARDS.M2A_DRAGONITE_MUR, tier: 1, count: 1 },
                     { card: VERIFIED_CARDS.M2A_GENGAR_SAR, tier: 2, count: 2 },
-                    { card: VERIFIED_CARDS.T3_DRAGONITE_V, tier: 3, count: 10 },
-                    { card: VERIFIED_CARDS.T4_DRAGONAIR_AR, tier: 4, count: 180 },
-                    { card: VERIFIED_CARDS.T5_GENGAR_R, tier: 5, count: 707 }
+                    { card: VERIFIED_CARDS.T3_DRAGONITE_V, tier: 3, count: 3 },
+                    { card: VERIFIED_CARDS.T4_DRAGONAIR_AR, tier: 4, count: 25 },
+                    { card: VERIFIED_CARDS.T5_GENGAR_R, tier: 5, count: 960 }
                 ]
             },
             {
@@ -1642,15 +1780,15 @@
                 badge: '🌙 M1S 超級交響樂 (50種)',
                 title: '【M1S 超級交響樂】超級沙奈朵 ex MUR 純金 & SAR 華麗祭',
                 price: 760,
-                totalTickets: 900,
+                totalTickets: 3500,
                 lastOneCard: { ...VERIFIED_CARDS.M1S_GARDEVOIR_SAR, name: '【最後一賞】超級沙奈朵 ex SAR', pt: 13800 },
                 milestoneCard: { ...VERIFIED_CARDS.T4_MEW_RR, name: '【整數賞】夢幻 ex RR 超能閃卡', pt: 1050 },
                 prizes: [
                     { card: VERIFIED_CARDS.M1S_GARDEVOIR_MUR, tier: 1, count: 1 },
-                    { card: VERIFIED_CARDS.M1S_GARDEVOIR_SAR, tier: 2, count: 3 },
-                    { card: VERIFIED_CARDS.T3_ALAKAZAM_SAR, tier: 3, count: 10 },
-                    { card: VERIFIED_CARDS.T4_MEW_RR, tier: 4, count: 180 },
-                    { card: VERIFIED_CARDS.T5_EEVEE_C, tier: 5, count: 706 }
+                    { card: VERIFIED_CARDS.M1S_GARDEVOIR_SAR, tier: 2, count: 2 },
+                    { card: VERIFIED_CARDS.T3_ALAKAZAM_SAR, tier: 3, count: 3 },
+                    { card: VERIFIED_CARDS.T4_MEW_RR, tier: 4, count: 25 },
+                    { card: VERIFIED_CARDS.T5_EEVEE_C, tier: 5, count: 960 }
                 ]
             },
             {
@@ -1659,15 +1797,15 @@
                 badge: '🔥 M2 煉獄烈焰 X MUR (50種)',
                 title: '【M2 煉獄烈焰 X】超級噴火龍 X ex MUR 純金 & 小光 SAR',
                 price: 950,
-                totalTickets: 900,
+                totalTickets: 3500,
                 lastOneCard: { ...VERIFIED_CARDS.M2_ZARD_X_SAR, name: '【最後一賞】超級噴火龍 X ex SAR', pt: 16000 },
                 milestoneCard: { ...VERIFIED_CARDS.T4_CHARMANDER_AR, name: '【整數賞】小火龍 AR 烈焰精選', pt: 1250 },
                 prizes: [
                     { card: VERIFIED_CARDS.M2_ZARD_X_MUR, tier: 1, count: 1 },
-                    { card: VERIFIED_CARDS.M2_ZARD_X_SAR, tier: 2, count: 2 },
-                    { card: VERIFIED_CARDS.M2_DAWN_SAR, tier: 2, count: 2 },
-                    { card: VERIFIED_CARDS.T4_CHARIZARD_RR, tier: 4, count: 180 },
-                    { card: VERIFIED_CARDS.T5_MAGIKARP_C, tier: 5, count: 715 }
+                    { card: VERIFIED_CARDS.M2_ZARD_X_SAR, tier: 2, count: 1 },
+                    { card: VERIFIED_CARDS.M2_DAWN_SAR, tier: 2, count: 1 },
+                    { card: VERIFIED_CARDS.T4_CHARIZARD_RR, tier: 4, count: 25 },
+                    { card: VERIFIED_CARDS.T5_MAGIKARP_C, tier: 5, count: 960 }
                 ]
             },
             {
@@ -1676,15 +1814,15 @@
                 badge: '⚡ SV11 黑雷＆白焰 BWR (50種)',
                 title: '【SV11 黑雷＆白焰】純黑捷克羅姆 BWR & 純白萊希拉姆 BWR',
                 price: 820,
-                totalTickets: 900,
+                totalTickets: 3500,
                 lastOneCard: { ...VERIFIED_CARDS.SV11_VICTINI_BWR, name: '【最後一賞】緋紅比克提尼 AR 勝利紀念', pt: 15200 },
                 milestoneCard: { ...VERIFIED_CARDS.T4_PIKA_AR, name: '【整數賞】皮卡丘 AR 雷電閃卡', pt: 1100 },
                 prizes: [
                     { card: VERIFIED_CARDS.SV11_ZEKROM_BWR, tier: 1, count: 1 },
                     { card: VERIFIED_CARDS.SV11_RESHIRAM_BWR, tier: 2, count: 2 },
-                    { card: VERIFIED_CARDS.SV11_VICTINI_BWR, tier: 3, count: 8 },
-                    { card: VERIFIED_CARDS.T4_PIKA_AR, tier: 4, count: 180 },
-                    { card: VERIFIED_CARDS.T5_SNORLAX_R, tier: 5, count: 709 }
+                    { card: VERIFIED_CARDS.SV11_VICTINI_BWR, tier: 3, count: 3 },
+                    { card: VERIFIED_CARDS.T4_PIKA_AR, tier: 4, count: 25 },
+                    { card: VERIFIED_CARDS.T5_SNORLAX_R, tier: 5, count: 960 }
                 ]
             },
             {
@@ -1693,15 +1831,15 @@
                 badge: '💎 SV8a 太晶伊布家族 (50種)',
                 title: '【SV8a 太晶慶典 ex】太晶月亮伊布 SAR & 仙子伊布 SAR',
                 price: 890,
-                totalTickets: 900,
+                totalTickets: 3500,
                 lastOneCard: { ...VERIFIED_CARDS.SV85_SYLVEON_SAR, name: '【最後一賞】太晶仙子伊布 ex SAR', pt: 16000 },
                 milestoneCard: { ...VERIFIED_CARDS.T4_PIKA_AR, name: '【整數賞】皮卡丘 AR 街角散步', pt: 1150 },
                 prizes: [
                     { card: VERIFIED_CARDS.SV85_UMBREON_SAR, tier: 1, count: 1 },
-                    { card: VERIFIED_CARDS.SV85_SYLVEON_SAR, tier: 2, count: 3 },
-                    { card: VERIFIED_CARDS.T3_MIRIAM_SR, tier: 3, count: 10 },
-                    { card: VERIFIED_CARDS.T4_PIKA_AR, tier: 4, count: 180 },
-                    { card: VERIFIED_CARDS.T5_EEVEE_C, tier: 5, count: 706 }
+                    { card: VERIFIED_CARDS.SV85_SYLVEON_SAR, tier: 2, count: 2 },
+                    { card: VERIFIED_CARDS.T3_MIRIAM_SR, tier: 3, count: 3 },
+                    { card: VERIFIED_CARDS.T4_PIKA_AR, tier: 4, count: 25 },
+                    { card: VERIFIED_CARDS.T5_EEVEE_C, tier: 5, count: 960 }
                 ]
             },
             {
@@ -1710,15 +1848,15 @@
                 badge: '🔴 SV2a 經典關都 151 (50種)',
                 title: '【SV2a 寶可夢 151】火山噴火龍 SAR & 御三家全圖祭',
                 price: 750,
-                totalTickets: 900,
+                totalTickets: 3500,
                 lastOneCard: { ...VERIFIED_CARDS.VENUSAUR_151_SAR, name: '【最後一賞】妙蛙花 ex SAR 密林全圖', pt: 13800 },
                 milestoneCard: { ...VERIFIED_CARDS.T4_PIKA_AR, name: '【整數賞】151 皮卡丘 AR 散步全圖', pt: 1100 },
                 prizes: [
                     { card: VERIFIED_CARDS.ZARD_151_SAR, tier: 1, count: 1 },
-                    { card: VERIFIED_CARDS.BLASTOISE_151_SAR, tier: 2, count: 3 },
-                    { card: VERIFIED_CARDS.T3_ZAPDOS_SAR, tier: 3, count: 9 },
-                    { card: VERIFIED_CARDS.T4_PIKA_AR, tier: 4, count: 180 },
-                    { card: VERIFIED_CARDS.T5_GYARADOS_R, tier: 5, count: 707 }
+                    { card: VERIFIED_CARDS.BLASTOISE_151_SAR, tier: 2, count: 2 },
+                    { card: VERIFIED_CARDS.T3_ZAPDOS_SAR, tier: 3, count: 3 },
+                    { card: VERIFIED_CARDS.T4_PIKA_AR, tier: 4, count: 25 },
+                    { card: VERIFIED_CARDS.T5_GYARADOS_R, tier: 5, count: 960 }
                 ]
             },
             {
@@ -1727,16 +1865,16 @@
                 badge: '🌌 劍盾巔峰神獸 SA (50種)',
                 title: '【異次元神獸祭】騎拉帝納 V SA 111/100 & 洛奇亞 V SA',
                 price: 960,
-                totalTickets: 900,
+                totalTickets: 3500,
                 lastOneCard: { ...VERIFIED_CARDS.ARCEUS_GOLD_UR, name: '【最後一賞】黃金阿爾宙斯 VSTAR UR', pt: 14900 },
                 milestoneCard: { ...VERIFIED_CARDS.T4_DRAGONAIR_AR, name: '【整數賞】哈克龍 AR 月夜精選', pt: 1150 },
                 prizes: [
                     { card: VERIFIED_CARDS.GIRATINA_V_SA, tier: 1, count: 1 },
-                    { card: VERIFIED_CARDS.LUGIA_V_SA, tier: 2, count: 2 },
+                    { card: VERIFIED_CARDS.LUGIA_V_SA, tier: 2, count: 1 },
                     { card: VERIFIED_CARDS.RAYQUAZA_218, tier: 2, count: 1 },
-                    { card: VERIFIED_CARDS.T3_DRAGONITE_V, tier: 3, count: 10 },
-                    { card: VERIFIED_CARDS.T4_DRAGONAIR_AR, tier: 4, count: 180 },
-                    { card: VERIFIED_CARDS.T5_SNORLAX_R, tier: 5, count: 706 }
+                    { card: VERIFIED_CARDS.T3_DRAGONITE_V, tier: 3, count: 3 },
+                    { card: VERIFIED_CARDS.T4_DRAGONAIR_AR, tier: 4, count: 25 },
+                    { card: VERIFIED_CARDS.T5_SNORLAX_R, tier: 5, count: 960 }
                 ]
             }
         ];
@@ -1768,7 +1906,31 @@
             POOL_CONFIGS.forEach((pool, pIdx) => {
                 if (pool.prizes.length >= 50) return;
                 const usedIds = new Set(pool.prizes.map(p => p.card.id));
-                const isHeavenHell = pool.id === 'pool-100k-heaven-hell';
+
+                // 專屬處理：12,000 PT 天堂與地獄 1/2 池（精準配率：1% 2萬 / 19% 1.2萬 / 30% 1萬 / 50% 保底 6,000 PT）
+                if (pool.id === 'pool-12k-heaven-hell') {
+                    const needed = Math.max(0, 50 - pool.prizes.length); // 33 種
+                    let added = 0;
+                    const pool500Bank = [...tier4Bank, ...tier5Bank];
+                    for (let i = 0; i < pool500Bank.length && added < needed; i++) {
+                        const cand = pool500Bank[i];
+                        if (!cand || usedIds.has(cand.id)) continue;
+                        usedIds.add(cand.id);
+                        // 前 22 種各 15 張 (330) + 後 10 種各 16 張 (160) + 最後 1 種 10 張 = 精準 500 口 (50.00%)
+                        const cCount = added < 22 ? 15 : (added < 32 ? 16 : 10);
+                        pool.prizes.push({
+                            card: { ...cand, name: `【保底 6,000 PT】${cand.name}`, pt: 6000 },
+                            tier: 5,
+                            count: cCount
+                        });
+                        added++;
+                    }
+                    pool.totalTickets = pool.prizes.reduce((sum, p) => sum + p.count, 0);
+                    return;
+                }
+
+                const is100kExtreme = pool.id === 'pool-100k-heaven-hell';
+                const isMicro = Boolean(pool.isMicro);
 
                 const addUniqueFrom = (bank, tier, howMany, countPerType, offset) => {
                     let added = 0;
@@ -1776,7 +1938,7 @@
                         const cand = bank[(i + offset) % bank.length];
                         if (!cand || usedIds.has(cand.id)) continue;
                         usedIds.add(cand.id);
-                        const cardObj = isHeavenHell && tier === 5
+                        const cardObj = is100kExtreme && tier === 5
                             ? { ...cand, name: `【地獄保底】${cand.name}`, pt: 50 }
                             : cand;
                         pool.prizes.push({ card: cardObj, tier, count: countPerType });
@@ -1784,13 +1946,15 @@
                     }
                 };
 
-                if (!isHeavenHell) {
-                    addUniqueFrom(tier2Bank, 2, 2, 1, pIdx * 3);
-                    addUniqueFrom(tier3Bank, 3, 6, 1, pIdx * 5);
-                    addUniqueFrom(tier4Bank, 4, 16, 6, pIdx * 11);
+                // 大幅調低 2、3、4 等高 PT 卡片配率，拉高 5 等低 PT 卡片佔比（約 94%～95%）
+                if (!is100kExtreme) {
+                    addUniqueFrom(tier2Bank, 2, 2, isMicro ? 2 : 1, pIdx * 3);
+                    addUniqueFrom(tier3Bank, 3, 6, isMicro ? 3 : 1, pIdx * 5);
+                    addUniqueFrom(tier4Bank, 4, 16, isMicro ? 12 : 4, pIdx * 11);
                 }
                 const remainingTypesNeeded = Math.max(0, 50 - pool.prizes.length);
-                addUniqueFrom(tier5Bank, 5, remainingTypesNeeded, isHeavenHell ? 1 : 12, pIdx * 17);
+                const t5PerType = is100kExtreme ? 1 : (isMicro ? 245 : 115);
+                addUniqueFrom(tier5Bank, 5, remainingTypesNeeded, t5PerType, pIdx * 17);
 
                 pool.totalTickets = pool.prizes.reduce((sum, p) => sum + p.count, 0);
             });
@@ -2112,26 +2276,24 @@
         }
 
         /* ==========================================================================
-           第 7 節：Three.js 3D 電影級抽卡演出引擎 ＆ 結算視窗互動
+           第 7 節：Three.js 7 套獨立 3D 電影級抽卡演出引擎 ＆ 結算視窗互動
            ========================================================================== */
         const CinemaEngine = {
             rafId: null,
             timers: [],
             renderer: null,
-            scene: null,
-            camera: null,
             pendingTitle: '',
             pendingCards: [],
             pendingBonus: '',
 
             scripts: [
-                { name: '雷鳴精靈球超頻召喚', color: 0xfacc15 },
-                { name: '超夢念力黑洞裂變', color: 0xc084fc },
-                { name: '太晶星冠七彩折射', color: 0x38bdf8 },
-                { name: '噴火龍煉獄蒼藍龍息', color: 0xf97316 },
-                { name: '烈空坐天際隕石衝擊', color: 0x34d399 },
-                { name: '騎拉帝納反轉世界之門', color: 0xf43f5e },
-                { name: '30週年黃金聖殿降臨', color: 0xfde047 }
+                { id: 'pokeball', name: '⚡ 雷鳴精靈球超頻召喚', color: 0xfacc15, sub: '精靈球核心高壓旋轉・閃電能量匯聚中...' },
+                { id: 'blackhole', name: '🌀 超夢念力黑洞裂變', color: 0xc084fc, sub: '引力奇異點扭曲時空・星塵吸入黑洞...' },
+                { id: 'terastal', name: '💎 太晶星冠七彩稜鏡', color: 0x38bdf8, sub: '太晶結晶多面折射・七彩光譜共鳴中...' },
+                { id: 'inferno', name: '🔥 噴火龍煉獄雙螺旋龍息', color: 0xf97316, sub: '蒼藍與赤紅雙龍捲烈焰衝破天際...' },
+                { id: 'meteor', name: '☄️ 烈空坐天際隕石隧道', color: 0x34d399, sub: '穿越超光速翡翠星環・隕石劃破大氣層...' },
+                { id: 'distortion', name: '🌌 騎拉帝納反轉世界裂縫', color: 0xf43f5e, sub: '反重力黑曜石柱浮空・異次元裂縫開啟...' },
+                { id: 'temple', name: '👑 30週年黃金聖殿降臨', color: 0xfde047, sub: '八大黃金聖柱升起・傳說神光降臨舞台...' }
             ],
 
             clearTimers() {
@@ -2141,6 +2303,15 @@
                     cancelAnimationFrame(this.rafId);
                     this.rafId = null;
                 }
+            },
+
+            triggerScreenFlash() {
+                const fl = document.getElementById('cinema-flash-screen');
+                if (!fl) return;
+                fl.classList.remove('hidden', 'animate-hit-flash');
+                void fl.offsetWidth;
+                fl.classList.add('animate-hit-flash');
+                setTimeout(() => fl.classList.add('hidden'), 600);
             },
 
             play(title, cards, bonusText = '') {
@@ -2157,27 +2328,42 @@
                 const bestCard = [...cards].sort((a, b) => b.pt - a.pt)[0] || cards[0];
                 const bestTier = resolveCardTier(bestCard);
 
+                const stageEl = document.getElementById('cinema-stage');
+                if (stageEl) stageEl.classList.remove('animate-cinema-shake');
+
                 document.getElementById('cinema-script-badge').textContent = `SCRIPT #${sIdx + 1} • ${script.name}`;
                 document.getElementById('cinema-pool-name').textContent = title;
-                document.getElementById('cinema-phase-banner').textContent = 'STAGE 1 • 能量核心充能中...';
-                document.getElementById('cinema-sub-banner').textContent = `正在解析 ${cards.length} 枚命運卡匣波動...`;
+                document.getElementById('cinema-phase-banner').className = 'px-4 py-1.5 rounded-full bg-black/85 border-2 border-sky-400 text-sky-300 text-xs sm:text-sm font-black shadow-2xl';
+                document.getElementById('cinema-phase-banner').textContent = `STAGE 1 • ${script.name}`;
+                document.getElementById('cinema-sub-banner').textContent = script.sub;
                 document.getElementById('cinema-reveal-wrap').classList.add('hidden');
                 document.getElementById('cinema-modal').classList.remove('hidden');
 
                 SoundEngine.playCharge();
 
                 requestAnimationFrame(() => {
-                    this.initThree(script.color, bestTier);
+                    this.initThree(script.id, script.color, bestTier);
                 });
 
                 this.timers.push(setTimeout(() => {
-                    document.getElementById('cinema-phase-banner').textContent = bestTier <= 2
-                        ? '⚠️ STAGE 2 • 偵測到超高能金紅神光反應！！'
-                        : 'STAGE 2 • 能量共振突破臨界點！';
-                    if (bestTier <= 2) SoundEngine.playJackpot();
-                }, 900));
+                    this.triggerScreenFlash();
+                    const banner = document.getElementById('cinema-phase-banner');
+                    if (bestTier <= 2) {
+                        banner.className = 'px-4 py-1.5 rounded-full bg-rose-950/90 border-2 border-amber-400 text-amber-300 text-xs sm:text-sm font-black shadow-2xl animate-bounce';
+                        banner.textContent = '⚠️ STAGE 2 • 昇格逆轉發動！！偵測到超高能金紅神光！！';
+                        if (stageEl) stageEl.classList.add('animate-cinema-shake');
+                        SoundEngine.playJackpot();
+                    } else if (bestTier === 3) {
+                        banner.className = 'px-4 py-1.5 rounded-full bg-purple-950/90 border-2 border-purple-400 text-purple-200 text-xs sm:text-sm font-black shadow-2xl';
+                        banner.textContent = '✨ STAGE 2 • 紫光能量突破臨界點！！';
+                        SoundEngine.playWin();
+                    } else {
+                        banner.textContent = 'STAGE 2 • 能量共振釋放中...';
+                    }
+                }, 1050));
 
                 this.timers.push(setTimeout(() => {
+                    this.triggerScreenFlash();
                     const revealWrap = document.getElementById('cinema-reveal-wrap');
                     const revealImg = document.getElementById('cinema-reveal-img');
                     const revealTitle = document.getElementById('cinema-reveal-title');
@@ -2190,22 +2376,24 @@
                     revealImg.dataset.ptcgNum = bestCard.ptcgNum || '25';
                     revealTitle.textContent = `最高命中：${bestCard.name} (${bestCard.pt.toLocaleString()} PT)`;
                     auraRing.className = bestTier === 1
-                        ? 'absolute -inset-4 rounded-3xl blur-xl bg-rose-500/70 cinema-aura-pulse'
+                        ? 'absolute -inset-4 rounded-3xl blur-xl bg-rose-500/80 cinema-aura-pulse'
                         : bestTier === 2
-                            ? 'absolute -inset-4 rounded-3xl blur-xl bg-amber-400/70 cinema-aura-pulse'
-                            : 'absolute -inset-4 rounded-3xl blur-xl bg-sky-400/50 cinema-aura-pulse';
+                            ? 'absolute -inset-4 rounded-3xl blur-xl bg-amber-400/80 cinema-aura-pulse'
+                            : bestTier === 3
+                                ? 'absolute -inset-4 rounded-3xl blur-xl bg-purple-500/65 cinema-aura-pulse'
+                                : 'absolute -inset-4 rounded-3xl blur-xl bg-sky-400/50 cinema-aura-pulse';
 
                     revealWrap.classList.remove('hidden');
-                    document.getElementById('cinema-phase-banner').textContent = 'STAGE 3 • 命運卡牌降臨！';
+                    document.getElementById('cinema-phase-banner').textContent = 'STAGE 3 • 命運卡牌降臨舞台！';
                     SoundEngine.playWin();
-                }, 1750));
+                }, 2050));
 
                 this.timers.push(setTimeout(() => {
                     this.finish();
-                }, 2950));
+                }, 3450));
             },
 
-            initThree(accentHex, bestTier) {
+            initThree(scriptId, accentHex, bestTier) {
                 try {
                     const stage = document.getElementById('cinema-stage');
                     const canvas = document.getElementById('cinema-canvas');
@@ -2221,45 +2409,202 @@
                     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
 
                     const scene = new THREE.Scene();
-                    const camera = new THREE.PerspectiveCamera(60, w / h, 0.1, 100);
-                    camera.position.z = 7;
+                    const camera = new THREE.PerspectiveCamera(60, w / h, 0.1, 120);
+                    camera.position.set(0, 0, 8);
 
-                    const coreColor = bestTier === 1 ? 0xf43f5e : (bestTier === 2 ? 0xfacc15 : accentHex);
-                    const coreGeo = new THREE.OctahedronGeometry(1.35, 1);
-                    const coreMat = new THREE.MeshBasicMaterial({ color: coreColor, wireframe: true });
-                    const coreMesh = new THREE.Mesh(coreGeo, coreMat);
-                    scene.add(coreMesh);
+                    const hitColor = bestTier === 1 ? 0xf43f5e : (bestTier === 2 ? 0xfacc15 : accentHex);
+                    const group = new THREE.Group();
+                    scene.add(group);
 
-                    const ringGeo = new THREE.TorusGeometry(2.3, 0.06, 16, 80);
-                    const ringMat = new THREE.MeshBasicMaterial({ color: 0xfde047 });
-                    const ringMesh = new THREE.Mesh(ringGeo, ringMat);
-                    ringMesh.rotation.x = 1.1;
-                    scene.add(ringMesh);
+                    const animators = [];
 
-                    const pCount = 220;
+                    if (scriptId === 'pokeball') {
+                        // 劇本 1：3D 精靈球＋閃電折線
+                        const topHalf = new THREE.Mesh(
+                            new THREE.SphereGeometry(1.5, 28, 16, 0, Math.PI * 2, 0, Math.PI * 0.48),
+                            new THREE.MeshBasicMaterial({ color: 0xef4444, wireframe: false })
+                        );
+                        const botHalf = new THREE.Mesh(
+                            new THREE.SphereGeometry(1.5, 28, 16, 0, Math.PI * 2, Math.PI * 0.52, Math.PI * 0.48),
+                            new THREE.MeshBasicMaterial({ color: 0xf8fafc })
+                        );
+                        const belt = new THREE.Mesh(
+                            new THREE.TorusGeometry(1.52, 0.08, 12, 48),
+                            new THREE.MeshBasicMaterial({ color: hitColor })
+                        );
+                        belt.rotation.x = Math.PI / 2;
+                        const btn = new THREE.Mesh(
+                            new THREE.SphereGeometry(0.32, 16, 16),
+                            new THREE.MeshBasicMaterial({ color: 0xfde047 })
+                        );
+                        btn.position.z = 1.5;
+                        group.add(topHalf, botHalf, belt, btn);
+                        animators.push((t) => {
+                            group.rotation.y += 0.08;
+                            group.rotation.z = Math.sin(t * 22) * 0.18;
+                            const s = 1 + Math.sin(t * 14) * 0.08;
+                            group.scale.set(s, s, s);
+                        });
+                    } else if (scriptId === 'blackhole') {
+                        // 劇本 2：念力黑洞＋四層傾斜吸積盤
+                        const hole = new THREE.Mesh(
+                            new THREE.SphereGeometry(1.1, 24, 24),
+                            new THREE.MeshBasicMaterial({ color: 0x05020a })
+                        );
+                        group.add(hole);
+                        const rings = [];
+                        for (let r = 0; r < 4; r++) {
+                            const ring = new THREE.Mesh(
+                                new THREE.TorusGeometry(1.6 + r * 0.55, 0.05, 12, 64),
+                                new THREE.MeshBasicMaterial({ color: r % 2 === 0 ? 0xc084fc : hitColor })
+                            );
+                            ring.rotation.x = 1.15 + r * 0.15;
+                            ring.rotation.y = r * 0.4;
+                            group.add(ring);
+                            rings.push(ring);
+                        }
+                        animators.push(() => {
+                            rings.forEach((rg, idx) => {
+                                rg.rotation.z += 0.06 * (idx + 1);
+                            });
+                            group.rotation.y += 0.02;
+                        });
+                    } else if (scriptId === 'terastal') {
+                        // 劇本 3：太晶七彩鑽石與環繞結晶碎片
+                        const crystal = new THREE.Mesh(
+                            new THREE.OctahedronGeometry(1.6, 0),
+                            new THREE.MeshBasicMaterial({ color: 0x38bdf8, wireframe: true })
+                        );
+                        const innerGem = new THREE.Mesh(
+                            new THREE.IcosahedronGeometry(0.95, 0),
+                            new THREE.MeshBasicMaterial({ color: hitColor })
+                        );
+                        group.add(crystal, innerGem);
+                        const shards = [];
+                        for (let i = 0; i < 12; i++) {
+                            const sh = new THREE.Mesh(
+                                new THREE.TetrahedronGeometry(0.28),
+                                new THREE.MeshBasicMaterial({ color: i % 2 === 0 ? 0xf472b6 : 0xfacc15 })
+                            );
+                            const ang = (i / 12) * Math.PI * 2;
+                            sh.position.set(Math.cos(ang) * 2.8, Math.sin(ang) * 1.4, Math.sin(ang) * 2.8);
+                            group.add(sh);
+                            shards.push(sh);
+                        }
+                        animators.push((t) => {
+                            crystal.rotation.y += 0.05;
+                            innerGem.rotation.x -= 0.07;
+                            group.rotation.y += 0.03;
+                            shards.forEach((s, idx) => {
+                                s.rotation.x += 0.09;
+                                s.position.y = Math.sin(t * 5 + idx) * 1.6;
+                            });
+                        });
+                    } else if (scriptId === 'inferno') {
+                        // 劇本 4：雙螺旋烈焰龍捲風
+                        const orbs = [];
+                        for (let i = 0; i < 36; i++) {
+                            const isBlue = i % 2 === 0;
+                            const orb = new THREE.Mesh(
+                                new THREE.SphereGeometry(0.18 + (i % 3) * 0.05, 10, 10),
+                                new THREE.MeshBasicMaterial({ color: isBlue ? 0x38bdf8 : 0xf97316 })
+                            );
+                            group.add(orb);
+                            orbs.push({ mesh: orb, idx: i, isBlue });
+                        }
+                        animators.push((t) => {
+                            orbs.forEach(({ mesh, idx, isBlue }) => {
+                                const hNorm = ((idx / 36) + t * 0.45) % 1;
+                                const y = (hNorm - 0.5) * 6.5;
+                                const radius = 0.6 + hNorm * 2.2;
+                                const ang = hNorm * Math.PI * 6 + (isBlue ? 0 : Math.PI);
+                                mesh.position.set(Math.cos(ang) * radius, y, Math.sin(ang) * radius);
+                            });
+                        });
+                    } else if (scriptId === 'meteor') {
+                        // 劇本 5：超光速翡翠星環隧道
+                        const tunnelRings = [];
+                        for (let i = 0; i < 10; i++) {
+                            const tr = new THREE.Mesh(
+                                new THREE.TorusGeometry(2.4, 0.05, 8, 36),
+                                new THREE.MeshBasicMaterial({ color: i % 2 === 0 ? 0x34d399 : hitColor })
+                            );
+                            tr.position.z = -i * 2.2;
+                            group.add(tr);
+                            tunnelRings.push(tr);
+                        }
+                        animators.push(() => {
+                            tunnelRings.forEach(tr => {
+                                tr.position.z += 0.28;
+                                tr.rotation.z += 0.04;
+                                if (tr.position.z > 6) tr.position.z = -16;
+                            });
+                        });
+                    } else if (scriptId === 'distortion') {
+                        // 劇本 6：反轉世界浮空黑曜石方碑
+                        const blocks = [];
+                        for (let i = 0; i < 16; i++) {
+                            const blk = new THREE.Mesh(
+                                new THREE.BoxGeometry(0.55, 1.4, 0.55),
+                                new THREE.MeshBasicMaterial({ color: i % 3 === 0 ? 0xf43f5e : 0x312e81, wireframe: i % 2 === 0 })
+                            );
+                            const ang = (i / 16) * Math.PI * 2;
+                            blk.position.set(Math.cos(ang) * 2.9, ((i % 5) - 2) * 0.9, Math.sin(ang) * 2.9);
+                            group.add(blk);
+                            blocks.push(blk);
+                        }
+                        animators.push((t) => {
+                            group.rotation.y -= 0.035;
+                            camera.rotation.z = Math.sin(t * 2.5) * 0.22;
+                            blocks.forEach((b, idx) => {
+                                b.rotation.x += 0.04;
+                                b.position.y += Math.sin(t * 4 + idx) * 0.02;
+                            });
+                        });
+                    } else {
+                        // 劇本 7：30週年八柱黃金聖殿
+                        const sun = new THREE.Mesh(
+                            new THREE.SphereGeometry(1.2, 24, 24),
+                            new THREE.MeshBasicMaterial({ color: 0xfde047 })
+                        );
+                        group.add(sun);
+                        for (let i = 0; i < 8; i++) {
+                            const pillar = new THREE.Mesh(
+                                new THREE.CylinderGeometry(0.16, 0.22, 4.4, 12),
+                                new THREE.MeshBasicMaterial({ color: 0xf59e0b })
+                            );
+                            const ang = (i / 8) * Math.PI * 2;
+                            pillar.position.set(Math.cos(ang) * 2.7, 0, Math.sin(ang) * 2.7);
+                            group.add(pillar);
+                        }
+                        animators.push((t) => {
+                            group.rotation.y += 0.04;
+                            const pulse = 1 + Math.sin(t * 10) * 0.12;
+                            sun.scale.set(pulse, pulse, pulse);
+                        });
+                    }
+
+                    // 通用背景星塵粒子
+                    const pCount = 260;
                     const pPos = new Float32Array(pCount * 3);
                     for (let i = 0; i < pCount * 3; i++) {
-                        pPos[i] = (Math.random() - 0.5) * 14;
+                        pPos[i] = (Math.random() - 0.5) * 16;
                     }
                     const pGeo = new THREE.BufferGeometry();
                     pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
-                    const pMat = new THREE.PointsMaterial({ color: coreColor, size: 0.12 });
-                    const stars = new THREE.Points(pGeo, pMat);
+                    const stars = new THREE.Points(pGeo, new THREE.PointsMaterial({ color: hitColor, size: 0.12 }));
                     scene.add(stars);
 
-                    this.scene = scene;
-                    this.camera = camera;
-
-                    const animate = () => {
+                    const startTime = performance.now();
+                    const animate = (now) => {
                         this.rafId = requestAnimationFrame(animate);
-                        coreMesh.rotation.x += 0.035;
-                        coreMesh.rotation.y += 0.05;
-                        ringMesh.rotation.z += 0.04;
-                        stars.rotation.y += 0.008;
-                        if (camera.position.z > 4.6) camera.position.z -= 0.025;
+                        const elapsed = (now - startTime) * 0.001;
+                        animators.forEach(fn => fn(elapsed));
+                        stars.rotation.y += 0.01;
+                        if (camera.position.z > 5.4) camera.position.z -= 0.025;
                         this.renderer.render(scene, camera);
                     };
-                    animate();
+                    this.rafId = requestAnimationFrame(animate);
                 } catch (e) {}
             },
 
@@ -3958,6 +4303,9 @@
             reflexTimer: null,
             reflexScore: 0,
             reflexTimeLeft: 15,
+            slotBusy: false,
+            rouletteBusy: false,
+            rouletteHist: ['🔴', '🔵', '🔴', '🟣', '🔵'],
 
             getDailyEarned() {
                 try {
@@ -3980,56 +4328,174 @@
             },
 
             updateDailyUI() {
+                const txt = `今日額度：${this.getDailyEarned().toLocaleString()} / 1,000 PT`;
                 const el = document.getElementById('daily-free-pt-label');
-                if (el) el.textContent = `今日額度：${this.getDailyEarned().toLocaleString()} / 1,000 PT`;
+                if (el) el.textContent = txt;
+                const bannerEl = document.getElementById('arcade-banner-daily');
+                if (bannerEl) bannerEl.textContent = `今日免費額度：${this.getDailyEarned().toLocaleString()} / 1,000 PT`;
+            },
+
+            setSlotBet(val) {
+                const sel = document.getElementById('slot-bet-select');
+                if (sel) sel.value = String(val);
+                document.querySelectorAll('.slot-chip').forEach(btn => {
+                    const bVal = Number(btn.textContent.replace(/,/g, ''));
+                    btn.className = bVal === val
+                        ? 'slot-chip py-1.5 rounded-lg bg-amber-400 text-black'
+                        : 'slot-chip py-1.5 rounded-lg bg-obsidian border border-white/15 text-gray-300 hover:border-amber-400';
+                });
             },
 
             spinSlot() {
+                if (this.slotBusy) return;
                 const bet = Number(document.getElementById('slot-bet-select').value) || 1000;
                 if (!spendPtSafe(bet)) return;
+
+                this.slotBusy = true;
+                const btn = document.getElementById('btn-spin-slot');
+                const statusEl = document.getElementById('slot-status-text');
+                if (btn) btn.disabled = true;
+                if (statusEl) statusEl.textContent = '🎰 滾輪高速轉動中...';
+
                 const symbols = ['7️⃣', '⚡', '🟣', '🔥', '🍒', '💎'];
-                const res = [0, 1, 2].map(() => symbols[Math.floor(Math.random() * symbols.length)]);
-                res.forEach((s, i) => {
-                    document.getElementById(`slot-reel-${i}`).textContent = s;
+                const finalRes = [0, 1, 2].map(() => symbols[Math.floor(Math.random() * symbols.length)]);
+                const reels = [0, 1, 2].map(i => document.getElementById(`slot-reel-${i}`));
+                reels.forEach(r => r && r.classList.add('slot-spinning'));
+
+                const spinIv = setInterval(() => {
+                    reels.forEach((r, idx) => {
+                        if (r && r.classList.contains('slot-spinning')) {
+                            r.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+                        }
+                    });
+                }, 80);
+
+                [450, 750, 1050].forEach((delay, idx) => {
+                    setTimeout(() => {
+                        if (reels[idx]) {
+                            reels[idx].classList.remove('slot-spinning');
+                            reels[idx].textContent = finalRes[idx];
+                        }
+                        SoundEngine.playClick();
+                        if (idx === 2) {
+                            clearInterval(spinIv);
+                            this.slotBusy = false;
+                            if (btn) btn.disabled = false;
+
+                            let mult = 0;
+                            if (finalRes[0] === finalRes[1] && finalRes[1] === finalRes[2]) {
+                                mult = finalRes[0] === '7️⃣' ? 50 : (finalRes[0] === '⚡' ? 15 : (finalRes[0] === '🟣' ? 10 : 6));
+                            } else if (finalRes[0] === finalRes[1] || finalRes[1] === finalRes[2] || finalRes[0] === finalRes[2]) {
+                                mult = 1.4;
+                            }
+
+                            if (mult > 0) {
+                                const win = Math.round(bet * mult);
+                                addPtSafe(win);
+                                if (mult >= 10) SoundEngine.playJackpot();
+                                else SoundEngine.playWin();
+                                if (statusEl) statusEl.textContent = `🎉 中獎 ${mult}x！獲得 +${win.toLocaleString()} PT！`;
+                                showToast(`🎰 老虎機中獎 ${mult}x！獲得 +${win.toLocaleString()} PT！`);
+                            } else {
+                                if (statusEl) statusEl.textContent = '差一點連線，再轉一次試手氣！';
+                            }
+                        }
+                    }, delay);
                 });
-
-                let mult = 0;
-                if (res[0] === res[1] && res[1] === res[2]) {
-                    mult = res[0] === '7️⃣' ? 50 : (res[0] === '⚡' ? 15 : (res[0] === '🟣' ? 10 : 6));
-                } else if (res[0] === res[1] || res[1] === res[2] || res[0] === res[2]) {
-                    mult = 1.4;
-                }
-
-                if (mult > 0) {
-                    const win = Math.round(bet * mult);
-                    addPtSafe(win);
-                    SoundEngine.playWin();
-                    showToast(`🎰 中獎 ${mult}x！獲得 +${win.toLocaleString()} PT！`);
-                } else {
-                    SoundEngine.playClick();
-                    showToast('🎰 差一點連線，再接再厲！');
-                }
             },
 
             playRoulette(pick) {
+                if (this.rouletteBusy) return;
                 const bet = Number(document.getElementById('roulette-bet-select').value) || 1000;
                 if (!spendPtSafe(bet)) return;
-                const r = Math.random();
-                const outcome = r < 0.065 ? 'MASTER' : (r < 0.53 ? 'RED' : 'BLUE');
-                const ballMap = { RED: '🔴', BLUE: '🔵', MASTER: '🟣' };
-                document.getElementById('roulette-result-ball').textContent = ballMap[outcome];
 
-                if (pick === outcome) {
-                    const mult = outcome === 'MASTER' ? 14 : 2;
-                    const win = bet * mult;
-                    addPtSafe(win);
-                    SoundEngine.playJackpot();
-                    document.getElementById('roulette-result-text').textContent = `🎉 猜中 ${ballMap[outcome]}！贏得 +${win.toLocaleString()} PT (${mult}x)！`;
-                    showToast(`🎡 精靈球賭盤命中 ${mult}x！獲得 +${win.toLocaleString()} PT！`);
-                } else {
+                this.rouletteBusy = true;
+                const trackEl = document.getElementById('roulette-track');
+                const resText = document.getElementById('roulette-result-text');
+                if (resText) resText.textContent = '🎡 精靈球輪盤高速轉動中...';
+
+                const seq = ['🔴', '🔵', '🔴', '🔵', '🟣'];
+                let step = 0;
+                const iv = setInterval(() => {
+                    step++;
+                    if (trackEl) {
+                        const view = [0, 1, 2, 3, 4].map(o => seq[(step + o) % seq.length]);
+                        trackEl.innerHTML = view.map((b, i) => i === 2
+                            ? `<span class="px-1.5 py-0.5 rounded-lg bg-amber-400/30 border border-amber-400 scale-125">${b}</span>`
+                            : `<span class="opacity-65">${b}</span>`
+                        ).join('');
+                    }
                     SoundEngine.playClick();
-                    document.getElementById('roulette-result-text').textContent = `開出 ${ballMap[outcome]}，下次一定中！`;
-                }
+                }, 90);
+
+                setTimeout(() => {
+                    clearInterval(iv);
+                    this.rouletteBusy = false;
+                    const r = Math.random();
+                    const outcome = r < 0.065 ? 'MASTER' : (r < 0.53 ? 'RED' : 'BLUE');
+                    const ballMap = { RED: '🔴', BLUE: '🔵', MASTER: '🟣' };
+                    const winBall = ballMap[outcome];
+
+                    if (trackEl) {
+                        trackEl.innerHTML = `<span>🔴</span><span>🔵</span><span class="px-2 py-0.5 rounded-lg bg-amber-400/35 border-2 border-amber-400 scale-125">${winBall}</span><span>🔴</span><span>🔵</span>`;
+                    }
+                    this.rouletteHist.unshift(winBall);
+                    this.rouletteHist = this.rouletteHist.slice(0, 6);
+                    const histEl = document.getElementById('roulette-history');
+                    if (histEl) {
+                        histEl.innerHTML = `<span class="text-[10px] text-gray-500">近期：</span>` + this.rouletteHist.map(b => `<span>${b}</span>`).join('');
+                    }
+
+                    if (pick === outcome) {
+                        const mult = outcome === 'MASTER' ? 14 : 2;
+                        const win = bet * mult;
+                        addPtSafe(win);
+                        if (mult >= 14) SoundEngine.playJackpot();
+                        else SoundEngine.playWin();
+                        if (resText) resText.textContent = `🎉 猜中 ${winBall}！贏得 +${win.toLocaleString()} PT (${mult}x)！`;
+                        showToast(`🎡 精靈球賭盤命中 ${mult}x！獲得 +${win.toLocaleString()} PT！`);
+                    } else {
+                        if (resText) resText.textContent = `開出 ${winBall}，下次一定中！`;
+                    }
+                }, 950);
+            },
+
+            spawnReflexTarget(arena) {
+                if (!this.reflexTimer || !arena) return;
+                const roll = Math.random();
+                const type = roll < 0.42 ? 'BOMB' : (roll < 0.84 ? 'PIKA' : 'MEW');
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.style.left = `${8 + Math.random() * 74}%`;
+                btn.style.top = `${8 + Math.random() * 70}%`;
+                btn.className = 'absolute text-2xl sm:text-3xl p-2 rounded-full bg-slate-800/95 border border-white/25 shadow-lg hover:scale-110 active:scale-95 transition-transform';
+                btn.textContent = type === 'BOMB' ? '💣' : (type === 'PIKA' ? '⚡' : '🌟');
+
+                const lifeMs = 850 + Math.floor(Math.random() * 350);
+                const removeTimer = setTimeout(() => {
+                    if (btn.isConnected) btn.remove();
+                }, lifeMs);
+
+                btn.onclick = (e) => {
+                    e.stopPropagation();
+                    clearTimeout(removeTimer);
+                    const delta = type === 'BOMB' ? -80 : (type === 'MEW' ? 120 : 35);
+                    this.reflexScore = Math.max(0, this.reflexScore + delta);
+                    if (type === 'BOMB') SoundEngine.playTear();
+                    else SoundEngine.playClick();
+
+                    const pop = document.createElement('span');
+                    pop.style.left = btn.style.left;
+                    pop.style.top = btn.style.top;
+                    pop.className = `pointer-events-none absolute text-xs font-black ${delta > 0 ? 'text-emerald-300' : 'text-rose-400'}`;
+                    pop.textContent = delta > 0 ? `+${delta}` : `${delta}`;
+                    arena.appendChild(pop);
+                    setTimeout(() => pop.remove(), 450);
+
+                    document.getElementById('reflex-score').textContent = `${this.reflexScore} PT`;
+                    btn.remove();
+                };
+                arena.appendChild(btn);
             },
 
             startReflexGame() {
@@ -4041,47 +4507,36 @@
                 this.reflexScore = 0;
                 this.reflexTimeLeft = 15.0;
                 const arena = document.getElementById('reflex-arena');
-                document.getElementById('btn-start-reflex').disabled = true;
+                const startBtn = document.getElementById('btn-start-reflex');
+                if (startBtn) startBtn.disabled = true;
+                arena.innerHTML = '';
+
+                this.spawnReflexTarget(arena);
+                this.spawnReflexTarget(arena);
 
                 this.reflexTimer = setInterval(() => {
-                    this.reflexTimeLeft = Math.max(0, +(this.reflexTimeLeft - 0.35).toFixed(1));
+                    this.reflexTimeLeft = Math.max(0, +(this.reflexTimeLeft - 0.5).toFixed(1));
                     document.getElementById('reflex-timer').textContent = `${this.reflexTimeLeft.toFixed(1)}s`;
                     document.getElementById('reflex-score').textContent = `${this.reflexScore} PT`;
 
                     if (this.reflexTimeLeft <= 0) {
                         clearInterval(this.reflexTimer);
                         this.reflexTimer = null;
-                        document.getElementById('btn-start-reflex').disabled = false;
-                        arena.innerHTML = `<div class="text-center text-xs font-black text-amber-300">挑戰結束！本局得分 ${this.reflexScore} PT</div>`;
+                        if (startBtn) startBtn.disabled = false;
                         const granted = this.addDailyEarned(this.reflexScore);
+                        arena.innerHTML = `
+                            <div class="text-center space-y-1 px-3">
+                                <div class="text-sm font-black text-amber-300">⏱ 挑戰結束！本局得分 ${this.reflexScore} PT</div>
+                                <div class="text-xs font-bold text-emerald-300">實際入帳：+${granted} PT（每日上限 1,000 PT）</div>
+                            </div>`;
+                        SoundEngine.playWin();
                         showToast(`⚡ 挑戰結束！實際入帳 +${granted} PT（受每日 1,000 PT 上限規範）`);
                         return;
                     }
 
-                    arena.innerHTML = '';
-                    const count = 2 + Math.floor(Math.random() * 2);
-                    for (let i = 0; i < count; i++) {
-                        const roll = Math.random();
-                        const type = roll < 0.45 ? 'BOMB' : (roll < 0.82 ? 'PIKA' : 'MEW');
-                        const btn = document.createElement('button');
-                        btn.style.left = `${10 + Math.random() * 72}%`;
-                        btn.style.top = `${10 + Math.random() * 68}%`;
-                        btn.className = 'absolute text-2xl p-1.5 rounded-full bg-white/10 hover:scale-125 transition-transform';
-                        btn.textContent = type === 'BOMB' ? '💣' : (type === 'PIKA' ? '⚡' : '🌟');
-                        btn.onclick = () => {
-                            if (type === 'BOMB') {
-                                this.reflexScore = Math.max(0, this.reflexScore - 80);
-                                SoundEngine.playTear();
-                            } else {
-                                this.reflexScore += type === 'MEW' ? 120 : 35;
-                                SoundEngine.playClick();
-                            }
-                            document.getElementById('reflex-score').textContent = `${this.reflexScore} PT`;
-                            btn.remove();
-                        };
-                        arena.appendChild(btn);
-                    }
-                }, 350);
+                    this.spawnReflexTarget(arena);
+                    if (Math.random() < 0.65) this.spawnReflexTarget(arena);
+                }, 500);
             }
         };
 
