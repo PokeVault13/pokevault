@@ -65,9 +65,23 @@
             );
         }
 
-        @keyframes holoShimmer {
-            0% { background-position: -180% 0; }
-            100% { background-position: 180% 0; }
+        .pack-foil-crimp-gold {
+            background: repeating-linear-gradient(
+                90deg,
+                #b45309 0px,
+                #fde047 2px,
+                #ca8a04 4px,
+                #78350f 6px
+            );
+        }
+
+        .pack-foil-crimp-silver {
+            background: repeating-linear-gradient(
+                90deg,
+                rgba(255,255,255,0.18) 0px,
+                rgba(255,255,255,0.52) 2px,
+                rgba(15,23,42,0.55) 4px
+            );
         }
         .holo-glint {
             background: linear-gradient(
@@ -679,22 +693,9 @@
             <div id="result-cards-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 max-h-[54vh] overflow-y-auto p-1"></div>
 
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-2 border-t border-white/10">
-                <button onclick="keepAllResultCards()" class="py-3 px-4 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:brightness-110 text-white font-black text-xs sm:text-sm shadow-lg">
-                    🎒 全部保留入保管庫
-                </button>
-                <button onclick="sellLowTierResultCards()" id="btn-sell-low-results" class="py-3 px-4 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/60 text-amber-200 font-black text-xs sm:text-sm">
-                    ♻️ 回收 4/5 等卡 (留高賞)
-                </button>
-                <button onclick="sellAllResultCards()" id="btn-sell-all-results" class="py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-500 hover:brightness-110 text-black font-black text-xs sm:text-sm shadow-lg">
-                    💰 全部換回 0 PT
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ==================== 彈窗 3：擬真 3D 鋁箔卡包撕開 ＋ 手指拖曳側傾偷看卡邊視窗 ==================== -->
+    <!-- ==================== 彈窗 3：擬真 3D 鋁箔卡包撕開 ＋ 自由 3D 立體旋轉偷看卡邊邊角角視窗 ==================== -->
     <div id="pack-tear-modal" class="hidden fixed inset-0 z-50 bg-black/95 backdrop-blur-md overflow-y-auto p-3 sm:p-6">
-        <div class="max-w-lg mx-auto bg-slatecard border border-amber-400/50 rounded-3xl p-4 sm:p-6 space-y-3.5 my-auto text-center shadow-2xl relative overflow-hidden">
+        <div class="max-w-lg mx-auto bg-slatecard border border-amber-400/50 rounded-3xl p-4 sm:p-6 space-y-3 my-auto text-center shadow-2xl relative overflow-hidden">
             <div id="pack-hit-flash-overlay" class="pointer-events-none hidden absolute inset-0 z-30 bg-gradient-to-tr from-amber-400/50 via-yellow-200/60 to-rose-500/50"></div>
 
             <div class="flex items-center justify-between relative z-10">
@@ -706,18 +707,18 @@
 
             <!-- 階段 1：擬真 3D 鋁箔卡包 ＋ 可拖曳撕開頂部鋁箔封條 -->
             <div id="pack-sealed-stage" class="space-y-3.5 py-1 relative z-10">
-                <div id="pack-3d-tilt-wrapper" class="relative mx-auto w-56 h-80 select-none touch-none transition-transform duration-150" style="transform-style: preserve-3d;">
+                <div id="pack-3d-tilt-wrapper" class="relative mx-auto w-56 h-[348px] select-none touch-none transition-transform duration-150" style="transform-style: preserve-3d;">
                     <div id="pack-tear-strip" class="relative z-20 h-11 w-full rounded-t-2xl bg-gradient-to-r from-amber-500 via-yellow-300 to-amber-500 border-b-2 border-dashed border-rose-600 shadow-lg flex flex-col justify-between overflow-hidden cursor-grab active:cursor-grabbing">
-                        <div class="h-2 w-full pack-crimp-pattern opacity-80"></div>
+                        <div class="h-2.5 w-full pack-foil-crimp-gold"></div>
                         <div class="px-2.5 flex items-center justify-between text-[10px] font-black text-black">
-                            <span id="pack-scissors-icon" class="inline-flex items-center gap-1 bg-white/85 px-1.5 py-0.5 rounded-full shadow">✂️ 滑動撕開</span>
+                            <span id="pack-scissors-icon" class="inline-flex items-center gap-1 bg-white/90 px-1.5 py-0.5 rounded-full shadow">✂️ 滑動撕開</span>
                             <span id="pack-tear-pct" class="font-display">0%</span>
                             <span>➔➔</span>
                         </div>
-                        <div class="h-1 w-full bg-rose-600/40"></div>
+                        <div class="h-1 w-full bg-rose-600/50"></div>
                     </div>
 
-                    <div id="pack-wrapper-container" onclick="PackOpener.tearOpen()" class="cursor-pointer w-full h-[276px] rounded-b-2xl overflow-hidden border-x-2 border-b-2 border-amber-400 shadow-[0_12px_40px_rgba(251,191,36,0.45)]"></div>
+                    <div id="pack-wrapper-container" onclick="PackOpener.tearOpen()" class="cursor-pointer w-full h-[304px] rounded-b-2xl overflow-hidden border-x-2 border-b-2 border-amber-400 shadow-[0_12px_40px_rgba(251,191,36,0.45)]"></div>
                 </div>
 
                 <div class="bg-obsidian border border-amber-400/40 rounded-2xl p-2.5 space-y-1.5">
@@ -728,27 +729,40 @@
                 </div>
             </div>
 
-            <!-- 階段 2：撕開後卡片從鋁箔袋口抽出 ＋ 3D 側邊偷看卡邊 ＋ 滑動甩牌 -->
-            <div id="pack-peek-stage" class="hidden space-y-3 relative z-10">
+            <!-- 階段 2：全自由 360° 3D 立體旋轉檢視卡牌邊邊角角（移除橫向拉桿） -->
+            <div id="pack-peek-stage" class="hidden space-y-2.5 relative z-10">
                 <div class="px-3 py-1.5 rounded-xl bg-obsidian/90 border border-amber-400/40 text-xs font-black text-amber-300" id="pack-edge-hint">
-                    👀 左右拖曳卡片或滑動拉桿側傾，偷看側邊發光顏色！
+                    🖐️ 單指／滑鼠自由 360° 拖曳轉動 3D 卡牌，檢視上下左右邊緣與四角光澤！
                 </div>
 
-                <div class="relative mx-auto w-64 h-80 flex items-center justify-center">
-                    <div id="pack-open-beam" class="pointer-events-none absolute inset-x-6 bottom-2 h-64 rounded-full blur-2xl opacity-60 bg-gradient-to-t from-amber-400/50 via-purple-500/30 to-transparent"></div>
-                    <div id="pack-3d-stack" class="relative w-60 h-76 flex items-center justify-center select-none touch-none animate-cards-emerge"></div>
-                    <div class="pointer-events-none absolute -bottom-2 inset-x-8 h-10 rounded-b-2xl bg-gradient-to-t from-amber-500/30 via-slate-900/90 to-transparent border-x border-b border-amber-400/40 flex items-end justify-center pb-1">
-                        <span class="text-[9px] font-display font-black tracking-widest text-amber-300/80">OPENED FOIL POUCH</span>
-                    </div>
-                </div>
+                <!-- 真實 Three.js 3D 立體卡牌疊層舞台 -->
+                <div id="pack-3d-viewport" class="relative mx-auto w-full h-80 sm:h-88 rounded-2xl bg-gradient-to-b from-slate-950 via-[#0b1224] to-obsidian border border-amber-400/35 overflow-hidden select-none touch-none cursor-grab active:cursor-grabbing shadow-inner">
+                    <div id="pack-open-beam" class="pointer-events-none absolute inset-x-8 bottom-0 h-56 rounded-full blur-2xl opacity-50 bg-gradient-to-t from-amber-400/40 via-purple-500/20 to-transparent"></div>
+                    <canvas id="pack-3d-canvas" class="relative z-10 w-full h-full block"></canvas>
 
-                <div class="bg-obsidian border border-white/10 rounded-xl p-2.5 space-y-1">
-                    <div class="flex justify-between text-[11px] font-black text-gray-300">
-                        <span>◀ 往左偷看卡邊</span>
-                        <span id="pack-remaining-counter" class="text-amber-300">剩餘 5 張</span>
-                        <span>往右偷看卡邊 ▶</span>
+                    <!-- 左上角剩餘張數與角度指示 -->
+                    <div class="pointer-events-none absolute top-2.5 left-2.5 z-20 px-2.5 py-1 rounded-lg bg-black/75 border border-white/15 text-[10px] font-black text-amber-300">
+                        <span id="pack-remaining-counter">剩餘 6 張</span>
                     </div>
-                    <input id="pack-tilt-slider" type="range" min="-62" max="62" value="32" oninput="PackOpener.setTilt(this.value)" class="w-full accent-amber-400 cursor-pointer">
+
+                    <!-- 右上角 3D 縮放控制 -->
+                    <div class="absolute top-2 right-2 z-20 flex items-center gap-1">
+                        <button onclick="PackOpener.adjustZoom(-0.7)" title="拉近看卡邊細節" class="w-7 h-7 rounded-lg bg-black/75 hover:bg-amber-400 hover:text-black border border-white/15 text-xs font-black text-white">＋</button>
+                        <button onclick="PackOpener.adjustZoom(0.7)" title="拉遠" class="w-7 h-7 rounded-lg bg-black/75 hover:bg-amber-400 hover:text-black border border-white/15 text-xs font-black text-white">－</button>
+                    </div>
+
+                    <!-- 底部快捷 3D 視角輔助膠囊（非拉桿） -->
+                    <div class="absolute bottom-2 inset-x-2 z-20 flex items-center justify-center gap-1.5 flex-wrap">
+                        <button onclick="PackOpener.presetView('edge')" class="px-2.5 py-1 rounded-full bg-black/80 hover:bg-amber-400 hover:text-black border border-amber-400/40 text-[10px] font-black text-amber-200 transition-colors">
+                            📐 側邊與四角視角
+                        </button>
+                        <button onclick="PackOpener.toggleFanSpread()" id="btn-pack-fan" class="px-2.5 py-1 rounded-full bg-black/80 hover:bg-cyan-400 hover:text-black border border-cyan-400/40 text-[10px] font-black text-cyan-200 transition-colors">
+                            🃏 扇形錯開卡邊
+                        </button>
+                        <button onclick="PackOpener.presetView('front')" class="px-2.5 py-1 rounded-full bg-black/80 hover:bg-white hover:text-black border border-white/20 text-[10px] font-black text-gray-200 transition-colors">
+                            🔄 回正面
+                        </button>
+                    </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-2.5">
@@ -3078,35 +3092,115 @@
         };
 
         const BOX_SETS = [
-            { id: 'box-30th', setCode: 'M6a', badge: '👑 2026 30週年全112種', title: '寶可夢 30週年紀念皇冠盒 (M6a)', jpTitle: '30th Celebration', desc: '100% 正宗 M6a 官方完整卡表！收錄 001/103～103/103 全部 103 張卡 ＋ 秘寶全圖（共 112 種）！', packPrice: 900, boxPrice: 8500, packGrad: 'from-amber-700 via-yellow-900 to-slate-950', packAccent: '#facc15', coverImg: scryImg('me55', 'R'), ptcgSet: 'cel25', ptcgNum: '25' },
-            { id: 'box-sv10', setCode: 'SV10', badge: '🚀 SV10 全132種完整收錄', title: 'SV10 火箭隊的榮耀 擴充盒', jpTitle: 'ロケット団の栄光', desc: '100% 正版 SV10 完整卡表（001/098～132/098 共 132 種）！主打火箭隊的超夢 ex SAR/UR、坂木 SAR！', packPrice: 600, boxPrice: 5600, packGrad: 'from-rose-800 via-red-950 to-slate-950', packAccent: '#fb7185', coverImg: tcImg('sv10', '231'), ptcgSet: 'sv10', ptcgNum: '231' },
-            { id: 'box-m1l', setCode: 'M1L', badge: '🥊 M1L 全92種完整收錄', title: 'M1L 超級勇氣 (Mega Brave)', jpTitle: 'メガブレイブ', desc: '100% 正版 M1L 完整卡表（001/063～092/063 共 92 種）！主打超級路卡利歐 ex MUR 純金與莉莉艾的決心 SAR！', packPrice: 650, boxPrice: 6000, packGrad: 'from-orange-700 via-amber-950 to-slate-950', packAccent: '#fb923c', coverImg: tcImg('me1', '187'), ptcgSet: 'me1', ptcgNum: '187' },
-            { id: 'box-m2a', setCode: 'M2a', badge: '🐉 M2a 全250種完整收錄', title: 'M2a 超級夢想 ex (MEGA Dream ex)', jpTitle: 'MEGAドリームex', desc: '100% 正版 M2a 完整卡表（001/193～250/193 共 250 種）！收錄超級快龍 ex MUR 純金 (#250) 與超級耿鬼 SAR！', packPrice: 750, boxPrice: 7000, packGrad: 'from-emerald-800 via-teal-950 to-slate-950', packAccent: '#34d399', coverImg: tcImg('me2pt5', '284'), ptcgSet: 'me2pt5', ptcgNum: '284' },
-            { id: 'box-m1s', setCode: 'M1S', badge: '🌙 M1S 全92種完整收錄', title: 'M1S 超級交響樂 (Mega Symphonia)', jpTitle: 'メガシンフォニア', desc: '100% 正版 M1S 完整卡表（001/063～092/063 共 92 種）！主打超級沙奈朵 ex MUR 純金與阿塞蘿拉 SAR！', packPrice: 650, boxPrice: 6000, packGrad: 'from-pink-800 via-purple-950 to-slate-950', packAccent: '#f472b6', coverImg: tcImg('me1', '188'), ptcgSet: 'me1', ptcgNum: '188' },
-            { id: 'box-m2', setCode: 'M2', badge: '🔥 M2 全116種完整收錄', title: 'M2 煉獄烈焰 X (Inferno X)', jpTitle: 'インフェルノX', desc: '100% 正版 M2 完整卡表（001/080～116/080 共 116 種）！收錄超級噴火龍 X ex MUR 純金與小光 (Dawn) SAR！', packPrice: 720, boxPrice: 6800, packGrad: 'from-sky-800 via-blue-950 to-slate-950', packAccent: '#38bdf8', coverImg: tcImg('me2', '130'), ptcgSet: 'me2', ptcgNum: '130' },
-            { id: 'box-sv11', setCode: 'SV11', badge: '⚡ SV11 雙彈全348種', title: 'SV11 黑雷＆白焰 雙擴充盒', jpTitle: 'ブラックボルト・ホワイトフレア', desc: '100% 正版 SV11B+W 完整雙彈卡表（共 348 種）！收錄純黑捷克羅姆 BWR、純白萊希拉姆 BWR！', packPrice: 680, boxPrice: 6400, packGrad: 'from-zinc-700 via-slate-900 to-black', packAccent: '#e2e8f0', coverImg: tcImg('zsv10pt5', '172'), ptcgSet: 'zsv10pt5', ptcgNum: '172' },
-            { id: 'box-sv85', setCode: 'SV8a', badge: '💎 SV8a 全237種完整收錄', title: 'SV8a 太晶慶典 ex 頂級盒', jpTitle: 'テラスタルフェスex', desc: '100% 正版 SV8a 完整卡表（001/187～237/187 共 237 種）！收錄太晶月亮伊布 SAR、太晶仙子伊布 SAR！', packPrice: 800, boxPrice: 7500, packGrad: 'from-indigo-800 via-purple-950 to-slate-950', packAccent: '#c084fc', coverImg: tcImg('sv8pt5', '161'), ptcgSet: 'sv8pt5', ptcgNum: '161' },
-            { id: 'box-151', setCode: 'SV2a', badge: '🔴 SV2a 151 全210種', title: 'SV2a 寶可夢卡牌 151 強化盒', jpTitle: 'ポケモンカード151', desc: '100% 正版 SV2a 151 完整卡表（001/165～210/165 共 210 種）！御三家 SAR 齊聚，噴火龍、水箭龜、妙蛙花！', packPrice: 620, boxPrice: 5800, packGrad: 'from-red-800 via-rose-950 to-slate-950', packAccent: '#f87171', coverImg: tcImg('sv3pt5', '199'), ptcgSet: 'sv3pt5', ptcgNum: '199' },
-            { id: 'box-25th', setCode: 'S8a', badge: '🎂 25週年 S8a+Promo 55種', title: '寶可夢 25週年黃金紀念箱', jpTitle: '25th GOLDEN BOX', desc: '100% 正版 S8a 主彈 + S8a-P 25th Promo 完整卡表（共 55 種）！收錄純金皮卡丘 V、黃金夢幻 UR 與御三家復刻！', packPrice: 850, boxPrice: 7900, packGrad: 'from-yellow-700 via-amber-950 to-slate-950', packAccent: '#fde047', coverImg: tcImg('swshp', 'SWSH145'), ptcgSet: 'swshp', ptcgNum: 'SWSH145' },
-            { id: 'box-sv9', setCode: 'SV9', badge: '🤝 SV9 全132種完整收錄', title: 'SV9 對戰搭檔 (Battle Partners)', jpTitle: 'バトルパートナーズ', desc: '100% 正版 SV9 完整卡表（001/100～132/100 共 132 種）！收錄莉莉艾的皮皮 ex SAR、N 的索羅亞克 ex SAR！', packPrice: 580, boxPrice: 5400, packGrad: 'from-cyan-800 via-sky-950 to-slate-950', packAccent: '#22d3ee', coverImg: tcImg('sv9', '184'), ptcgSet: 'sv9', ptcgNum: '184' }
+            { id: 'box-30th', setCode: 'M6a', cardsPerPack: 6, badge: '👑 2026 30週年全112種', title: '寶可夢 30週年紀念皇冠盒 (M6a)', jpTitle: '30th セレブレーション', desc: '100% 正宗 M6a 官方完整卡表！每包 6 枚全閃卡，收錄 001/103～103/103 全部 103 張卡 ＋ 秘寶全圖（共 112 種）！', packPrice: 900, boxPrice: 8500, packGrad: 'from-sky-400 via-amber-200 to-yellow-500', coverDex: [25, 151, 150], coverImg: scryImg('me55', 'R'), ptcgSet: 'cel25', ptcgNum: '25' },
+            { id: 'box-sv10', setCode: 'SV10', cardsPerPack: 5, badge: '🚀 SV10 全132種完整收錄', title: 'SV10 火箭隊的榮耀 擴充盒', jpTitle: 'ロケット団の栄光', desc: '100% 正版 SV10 完整卡表（001/098～132/098 共 132 種）！主打火箭隊的超夢 ex SAR/UR、坂木 SAR！', packPrice: 600, boxPrice: 5600, packGrad: 'from-zinc-900 via-rose-950 to-black', coverDex: [150, 146], coverImg: tcImg('sv10', '231'), ptcgSet: 'sv10', ptcgNum: '231' },
+            { id: 'box-m1l', setCode: 'M1L', cardsPerPack: 5, badge: '🥊 M1L 全92種完整收錄', title: 'M1L 超級勇氣 (Mega Brave)', jpTitle: 'メガブレイブ', desc: '100% 正版 M1L 完整卡表（001/063～092/063 共 92 種）！主打超級路卡利歐 ex MUR 純金與莉莉艾的決心 SAR！', packPrice: 650, boxPrice: 6000, packGrad: 'from-amber-600 via-orange-900 to-slate-950', coverDex: [448, 3], coverImg: tcImg('me1', '187'), ptcgSet: 'me1', ptcgNum: '187' },
+            { id: 'box-m2a', setCode: 'M2a', cardsPerPack: 10, badge: '🐉 M2a 全250種完整收錄', title: 'M2a 超級夢想 ex (MEGA Dream ex)', jpTitle: 'MEGAドリームex', desc: '100% 正版 M2a 完整卡表（001/193～250/193 共 250 種）！收錄超級快龍 ex MUR 純金 (#250) 與超級耿鬼 SAR！', packPrice: 750, boxPrice: 7000, packGrad: 'from-emerald-600 via-teal-900 to-slate-950', coverDex: [149, 94], coverImg: tcImg('me2pt5', '284'), ptcgSet: 'me2pt5', ptcgNum: '284' },
+            { id: 'box-m1s', setCode: 'M1S', cardsPerPack: 5, badge: '🌙 M1S 全92種完整收錄', title: 'M1S 超級交響樂 (Mega Symphonia)', jpTitle: 'メガシンフォニア', desc: '100% 正版 M1S 完整卡表（001/063～092/063 共 92 種）！主打超級沙奈朵 ex MUR 純金與阿塞蘿拉 SAR！', packPrice: 650, boxPrice: 6000, packGrad: 'from-fuchsia-700 via-purple-950 to-slate-950', coverDex: [282, 380], coverImg: tcImg('me1', '188'), ptcgSet: 'me1', ptcgNum: '188' },
+            { id: 'box-m2', setCode: 'M2', cardsPerPack: 5, badge: '🔥 M2 全116種完整收錄', title: 'M2 煉獄烈焰 X (Inferno X)', jpTitle: 'インフェルノX', desc: '100% 正版 M2 完整卡表（001/080～116/080 共 116 種）！收錄超級噴火龍 X ex MUR 純金與小光 (Dawn) SAR！', packPrice: 720, boxPrice: 6800, packGrad: 'from-sky-700 via-blue-950 to-slate-950', coverDex: [6, 393], coverImg: tcImg('me2', '130'), ptcgSet: 'me2', ptcgNum: '130' },
+            { id: 'box-sv11', setCode: 'SV11', cardsPerPack: 7, badge: '⚡ SV11 雙彈全348種', title: 'SV11 黑雷＆白焰 雙擴充盒', jpTitle: 'ブラックボルト・ホワイトフレア', desc: '100% 正版 SV11B+W 完整雙彈卡表（共 348 種）！收錄純黑捷克羅姆 BWR、純白萊希拉姆 BWR！', packPrice: 680, boxPrice: 6400, packGrad: 'from-slate-700 via-zinc-900 to-black', coverDex: [644, 643], coverImg: tcImg('zsv10pt5', '172'), ptcgSet: 'zsv10pt5', ptcgNum: '172' },
+            { id: 'box-sv85', setCode: 'SV8a', cardsPerPack: 10, badge: '💎 SV8a 全237種完整收錄', title: 'SV8a 太晶慶典 ex 頂級盒', jpTitle: 'テラスタルフェスex', desc: '100% 正版 SV8a 完整卡表（001/187～237/187 共 237 種）！收錄太晶月亮伊布 SAR、太晶仙子伊布 SAR！', packPrice: 800, boxPrice: 7500, packGrad: 'from-indigo-700 via-purple-950 to-slate-950', coverDex: [197, 700], coverImg: tcImg('sv8pt5', '161'), ptcgSet: 'sv8pt5', ptcgNum: '161' },
+            { id: 'box-151', setCode: 'SV2a', cardsPerPack: 7, badge: '🔴 SV2a 151 全210種', title: 'SV2a 寶可夢卡牌 151 強化盒', jpTitle: 'ポケモンカード151', desc: '100% 正版 SV2a 151 完整卡表（001/165～210/165 共 210 種）！御三家 SAR 齊聚，噴火龍、水箭龜、妙蛙花！', packPrice: 620, boxPrice: 5800, packGrad: 'from-red-600 via-rose-900 to-slate-950', coverDex: [151, 6], coverImg: tcImg('sv3pt5', '199'), ptcgSet: 'sv3pt5', ptcgNum: '199' },
+            { id: 'box-25th', setCode: 'S8a', cardsPerPack: 5, badge: '🎂 25週年 S8a+Promo 55種', title: '寶可夢 25週年黃金紀念箱', jpTitle: '25th ANNIVERSARY', desc: '100% 正版 S8a 主彈 + S8a-P 25th Promo 完整卡表（共 55 種）！收錄純金皮卡丘 V、黃金夢幻 UR 與御三家復刻！', packPrice: 850, boxPrice: 7900, packGrad: 'from-yellow-500 via-amber-800 to-slate-950', coverDex: [25, 151], coverImg: tcImg('swshp', 'SWSH145'), ptcgSet: 'swshp', ptcgNum: 'SWSH145' },
+            { id: 'box-sv9', setCode: 'SV9', cardsPerPack: 5, badge: '🤝 SV9 全132種完整收錄', title: 'SV9 對戰搭檔 (Battle Partners)', jpTitle: 'バトルパートナーズ', desc: '100% 正版 SV9 完整卡表（001/100～132/100 共 132 種）！收錄莉莉艾的皮皮 ex SAR、N 的索羅亞克 ex SAR！', packPrice: 580, boxPrice: 5400, packGrad: 'from-cyan-600 via-sky-900 to-slate-950', coverDex: [35, 571], coverImg: tcImg('sv9', '184'), ptcgSet: 'sv9', ptcgNum: '184' }
         ];
+
+        function pokeArtUrl(dexId) {
+            return `https://assets.pokemon.com/assets/cms2/img/pokedex/full/${String(dexId).padStart(3, '0')}.png`;
+        }
 
         function renderBoosterPackVisual(box, size = 'sm') {
             const isLg = size === 'lg';
+            const countNum = box.cardsPerPack || 5;
+
+            // 專屬還原：2026 30週年 M6a 官方未拆封卡包包裝設計（金色鋸齒壓紋封口、夢幻+超夢+飛躍皮卡丘、30th CELEBRATION 金色立體徽章）
+            if (box.id === 'box-30th') {
+                return `
+                <div class="relative w-full h-full bg-gradient-to-b from-amber-300 via-sky-100 to-amber-400 flex flex-col justify-between select-none overflow-hidden text-slate-900">
+                    <!-- 頂部金色鋁箔壓紋鋸齒封口與吊掛圓孔 -->
+                    <div class="relative h-3.5 w-full pack-foil-crimp-gold border-b border-amber-700/60 flex items-center justify-center">
+                        <div class="w-2.5 h-2.5 rounded-full bg-slate-950 border border-amber-600 shadow-inner"></div>
+                    </div>
+
+                    <!-- 頂部日文卡包資訊列：ポケモンカードゲーム MEGA & ランダム 6枚入り M6a -->
+                    <div class="px-1.5 pt-0.5 flex items-start justify-between relative z-10 leading-none">
+                        <div class="text-left">
+                            <div class="${isLg ? 'text-[9px]' : 'text-[6.5px]'} font-black text-rose-600 drop-shadow-[0_1px_0_rgba(255,255,255,0.95)] tracking-tighter">ポケモンカードゲーム</div>
+                            <span class="inline-block px-1 py-0.2 rounded bg-slate-900 text-amber-300 font-display font-black ${isLg ? 'text-[8px]' : 'text-[6px]'}">MEGA</span>
+                        </div>
+                        <div class="text-right space-y-0.5">
+                            <div class="flex items-center justify-end gap-0.5">
+                                <span class="px-1 py-0.2 rounded bg-rose-600 text-white font-black ${isLg ? 'text-[8px]' : 'text-[5.5px]'}">6枚入</span>
+                                <span class="px-1 py-0.2 rounded bg-white/95 border border-slate-800 text-slate-900 font-display font-black ${isLg ? 'text-[8px]' : 'text-[5.5px]'}">M6a</span>
+                            </div>
+                            <div class="${isLg ? 'text-[7px]' : 'text-[5px]'} font-black text-slate-900 bg-amber-300/90 px-1 rounded">すべてがキラカード!</div>
+                        </div>
+                    </div>
+
+                    <!-- Pokémon 經典藍黃標誌 -->
+                    <div class="relative z-10 text-center -mt-0.5">
+                        <span class="font-display font-black italic ${isLg ? 'text-xl' : 'text-xs'} tracking-tight text-amber-300 drop-shadow-[0_2px_0_#1d4ed8]" style="-webkit-text-stroke: 1px #1e3a8a;">Pokémon</span>
+                    </div>
+
+                    <!-- 中央主視覺：夢幻（左）、超夢（右）、飛躍皮卡丘（正中）與 30 剪影標章 -->
+                    <div class="relative flex-1 w-full flex items-center justify-center my-0.5">
+                        <div class="pointer-events-none absolute inset-0 bg-gradient-to-r from-cyan-300/45 via-transparent to-emerald-300/45"></div>
+                        <img src="${pokeArtUrl(151)}" alt="Mew" onerror="this.style.display='none'" class="absolute ${isLg ? 'w-20 h-20 -top-1 left-2' : 'w-10 h-10 -top-0.5 left-0.5'} object-contain drop-shadow">
+                        <img src="${pokeArtUrl(150)}" alt="Mewtwo" onerror="this.style.display='none'" class="absolute ${isLg ? 'w-20 h-20 -top-1 right-2' : 'w-10 h-10 -top-0.5 right-0.5'} object-contain drop-shadow">
+                        <img src="${pokeArtUrl(25)}" alt="Pikachu" onerror="this.style.display='none'" class="relative z-10 ${isLg ? 'w-32 h-32 mt-3' : 'w-16 h-16 mt-2'} object-contain drop-shadow-[0_4px_8px_rgba(0,0,0,0.35)]">
+                        <!-- 右下角 30 週年皮卡丘金色剪影標章 -->
+                        <div class="absolute ${isLg ? 'bottom-1 right-2 px-1.5 py-0.5 text-[9px]' : 'bottom-0.5 right-1 px-1 text-[6px]'} z-20 rounded-full bg-amber-400 border border-amber-700 font-display font-black text-rose-700 shadow">
+                            ⚡30
+                        </div>
+                    </div>
+
+                    <!-- 底部 30th CELEBRATION 立體金字銘牌 -->
+                    <div class="relative z-20 mx-1.5 mb-1 rounded-lg bg-gradient-to-b from-yellow-200 via-amber-400 to-amber-600 border border-amber-900 shadow-md px-1 py-0.5 text-center leading-none">
+                        <div class="font-display font-black ${isLg ? 'text-base' : 'text-[10px]'} text-white drop-shadow-[0_1px_1px_#78350f]" style="-webkit-text-stroke: 0.6px #78350f;">30th</div>
+                        <div class="font-display font-black ${isLg ? 'text-[9px]' : 'text-[6px]'} tracking-wider text-amber-950">CELEBRATION</div>
+                        <div class="mt-0.5 rounded bg-amber-950 text-amber-200 font-black ${isLg ? 'text-[7px]' : 'text-[5px]'} py-0.2">30th セレブレーション</div>
+                    </div>
+
+                    <!-- 底部金色鋁箔鋸齒封口 -->
+                    <div class="h-3 w-full pack-foil-crimp-gold border-t border-amber-700/60"></div>
+                </div>`;
+            }
+
+            // 其餘 10 大系列：統一採用真實日本寶可夢卡包包裝外觀（非單張卡片框）
+            const [mainDex, subDex] = box.coverDex || [25, 151];
             return `
-            <div class="relative w-full h-full bg-gradient-to-b ${box.packGrad} flex flex-col justify-between p-2 select-none overflow-hidden">
-                <div class="pointer-events-none absolute inset-0 holo-glint opacity-60"></div>
-                <div class="flex items-center justify-between relative z-10">
-                    <span class="px-1.5 py-0.5 rounded bg-black/75 border border-amber-400/50 text-[9px] font-display font-black text-amber-300">${box.setCode}</span>
-                    <span class="px-1.5 py-0.5 rounded bg-white/90 text-black text-[8px] font-black">5枚入</span>
+            <div class="relative w-full h-full bg-gradient-to-b ${box.packGrad} flex flex-col justify-between select-none overflow-hidden">
+                <div class="pointer-events-none absolute inset-0 holo-glint opacity-45"></div>
+                <!-- 頂部鋁箔鋸齒封口與圓孔 -->
+                <div class="relative h-3 w-full pack-foil-crimp-silver border-b border-white/20 flex items-center justify-center">
+                    <div class="w-2 h-2 rounded-full bg-slate-950 border border-white/30"></div>
                 </div>
-                <div class="relative z-10 my-auto mx-auto ${isLg ? 'w-32 h-44' : 'w-16 h-22'} rounded-xl overflow-hidden border border-amber-300/70 shadow-lg bg-slate-950">
-                    <img src="${box.coverImg}" alt="${box.title}" data-card-name="${box.title}" data-card-code="${box.setCode}" data-ptcg-set="${box.ptcgSet || 'sv3pt5'}" data-ptcg-num="${box.ptcgNum || '25'}" referrerpolicy="no-referrer" onerror="handleCardImgError(this)" class="w-full h-full object-contain">
+
+                <!-- 頂部卡包系列與張數標示 -->
+                <div class="px-1.5 pt-1 flex items-center justify-between relative z-10">
+                    <span class="px-1.5 py-0.5 rounded bg-black/75 border border-amber-400/50 ${isLg ? 'text-[10px]' : 'text-[7.5px]'} font-display font-black text-amber-300">${box.setCode}</span>
+                    <span class="px-1.5 py-0.5 rounded bg-white/95 text-black ${isLg ? 'text-[9px]' : 'text-[7px]'} font-black">${countNum}枚入</span>
                 </div>
-                <div class="relative z-10 text-center leading-tight">
-                    <div class="text-[8px] font-display font-black tracking-widest text-white/90">POKÉMON TCG</div>
-                    <div class="text-[8px] font-bold text-amber-200 truncate">${box.jpTitle}</div>
+
+                <!-- Pokémon 經典字樣 -->
+                <div class="relative z-10 text-center -mt-0.5">
+                    <span class="font-display font-black italic ${isLg ? 'text-base' : 'text-[10px]'} text-amber-300 drop-shadow-[0_1px_0_#1e3a8a]">Pokémon</span>
                 </div>
+
+                <!-- 中央封面寶可夢全幅包裝插畫 -->
+                <div class="relative flex-1 w-full flex items-center justify-center">
+                    ${subDex ? `<img src="${pokeArtUrl(subDex)}" alt="Sub Art" onerror="this.style.display='none'" class="absolute ${isLg ? 'w-24 h-24 top-0 right-1' : 'w-12 h-12 top-0 right-0.5'} object-contain opacity-85 drop-shadow">` : ''}
+                    <img src="${pokeArtUrl(mainDex)}" alt="${box.title}" onerror="this.style.display='none'" class="relative z-10 ${isLg ? 'w-32 h-32' : 'w-16 h-16'} object-contain drop-shadow-[0_6px_12px_rgba(0,0,0,0.75)]">
+                </div>
+
+                <!-- 底部系列日文標題銘牌 -->
+                <div class="relative z-10 mx-1.5 mb-1 px-1.5 py-1 rounded-lg bg-black/80 border border-amber-400/40 text-center leading-tight">
+                    <div class="${isLg ? 'text-[8px]' : 'text-[6px]'} font-display font-black tracking-widest text-gray-300">拡張パック</div>
+                    <div class="${isLg ? 'text-[10px]' : 'text-[7.5px]'} font-black text-amber-300 truncate">${box.jpTitle}</div>
+                </div>
+
+                <!-- 底部鋁箔鋸齒封口 -->
+                <div class="h-2.5 w-full pack-foil-crimp-silver border-t border-white/20"></div>
             </div>`;
         }
 
@@ -3244,10 +3338,11 @@
                 return normalizeCardInstance(pool[Math.floor(Math.random() * pool.length)]);
             };
 
-            const totalCards = packCount * 5;
+            const perPack = box.cardsPerPack || 5;
+            const totalCards = packCount * perPack;
             const drawn = [];
             for (let i = 0; i < totalCards; i++) {
-                const isAceSlot = (i % 5 === 4);
+                const isAceSlot = (i % perPack === perPack - 1);
                 const r = Math.random();
                 if (isAceSlot) {
                     if (r < 0.025) drawn.push(pickFrom(topCards, roster));
@@ -3268,33 +3363,53 @@
                 }
             }
 
-            // 由低階排到高階，讓大獎藏在卡疊最底層，偷看卡邊更有懸念
+            // 由低階排到高階，讓大獎藏在卡疊最底層，3D 旋轉偷看邊角更有懸念
             drawn.sort((a, b) => a.pt - b.pt);
             const label = isBox ? `${box.title}（1BOX 整盒全開）` : `${box.title}（${packCount} 包）`;
             PackOpener.open(box, drawn, label);
         }
 
         /* ==========================================================================
-           第 9 節：擬真 3D 鋁箔卡包撕開 ＋ 手指拖曳側傾偷看卡邊引擎 (`PackOpener`)
+           第 9 節：擬真 3D 鋁箔卡包撕開 ＋ 自由 360° Three.js 3D 立體檢視卡牌邊邊角角引擎 (`PackOpener`)
            ========================================================================== */
         const PackOpener = {
             box: null,
             cards: [],
             allCards: [],
             label: '',
-            tiltAngle: 32,
+            rotX: -0.18,
+            rotY: 0.62,
+            velX: 0,
+            velY: 0,
+            zoomZ: 6.2,
+            fanSpread: false,
             isTorn: false,
             ripProgress: 0,
             gestureBound: false,
+            renderer: null,
+            scene: null,
+            camera: null,
+            stackGroup: null,
+            cardMeshes: [],
+            rafId: null,
+            backTex: null,
 
             open(box, cards, label) {
                 this.box = box;
                 this.cards = [...cards];
                 this.allCards = [...cards];
                 this.label = label;
-                this.tiltAngle = 32;
+                this.rotX = -0.18;
+                this.rotY = 0.62;
+                this.velX = 0;
+                this.velY = 0;
+                this.zoomZ = 6.2;
+                this.fanSpread = false;
                 this.isTorn = false;
                 this.ripProgress = 0;
+
+                const fanBtn = document.getElementById('btn-pack-fan');
+                if (fanBtn) fanBtn.className = 'px-2.5 py-1 rounded-full bg-black/80 hover:bg-cyan-400 hover:text-black border border-cyan-400/40 text-[10px] font-black text-cyan-200 transition-colors';
 
                 document.getElementById('pack-tear-badge').textContent = `${box.setCode} • ${cards.length} 張待拆封`;
                 document.getElementById('pack-tear-title').textContent = `✂️ 沿頂部虛線向右滑動撕開【${label}】！`;
@@ -3322,25 +3437,26 @@
                 if (this.gestureBound) return;
                 this.gestureBound = true;
 
+                // 1. 封條手指／滑鼠滑動撕開手勢
                 const wrap = document.getElementById('pack-3d-tilt-wrapper');
                 let draggingRip = false;
                 let startX = 0;
 
-                const onPointerDown = (e) => {
+                const onRipDown = (e) => {
                     if (this.isTorn) return;
                     draggingRip = true;
                     startX = e.clientX ?? (e.touches && e.touches[0].clientX) ?? 0;
                 };
-                const onPointerMove = (e) => {
+                const onRipMove = (e) => {
                     if (this.isTorn || !wrap) return;
                     const curX = e.clientX ?? (e.touches && e.touches[0].clientX) ?? 0;
                     const rect = wrap.getBoundingClientRect();
-                    const normX = ((curX - rect.left) / Math.max(1, rect.width) - 0.5) * 22;
-                    wrap.style.transform = `perspective(900px) rotateY(${normX.toFixed(1)}deg) rotateX(4deg)`;
+                    const normX = ((curX - rect.left) / Math.max(1, rect.width) - 0.5) * 24;
+                    wrap.style.transform = `perspective(900px) rotateY(${normX.toFixed(1)}deg) rotateX(5deg)`;
 
                     if (!draggingRip) return;
                     const deltaX = Math.max(0, curX - startX);
-                    const pct = Math.min(100, Math.round((deltaX / 155) * 100));
+                    const pct = Math.min(100, Math.round((deltaX / 150) * 100));
                     this.ripProgress = pct;
                     const strip = document.getElementById('pack-tear-strip');
                     const pctEl = document.getElementById('pack-tear-pct');
@@ -3351,7 +3467,7 @@
                         this.tearOpen();
                     }
                 };
-                const onPointerUp = () => {
+                const onRipUp = () => {
                     if (!draggingRip) return;
                     draggingRip = false;
                     if (!this.isTorn && this.ripProgress < 72) {
@@ -3363,34 +3479,49 @@
                 };
 
                 if (wrap) {
-                    wrap.addEventListener('pointerdown', onPointerDown);
-                    window.addEventListener('pointermove', onPointerMove);
-                    window.addEventListener('pointerup', onPointerUp);
+                    wrap.addEventListener('pointerdown', onRipDown);
+                    window.addEventListener('pointermove', onRipMove);
+                    window.addEventListener('pointerup', onRipUp);
                 }
 
-                const stackEl = document.getElementById('pack-3d-stack');
-                let draggingStack = false;
-                let stackStartX = 0;
-                let baseTilt = 32;
+                // 2. 撕開後 3D 立體舞台：全自由 360° 雙軸拖曳旋轉 (Yaw + Pitch) 檢視卡牌邊邊角角
+                const viewport = document.getElementById('pack-3d-viewport');
+                let dragging3D = false;
+                let lastX = 0;
+                let lastY = 0;
 
-                if (stackEl) {
-                    stackEl.addEventListener('pointerdown', (e) => {
-                        draggingStack = true;
-                        stackStartX = e.clientX || 0;
-                        baseTilt = this.tiltAngle;
+                if (viewport) {
+                    viewport.addEventListener('pointerdown', (e) => {
+                        if (e.target && e.target.tagName === 'BUTTON') return;
+                        dragging3D = true;
+                        lastX = e.clientX || 0;
+                        lastY = e.clientY || 0;
+                        this.velX = 0;
+                        this.velY = 0;
                     });
                     window.addEventListener('pointermove', (e) => {
-                        if (!draggingStack || !this.isTorn) return;
-                        const dx = (e.clientX || 0) - stackStartX;
-                        const nextTilt = Math.max(-62, Math.min(62, Math.round(baseTilt + dx * 0.45)));
-                        this.tiltAngle = nextTilt;
-                        const slider = document.getElementById('pack-tilt-slider');
-                        if (slider) slider.value = nextTilt;
-                        this.renderCardStack();
+                        if (!dragging3D || !this.isTorn) return;
+                        const cx = e.clientX || 0;
+                        const cy = e.clientY || 0;
+                        const dx = cx - lastX;
+                        const dy = cy - lastY;
+                        lastX = cx;
+                        lastY = cy;
+
+                        this.velY = dx * 0.013;
+                        this.velX = dy * 0.013;
+                        this.rotY += this.velY;
+                        this.rotX = Math.max(-1.35, Math.min(1.35, this.rotX + this.velX));
+                        this.updateEdgeHintFromAngle();
                     });
                     window.addEventListener('pointerup', () => {
-                        draggingStack = false;
+                        dragging3D = false;
                     });
+                    viewport.addEventListener('wheel', (e) => {
+                        if (!this.isTorn) return;
+                        e.preventDefault();
+                        this.adjustZoom(e.deltaY > 0 ? 0.45 : -0.45);
+                    }, { passive: false });
                 }
             },
 
@@ -3408,7 +3539,7 @@
                 const bestTier = resolveCardTier(bestCard);
                 const beam = document.getElementById('pack-open-beam');
                 if (beam) {
-                    beam.className = `pointer-events-none absolute inset-x-4 bottom-2 h-68 rounded-full blur-2xl animate-pack-beam ${
+                    beam.className = `pointer-events-none absolute inset-x-8 bottom-0 h-56 rounded-full blur-2xl animate-pack-beam ${
                         bestTier === 1 ? 'bg-gradient-to-t from-rose-500/80 via-amber-300/70 to-transparent' :
                         bestTier === 2 ? 'bg-gradient-to-t from-amber-400/75 via-yellow-200/60 to-transparent' :
                         bestTier === 3 ? 'bg-gradient-to-t from-purple-500/70 via-fuchsia-400/50 to-transparent' :
@@ -3419,23 +3550,260 @@
                 setTimeout(() => {
                     document.getElementById('pack-sealed-stage').classList.add('hidden');
                     document.getElementById('pack-peek-stage').classList.remove('hidden');
-                    document.getElementById('pack-tear-title').textContent = '👀 左右拖曳卡片或拉動滑桿，偷看 3D 卡邊光澤！';
-                    document.getElementById('pack-tilt-slider').value = this.tiltAngle;
-                    this.renderCardStack();
+                    document.getElementById('pack-tear-title').textContent = '🖐️ 自由 360° 拖曳轉動 3D 卡牌，檢視所有邊邊角角！';
+                    requestAnimationFrame(() => {
+                        this.init3DStage();
+                        this.rebuild3DCardStack();
+                    });
                 }, 420);
             },
 
-            setTilt(deg) {
-                this.tiltAngle = Number(deg) || 0;
-                this.renderCardStack();
+            getEdgeStyle(tier) {
+                if (tier === 1) return { hex: 0xf43f5e, emissive: 0x9f1239, label: '🌈 傳說虹紅神光邊角！！（藏有頂級大獎！）' };
+                if (tier === 2) return { hex: 0xfacc15, emissive: 0x854d0e, label: '✨ 耀眼 24K 純金邊角！（偵測到 SAR / UR / MUR！）' };
+                if (tier === 3) return { hex: 0xc084fc, emissive: 0x581c87, label: '💜 紫光全圖閃卡邊角（偵測到 SR / AR！）' };
+                if (tier === 4) return { hex: 0x38bdf8, emissive: 0x075985, label: '💙 銀藍閃膜卡邊角（偵測到 RR / R 閃卡）' };
+                return { hex: 0xe2e8f0, emissive: 0x1e293b, label: '🤍 普通白邊卡角' };
             },
 
-            getEdgeStyle(tier) {
-                if (tier === 1) return { color: '#f43f5e', glow: '0 0 24px #f43f5e, 0 0 42px #facc15', label: '🌈 傳說虹紅神光邊！！（藏有頂級大獎！）' };
-                if (tier === 2) return { color: '#facc15', glow: '0 0 20px #facc15', label: '✨ 耀眼純金大獎邊！（偵測到 SAR / UR / MUR！）' };
-                if (tier === 3) return { color: '#c084fc', glow: '0 0 15px #a855f7', label: '💜 紫光全圖閃卡邊（偵測到 SR / AR！）' };
-                if (tier === 4) return { color: '#38bdf8', glow: '0 0 11px #38bdf8', label: '💙 銀藍閃膜卡邊（偵測到 RR / R 閃卡）' };
-                return { color: '#cbd5e1', glow: 'none', label: '🤍 普通白邊卡' };
+            createCardBackTexture() {
+                if (this.backTex) return this.backTex;
+                const c = document.createElement('canvas');
+                c.width = 256;
+                c.height = 356;
+                const ctx = c.getContext('2d');
+                const grad = ctx.createLinearGradient(0, 0, 256, 356);
+                grad.addColorStop(0, '#0f2952');
+                grad.addColorStop(0.5, '#1e40af');
+                grad.addColorStop(1, '#0b1936');
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, 256, 356);
+                ctx.strokeStyle = '#38bdf8';
+                ctx.lineWidth = 12;
+                ctx.strokeRect(10, 10, 236, 336);
+                ctx.beginPath();
+                ctx.arc(128, 178, 56, 0, Math.PI * 2);
+                ctx.fillStyle = '#ef4444';
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(128, 178, 56, 0, Math.PI);
+                ctx.fillStyle = '#f8fafc';
+                ctx.fill();
+                ctx.lineWidth = 8;
+                ctx.strokeStyle = '#0f172a';
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.arc(128, 178, 18, 0, Math.PI * 2);
+                ctx.fillStyle = '#facc15';
+                ctx.fill();
+                ctx.stroke();
+                this.backTex = new THREE.CanvasTexture(c);
+                return this.backTex;
+            },
+
+            createCardFrontTexture(card) {
+                const c = document.createElement('canvas');
+                c.width = 360;
+                c.height = 500;
+                const ctx = c.getContext('2d');
+                const tier = resolveCardTier(card);
+
+                const bg = ctx.createLinearGradient(0, 0, 360, 500);
+                if (tier === 1) { bg.addColorStop(0, '#4c0519'); bg.addColorStop(0.5, '#78350f'); bg.addColorStop(1, '#1e1b4b'); }
+                else if (tier === 2) { bg.addColorStop(0, '#713f12'); bg.addColorStop(0.5, '#1e293b'); bg.addColorStop(1, '#451a03'); }
+                else if (tier === 3) { bg.addColorStop(0, '#3b0764'); bg.addColorStop(1, '#0f172a'); }
+                else { bg.addColorStop(0, '#0f172a'); bg.addColorStop(1, '#1e293b'); }
+                ctx.fillStyle = bg;
+                ctx.fillRect(0, 0, 360, 500);
+
+                ctx.strokeStyle = tier === 1 ? '#f43f5e' : (tier === 2 ? '#facc15' : (tier === 3 ? '#c084fc' : '#38bdf8'));
+                ctx.lineWidth = 14;
+                ctx.strokeRect(10, 10, 340, 480);
+
+                ctx.fillStyle = '#facc15';
+                ctx.font = '900 22px Inter, sans-serif';
+                ctx.fillText(`${card.rarity} • ${card.code}`, 28, 48);
+
+                ctx.fillStyle = '#ffffff';
+                ctx.font = '800 20px Inter, sans-serif';
+                const cleanTitle = (card.name || '').replace(/^【[^】]+】/, '').slice(0, 14);
+                ctx.fillText(cleanTitle, 28, 430);
+
+                ctx.fillStyle = '#fde047';
+                ctx.font = '900 24px Orbitron, sans-serif';
+                ctx.fillText(`${Number(card.pt || 0).toLocaleString()} PT`, 28, 468);
+
+                const tex = new THREE.CanvasTexture(c);
+
+                // 同步嘗試載入真實高清卡圖更新紋理
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+                img.onload = () => {
+                    try {
+                        ctx.drawImage(img, 0, 0, 360, 500);
+                        tex.needsUpdate = true;
+                    } catch (e) {}
+                };
+                img.src = card.img;
+
+                return tex;
+            },
+
+            init3DStage() {
+                const viewport = document.getElementById('pack-3d-viewport');
+                const canvas = document.getElementById('pack-3d-canvas');
+                if (!viewport || !canvas || typeof THREE === 'undefined') return;
+
+                const w = Math.max(280, viewport.clientWidth || 360);
+                const h = Math.max(280, viewport.clientHeight || 320);
+
+                if (!this.renderer) {
+                    this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+                }
+                this.renderer.setSize(w, h, false);
+                this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+
+                if (!this.scene) {
+                    this.scene = new THREE.Scene();
+                    const amb = new THREE.AmbientLight(0xffffff, 0.92);
+                    const dir1 = new THREE.DirectionalLight(0xfffbeb, 0.9);
+                    dir1.position.set(4, 6, 7);
+                    const dir2 = new THREE.DirectionalLight(0x38bdf8, 0.55);
+                    dir2.position.set(-5, -4, -5);
+                    this.scene.add(amb, dir1, dir2);
+
+                    this.stackGroup = new THREE.Group();
+                    this.scene.add(this.stackGroup);
+                }
+
+                if (!this.camera) {
+                    this.camera = new THREE.PerspectiveCamera(45, w / h, 0.1, 100);
+                } else {
+                    this.camera.aspect = w / h;
+                    this.camera.updateProjectionMatrix();
+                }
+                this.camera.position.set(0, 0, this.zoomZ);
+
+                if (!this.rafId) {
+                    const loop = () => {
+                        this.rafId = requestAnimationFrame(loop);
+                        if (!this.isTorn || !this.renderer || !this.scene || !this.camera) return;
+
+                        this.rotY += this.velY;
+                        this.rotX = Math.max(-1.35, Math.min(1.35, this.rotX + this.velX));
+                        this.velX *= 0.9;
+                        this.velY *= 0.9;
+
+                        if (this.stackGroup) {
+                            this.stackGroup.rotation.x = this.rotX;
+                            this.stackGroup.rotation.y = this.rotY;
+                        }
+                        this.camera.position.z += (this.zoomZ - this.camera.position.z) * 0.18;
+
+                        // 扇形錯開卡邊平滑過渡
+                        this.cardMeshes.forEach((mesh, idx) => {
+                            const targetX = this.fanSpread ? (idx - (this.cardMeshes.length - 1) * 0.5) * 0.24 : 0;
+                            const targetY = this.fanSpread ? -idx * 0.06 : 0;
+                            const targetRotZ = this.fanSpread ? -(idx - (this.cardMeshes.length - 1) * 0.5) * 0.07 : 0;
+                            mesh.position.x += (targetX - mesh.position.x) * 0.16;
+                            mesh.position.y += (targetY - mesh.position.y) * 0.16;
+                            mesh.rotation.z += (targetRotZ - mesh.rotation.z) * 0.16;
+                        });
+
+                        this.renderer.render(this.scene, this.camera);
+                    };
+                    this.rafId = requestAnimationFrame(loop);
+                }
+            },
+
+            rebuild3DCardStack() {
+                const counter = document.getElementById('pack-remaining-counter');
+                if (this.cards.length === 0) {
+                    this.revealAllToResult();
+                    return;
+                }
+                if (counter) counter.textContent = `剩餘 ${this.cards.length} 張`;
+                this.updateEdgeHintFromAngle();
+
+                if (!this.stackGroup) return;
+                while (this.stackGroup.children.length > 0) {
+                    this.stackGroup.remove(this.stackGroup.children[0]);
+                }
+                this.cardMeshes = [];
+
+                const visible = this.cards.slice(0, 8);
+                const backTex = this.createCardBackTexture();
+                const cardW = 2.45;
+                const cardH = 3.42;
+                const cardDepth = 0.048;
+
+                visible.forEach((card, i) => {
+                    const tier = resolveCardTier(card);
+                    const edge = this.getEdgeStyle(tier);
+                    const frontTex = this.createCardFrontTexture(card);
+
+                    // BoxGeometry 6 個面：[+X 右邊, -X 左邊, +Y 上邊, -Y 下邊, +Z 正面, -Z 背面]
+                    const edgeMat = new THREE.MeshStandardMaterial({
+                        color: edge.hex,
+                        emissive: edge.emissive,
+                        emissiveIntensity: tier <= 2 ? 0.85 : 0.35,
+                        roughness: 0.25,
+                        metalness: 0.7
+                    });
+                    const frontMat = new THREE.MeshBasicMaterial({ map: frontTex });
+                    const backMat = new THREE.MeshBasicMaterial({ map: backTex });
+
+                    const geo = new THREE.BoxGeometry(cardW, cardH, cardDepth);
+                    const mesh = new THREE.Mesh(geo, [edgeMat, edgeMat, edgeMat, edgeMat, frontMat, backMat]);
+                    mesh.position.z = ((visible.length - 1) * 0.5 - i) * 0.068;
+                    this.stackGroup.add(mesh);
+                    this.cardMeshes.push(mesh);
+                });
+            },
+
+            updateEdgeHintFromAngle() {
+                const hint = document.getElementById('pack-edge-hint');
+                if (!hint || this.cards.length === 0) return;
+                const bestCard = [...this.cards].sort((a, b) => b.pt - a.pt)[0];
+                const bestEdge = this.getEdgeStyle(resolveCardTier(bestCard));
+                const isTilted = Math.abs(Math.sin(this.rotY)) > 0.26 || Math.abs(this.rotX) > 0.26 || this.fanSpread;
+                hint.textContent = isTilted
+                    ? `👀 3D 邊角透視偵測：${bestEdge.label}`
+                    : '🖐️ 單指／滑鼠自由 360° 拖曳轉動 3D 卡牌，檢視上下左右邊緣與四角光澤！';
+            },
+
+            presetView(mode) {
+                if (mode === 'front') {
+                    this.rotX = 0;
+                    this.rotY = 0;
+                } else if (mode === 'edge') {
+                    this.rotX = -0.32;
+                    this.rotY = 1.08;
+                }
+                this.velX = 0;
+                this.velY = 0;
+                this.updateEdgeHintFromAngle();
+                SoundEngine.playClick();
+            },
+
+            toggleFanSpread() {
+                this.fanSpread = !this.fanSpread;
+                const btn = document.getElementById('btn-pack-fan');
+                if (btn) {
+                    btn.className = this.fanSpread
+                        ? 'px-2.5 py-1 rounded-full bg-cyan-400 text-black border border-cyan-300 text-[10px] font-black transition-colors'
+                        : 'px-2.5 py-1 rounded-full bg-black/80 hover:bg-cyan-400 hover:text-black border border-cyan-400/40 text-[10px] font-black text-cyan-200 transition-colors';
+                }
+                if (this.fanSpread && Math.abs(this.rotY) < 0.3) {
+                    this.rotY = 0.55;
+                }
+                this.updateEdgeHintFromAngle();
+                SoundEngine.playClick();
+            },
+
+            adjustZoom(delta) {
+                this.zoomZ = Math.max(3.8, Math.min(8.8, this.zoomZ + delta));
+                SoundEngine.playClick();
             },
 
             triggerHitFlash() {
@@ -3447,46 +3815,8 @@
                 setTimeout(() => flash.classList.add('hidden'), 620);
             },
 
-            renderCardStack() {
-                const container = document.getElementById('pack-3d-stack');
-                const counter = document.getElementById('pack-remaining-counter');
-                const hint = document.getElementById('pack-edge-hint');
-                if (!container) return;
-
-                if (this.cards.length === 0) {
-                    this.revealAllToResult();
-                    return;
-                }
-
-                counter.textContent = `剩餘 ${this.cards.length} 張`;
-                const bestCard = [...this.cards].sort((a, b) => b.pt - a.pt)[0];
-                const bestEdge = this.getEdgeStyle(resolveCardTier(bestCard));
-                hint.textContent = Math.abs(this.tiltAngle) >= 16
-                    ? `👀 偷看到卡疊側邊反應：${bestEdge.label}`
-                    : '👀 左右拖曳卡片或滑動拉桿側傾，偷看側邊發光色條！';
-
-                const visibleSlice = this.cards.slice(0, 7);
-                container.innerHTML = visibleSlice.map((card, i) => {
-                    const tier = resolveCardTier(card);
-                    const edge = this.getEdgeStyle(tier);
-                    const zOffset = (visibleSlice.length - i) * 5;
-                    const fanShift = (this.tiltAngle / 62) * (i * 9);
-                    const fanRotZ = (this.tiltAngle / 62) * (i * 1.4);
-                    return `
-                    <div id="${i === 0 ? 'pack-top-card' : ''}" onclick="PackOpener.revealNextCard()"
-                        style="transform: perspective(800px) rotateY(${this.tiltAngle}deg) rotateZ(${fanRotZ.toFixed(1)}deg) translateX(${fanShift.toFixed(1)}px) translateZ(${zOffset}px); border-right: 7px solid ${edge.color}; border-left: 7px solid ${edge.color}; box-shadow: ${edge.glow}; z-index: ${25 - i};"
-                        class="cursor-pointer absolute w-48 h-68 rounded-2xl bg-slate-950 border-t-2 border-b-2 border-white/30 overflow-hidden transition-transform duration-100">
-                        <img src="${card.img}" alt="${card.name}" data-card-name="${card.name}" data-card-code="${card.code}" data-ptcg-set="${card.ptcgSet || 'sv3pt5'}" data-ptcg-num="${card.ptcgNum || '25'}" referrerpolicy="no-referrer" onerror="handleCardImgError(this)" class="w-full h-full object-contain">
-                        ${tier <= 2 ? '<div class="pointer-events-none absolute inset-0 holo-glint"></div>' : ''}
-                    </div>`;
-                }).join('');
-            },
-
             revealNextCard() {
                 if (this.cards.length === 0) return;
-                const topEl = document.getElementById('pack-top-card');
-                if (topEl) topEl.classList.add('animate-card-flick');
-
                 const popped = this.cards.shift();
                 SoundEngine.playCardSlide();
                 if (resolveCardTier(popped) <= 2) {
@@ -3495,16 +3825,19 @@
                 }
                 showToast(`翻出：${popped.name} (${popped.pt.toLocaleString()} PT)`);
 
-                setTimeout(() => {
-                    if (this.cards.length === 0) {
-                        this.revealAllToResult();
-                    } else {
-                        this.renderCardStack();
-                    }
-                }, 180);
+                if (this.cards.length === 0) {
+                    this.revealAllToResult();
+                } else {
+                    this.rebuild3DCardStack();
+                }
             },
 
             revealAllToResult() {
+                this.isTorn = false;
+                if (this.rafId) {
+                    cancelAnimationFrame(this.rafId);
+                    this.rafId = null;
+                }
                 document.getElementById('pack-tear-modal').classList.add('hidden');
                 const sorted = [...this.allCards].sort((a, b) => b.pt - a.pt);
                 showResultModal(this.label, sorted);
